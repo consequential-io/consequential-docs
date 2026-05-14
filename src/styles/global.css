@@ -32,40 +32,35 @@
 
 	/* ── Accent palette (links, current item, primary buttons) ────────────
 	 *
-	 * Defaults to Tailwind's `violet` scale — a slightly more distinctive,
-	 * modern hue than Starlight's stock indigo. Generate a custom palette at
-	 * https://starlight.astro.build/guides/css-and-tailwind/#theming-with-css-variables
-	 * and paste the values below to match your brand.
+	 * Custom scale built around Consequential's brand purple (#5636d1).
 	 */
-	--color-accent-50: var(--color-violet-50);
-	--color-accent-100: var(--color-violet-100);
-	--color-accent-200: var(--color-violet-200);
-	--color-accent-300: var(--color-violet-300);
-	--color-accent-400: var(--color-violet-400);
-	--color-accent-500: var(--color-violet-500);
-	--color-accent-600: var(--color-violet-600);
-	--color-accent-700: var(--color-violet-700);
-	--color-accent-800: var(--color-violet-800);
-	--color-accent-900: var(--color-violet-900);
-	--color-accent-950: var(--color-violet-950);
+	--color-accent-50: #f0edfe;
+	--color-accent-100: #ddd6fd;
+	--color-accent-200: #bfb0fb;
+	--color-accent-300: #9c83f7;
+	--color-accent-400: #7c5af0;
+	--color-accent-500: #5636d1;
+	--color-accent-600: #4a2cb8;
+	--color-accent-700: #3e2499;
+	--color-accent-800: #321d7a;
+	--color-accent-900: #271764;
+	--color-accent-950: #160d3a;
 
 	/* ── Gray palette (backgrounds, borders, body text) ───────────────────
 	 *
-	 * Defaults to Tailwind's `slate` scale — a very slightly cool/blue-tinted
-	 * neutral that gives dark mode a warmer, less harsh feel than pure
-	 * neutral grays. Swap to `zinc` (neutral) or `stone` (warm) to taste.
+	 * Zinc (true neutral) to match Consequential's dark backgrounds (#161616).
 	 */
-	--color-gray-50: var(--color-slate-50);
-	--color-gray-100: var(--color-slate-100);
-	--color-gray-200: var(--color-slate-200);
-	--color-gray-300: var(--color-slate-300);
-	--color-gray-400: var(--color-slate-400);
-	--color-gray-500: var(--color-slate-500);
-	--color-gray-600: var(--color-slate-600);
-	--color-gray-700: var(--color-slate-700);
-	--color-gray-800: var(--color-slate-800);
-	--color-gray-900: var(--color-slate-900);
-	--color-gray-950: var(--color-slate-950);
+	--color-gray-50: var(--color-zinc-50);
+	--color-gray-100: var(--color-zinc-100);
+	--color-gray-200: var(--color-zinc-200);
+	--color-gray-300: var(--color-zinc-300);
+	--color-gray-400: var(--color-zinc-400);
+	--color-gray-500: var(--color-zinc-500);
+	--color-gray-600: var(--color-zinc-600);
+	--color-gray-700: var(--color-zinc-700);
+	--color-gray-800: var(--color-zinc-800);
+	--color-gray-900: var(--color-zinc-900);
+	--color-gray-950: var(--color-zinc-950);
 }
 
 /* ── Typography refinements ────────────────────────────────────────────────

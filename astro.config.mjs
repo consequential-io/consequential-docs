@@ -9,14 +9,12 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-	// TODO: replace with your deployed site URL. Required for sitemap and llms-txt
-	// to emit absolute URLs.
-	site: 'https://example.com',
+	site: 'https://consequential.io',
 	integrations: [
 		sitemap(),
 		starlight({
-			title: 'My Docs',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			title: 'Consequential Docs',
+			social: [],
 			customCss: ['./src/styles/global.css'],
 			components: {
 				Head: './src/components/CustomHead.astro',
@@ -34,9 +32,9 @@ export default defineConfig({
 					injectMarkdownRoutes: true,
 				}),
 				starlightLlmsTxt({
-					projectName: 'My Docs',
+					projectName: 'Consequential',
 					description:
-						'A documentation site built with Astro Starlight. Replace this description with a one-paragraph summary of your project.',
+						'Documentation for Consequential — a data-driven growth platform for eCommerce and DTC brands. Products include Northstar, Pulse, and Pixel for analytics, site monitoring, and UX insights.',
 				}),
 				// Generates reference pages under `/api/` from the OpenAPI spec.
 				// Replace `src/schemas/api.yaml` with your own spec (YAML or JSON).
