@@ -1,0 +1,119 @@
+---
+title: How to set up Google Ads for CDP (EdgeTag)
+description: Onboard Google Ads with EdgeTag, including conversion mapping, browser setup, and common troubleshooting.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This guide covers Google Ads onboarding, browser setup, and frequently asked questions for the EdgeTag CDP.
+
+## Onboarding
+
+Google Ads has seven fields:
+
+- **Sign in** (required) — Google's OAuth connects your account and authenticates EdgeTag to send data to Google.
+- **Merchant ID** (optional) — ID of the merchant center you use, where you uploaded the product details.
+- **Identifier Format** (optional) — format of the product identifier to use when sending events to Google Ads. Match this format with the format you use for Item ID in your merchant center.
+- **Account** (required) — account ID to which EdgeTag sends data. If you use a Google Ads MCC (Manager) account, select the MCC account ID here.
+- **Sub-account** (optional) — if you use a Google Ads MCC account and want to send data to a different sub-account, add the sub-account ID here.
+- **Conversions Mapping** (required) — map each tracked event to conversion actions created in the Google Ads dashboard. For each event, map a browser conversion action and a server conversion action.
+- **Enhanced Conversion setting** (optional) — define how you want to receive user data for tracked conversions. Match this with the enhanced conversions option in your Google Ads account.
+
+<Aside type="note">
+Browser conversion action and server conversion action are EdgeTag terms used to explain the setup. In Google Ads, a single conversion action cannot be sourced from both gtag (browser) and the Google Ads API (server), so for any event you want to track, create both browser and server conversion actions and map them in the app.
+</Aside>
+
+Before starting authentication for Google Ads, create conversion actions for the events you want to track via Blotout. Follow the instructions on how to create browser and server conversion actions. Create conversion actions in the correct ads account if you have access to multiple accounts. Once this is done, continue with authentication.
+
+### Google sign-in
+
+Once you start the OAuth process and log in with your Google account, in the step where you grant access to the EdgeTag app, select the first checkbox (provide access to see, edit, and create Google Ads accounts data). This is required to send events to your account.
+
+### Set up Merchant ID
+
+If you are not using Merchant Center, skip this optional field.
+
+Log in to [Google Merchant Center](https://merchants.google.com/mc/overview). Select the correct account if you have multiple. Find the Merchant ID in the top right corner of the page.
+
+### Set up Identifier Format
+
+If you use Google Merchant Center, set this field with the format you use for the product identifier value in the merchant center. Skip it if you are not using Merchant Center.
+
+For example: `{productId}`, `{variantId}`, `{sku}` if you use just IDs, or `shopify_US_{productId}_{variantId}` if there is a prefix along with the IDs. EdgeTag supports three standard variables for the identifier format: `productId`, `variantId`, and `sku`. Wrap these in brackets when you add them to the identifier format input.
+
+To find the existing item ID value used in your merchant center, go to the **Products** section and **All Products**. In the products table, look for the **Item ID** column to find the value you use as product ID.
+
+### Set up Conversions Mapping
+
+Once you select the Google Ads account, map conversion actions for the Blotout standard events. To capture conversions via the browser (gtag) only, configure the browser conversion action and leave the server one empty. To capture conversions via the server only, configure the server conversion action and leave the browser one empty. If both are configured, EdgeTag sends the conversion to the browser conversion action first; if that fails due to ad blockers, it sends to the server conversion action. If you use a sub-account in the manager ad account, add the sub-account ID value in the sub ad account customer field.
+
+## Browser setup
+
+When you use the SDK via the npm package, add the additional package for this channel to work correctly. Install [@blotoutio/providers-google-ads-clicks-sdk](https://www.npmjs.com/package/@blotoutio/providers-google-ads-clicks-sdk). After you install it, add it to your `init` call.
+
+## FAQ
+
+### This app is blocked
+
+Some companies apply stricter rules for Google Workspaces. Add the EdgeTag app to the list of trusted apps. You must be the administrator of your Google Workspace.
+
+<Steps>
+
+1. Go to your [Google Admin Console > Security > Access and data control > API controls](https://admin.google.com/ac/owl?hl=en) and click **Manage third-party app access**.
+2. Click **Add app > OAuth App Name or Client ID**.
+3. In search, enter the App ID `235604523012-dnmgkj19ttdnvhqk4tas51ejlicu8pac.apps.googleusercontent.com`, click **Search**, then click it.
+4. Select the checkbox and click **Select**.
+5. On the next screen, select **Trusted: Can access All Google Services** and click **Configure**.
+
+</Steps>
+
+You have added the app to your allowed list. Return to the app and add the Google Ads provider again.
+
+### Creating conversion actions in Google Ads
+
+This section covers how to create both browser and server conversion actions.
+
+#### Browser conversion action
+
+<Steps>
+
+1. Go to the [Conversions](https://ads.google.com/aw/conversions) section in the Google Ads dashboard.
+2. Click **Create conversion action**.
+3. Make sure **Conversions on a website** is checked. If the website URL is not added or configured correctly, click **edit**, enter the URL, click **scan**, then **done**. Click **Continue**.
+4. Select the **Conversion category**, then click **Set up**.
+5. Select **Manual event**, enter the conversion action name (for example, `Purchase browser blotout`), and click **use event**.
+6. Click **settings** to configure the conversion action.
+7. Change action optimization to secondary if you create these for testing; move it to primary once testing is done.
+8. Set your preferred values for fields like Value, Count, and Click-through conversion window, then click **Done**.
+9. Click **save and continue**.
+10. Click **Finish** to return to the conversions summary page.
+11. Click **Settings** in the left section, find the Enhanced conversions setting, and match the same option in the EdgeTag Google Ads form.
+
+</Steps>
+
+#### Server conversion action
+
+<Steps>
+
+1. Go to the [Conversions](https://ads.google.com/aw/conversions) section in the Google Ads dashboard.
+2. Click **Create conversion action**.
+3. Make sure **Conversions offline** is checked. If no data source is selected, click **add data source**, select **Skip this step and setup a data source later**, and click **Done**. Click **Continue**.
+4. Select the **Conversion category**, click **Add an event to this category**, and select **Offline data sources**.
+5. A new conversion action is added automatically with the default name `offline (Upload)`. Click **settings**.
+6. Update the conversion action name from `offline (Upload)` to something like `Purchase Server Blotout`.
+7. Change action optimization to secondary if you create these for testing; move it to primary once testing is done.
+8. Set your preferred values for fields like Value, Count, and Click-through conversion window, then click **Done**.
+9. Click **save and continue**.
+10. Click **Finish** to return to the conversions summary page.
+
+</Steps>
+
+### Google hasn't verified this app
+
+If you see this message, continue authentication: click **advanced**, then click the **Go to EdgeTag (unsafe)** link. Select the first checkbox, then click **Allow** to continue.
+
+### How to report profit margins in Google Ads?
+
+To report profit margins in Google Ads, first send cart data along with the conversion. Configure both the **Merchant ID** and **Identifier Format** fields in the Google Ads form within EdgeTag if you have not already. These fields are required to attach cart data to the conversion. Then refer to Google's official guide to [report profit margins](https://support.google.com/google-ads/answer/14944137?hl=en&ref_topic=14944136#zippy=%2Cset-up-with-google-ads) in Google Ads.
+
+{/* TODO: 11 image artifact(s) on DevRev ART-1297 could not be retrieved through the DevRev MCP — re-add manually. */}

@@ -1,0 +1,80 @@
+---
+title: Offline Events Uploads to CDP
+description: Upload offline Lead, Purchase, and PageView event data to the CDP using CSV files.
+---
+
+You can upload the following offline event data:
+
+- Lead
+- Purchase
+- PageView
+
+## File criteria
+
+- Only CSV files are accepted.
+- Maximum 1000 rows (excluding the header).
+- Either email or phone is required for Lead and Purchase events. `page_url` is required for PageView.
+- Additional params are optional.
+
+## Lead
+
+| User params | Lead params | Additional params |
+|-------------|-------------|-------------------|
+| `email` | `lead_name` | `timestamp` (optional) |
+| `phone` | `category` | `fbclid` (optional) |
+| `first_name` | `currency` | `gclid` (optional) |
+| `last_name` | | |
+| `city` | | |
+| `region` | | |
+| `country` | | |
+
+### Sample data
+
+| email | phone | first_name | last_name | city | region | country | lead_name | category | currency | value | timestamp | fbclid | gclid |
+|-------|-------|------------|-----------|------|--------|---------|-----------|----------|----------|-------|-----------|--------|-------|
+| uladell0@blogger.com | 12026593321 | Uri | Ladell | Washington | DC | US | Subscribe | subscribe | USD | 100 | 1730419200000 | 123123 | 456456 |
+| sstaite1@goo.gl | | Stephie | Staite | Baltimore | MD | US | NewsLetter_Subscribe | subscribe | EUR | 100 | 1730422800000 | 456456 | |
+| | 17241886341 | Gretna | Pennacci | Pittsburgh | PA | US | Campaign_Subscribe | inbound | GBP | 100 | 1730430000000 | 123123 | |
+| apartner3@microsoft.com | 12082148354 | Alexandros | Partner | Boise | ID | US | Lead | lead | CAD | 2000 | 1730433600000 | | |
+| tdecopeman4@about.com | 12677143270 | Tersina | DeCopeman | Philadelphia | PA | US | SMS_Click | outbound | AUD | 2000 | 1730437200000 | 123123 | |
+
+## Purchase
+
+| User params | Purchase params | Additional params |
+|-------------|-----------------|-------------------|
+| `email` | `order_id` | `timestamp` (optional) |
+| `phone` | `currency` | `fbclid` (optional) |
+| `first_name` | `value` | `gclid` (optional) |
+| `last_name` | | |
+| `city` | | |
+| `region` | | |
+| `country` | | |
+
+### Sample data
+
+| email | phone | first_name | last_name | city | region | country | order_id | currency | value | timestamp | fbclid | gclid |
+|-------|-------|------------|-----------|------|--------|---------|----------|----------|-------|-----------|--------|-------|
+| lmonro5@mozilla.com | | Lisa | Monro | BonitaSprings | FL | US | aaaa1234 | USD | 100 | 1730419200000 | 123123 | 456456 |
+| jhefner6@rambler.ru | 18177781170 | Janelle | Hefner | FortWorth | TX | US | bbbb1234 | GBP | 200 | 1730422800000 | 123123 | |
+| | 17275817532 | Steffen | Mattimoe | Largo | FL | US | cccc1234 | EUR | 3000 | 1730430000000 | 456456 | |
+| vfosh8@chicagotribune.com | | Valentine | Fosh | Chicago | IL | US | dddd1234 | AUD | 4000 | 1730433600000 | 123123 | 456456 |
+| ocollen9@zimbio.com | 12488044753 | Olly | Collen | Troy | MI | US | eeee1234 | CAD | 5000 | 1730437200000 | | |
+
+## PageView
+
+| User params | PageView params | Additional params |
+|-------------|-----------------|-------------------|
+| `email` (optional) | `page_url` | `timestamp` (optional) |
+| `phone` (optional) | `title` (optional) | `fbclid` (optional) |
+| `first_name` (optional) | `referrer` (optional) | `gclid` (optional) |
+| `last_name` (optional) | `search` (optional) | |
+| `city` (optional) | | |
+| `region` (optional) | | |
+| `country` (optional) | | |
+
+### Sample data
+
+| page_url | title | referrer | search | timestamp | fbclid | gclid | email | phone | first_name | last_name | city | region | country |
+|----------|-------|----------|--------|-----------|--------|-------|-------|-------|------------|-----------|------|--------|---------|
+| https://www.example.com | Example Site Homepage | https://www.google.com | ?key=value | 1733731806190 | 123456 | 987654 | john.doe@example.com | 1415762837 | John | Doe | San Francisco | CA | US |
+| https://www.example.com/subpage | | | | | | | | | | | | | |

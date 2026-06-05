@@ -1,0 +1,25 @@
+---
+title: Browser packages
+description: Control which browser pixel loads in a headless EdgeTag implementation by adding channel NPM packages.
+---
+
+With a headless implementation, you have complete control over the code by using the Out of the Blue NPM packages. This also means you determine which browser pixel loads. Regardless of your configuration settings in the channel to enable the browser pixel, it does not function until you add the specific NPM package for that channel.
+
+Packages still verify whether you have the browser pixel enabled for a specific channel. They only load third-party scripts if you enable this feature. If you have the pixel installed but disable it in the configuration, you do not experience any performance degradation.
+
+Each channel's documentation includes a link to the package on the first page.
+
+The following example shows how to add the browser package for the Meta channel.
+
+## Initialization with a browser pixel added
+
+```javascript
+import { init } from '@blotoutio/edgetag-sdk-js'
+import facebook from '@blotoutio/providers-facebook-sdk'
+
+init({
+  edgeURL: 'https://d.mysite.com',
+  disableConsentCheck: true,
+  providers: [facebook]
+})
+```

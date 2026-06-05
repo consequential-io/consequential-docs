@@ -1,0 +1,58 @@
+---
+title: How to Create Admin User in Magento?
+description: Create a Magento admin user from the Admin Panel or via the command line.
+sidebar:
+  order: 6
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+## Magento: Create Admin User in the Admin
+
+{/* TODO: migrate image artifact(s) artifact-211339, artifact-211340, artifact-211342, artifact-211343, artifact-211345 from ART-1286 — cannot be downloaded via DevRev MCP */}
+
+Go to **Admin Panel > System > Permissions > All Users** and press the **Add New User** button.
+
+Fill out the new user **Account Information**:
+
+<Steps>
+
+1. Set the **User Name** used during login, and specify the **First** and **Last Names**.
+2. Enter the user's **Email**.
+3. Create a **Password**, and confirm it in the **Password Confirmation** field.
+4. Choose the language of the admin panel interface for the user in the **Interface Locale**.
+
+   Note: we recommend choosing English since Magento has some issues in other locales. If you choose some other language, make sure you install a language pack of your preference.
+5. Activate the new user in the **This account is** select box.
+6. Enter your password (the password of the user you are logged in as) in the **Your Password** field.
+7. Go to the **User Role** section and choose the role you want to assign to this user. That's where you grant the Magento admin user access to different areas of your store.
+8. Save the new Magento admin user once you finish.
+
+</Steps>
+
+## Magento: Create admin user via command line
+
+If you're confident working with code, you can also create an admin user in Magento via CLI. For that:
+
+<Steps>
+
+1. Open a command line and navigate to your Magento root directory.
+2. Execute the following CLI command:
+
+   ```bash
+   php bin/magento admin:user:create --admin-user="USER_USERNAME" --admin-password="USER_PASSWORD" --admin-email="USER_EMAIL" --admin-firstname="USER_FIRSTNAME" --admin-lastname="USER_LASTNAME"
+   ```
+
+   For example:
+
+   ```bash
+   php bin/magento admin:user:create --admin-user="jondoe" --admin-password="asdAdnkjois97dtasdas" --admin-email="jon.doe@outoftheblue.ai" --admin-firstname="Jon" --admin-lastname="Doe"
+   ```
+
+</Steps>
+
+## Track admin users' activity
+
+Although you grant users access to certain store sections, you might still need to track their actions: what orders they view, what customers they delete or create, and what settings they edit.
+
+Configure the Magento admin action log and make sure no one violates your Magento security.

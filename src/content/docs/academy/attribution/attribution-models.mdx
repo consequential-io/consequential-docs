@@ -1,0 +1,219 @@
+---
+title: Attribution Models
+description: Understand the simple and multi-touch attribution models available in Out of the Blue.
+---
+import { Aside } from '@astrojs/starlight/components';
+
+Attribution modeling is one of the most important concepts for understanding performance across your marketing channels. It helps you identify which touchpoints actually influence conversions, so you can invest your budget where it matters most.
+
+This guide covers the attribution models, grouped into simple attribution models and multi-touch attribution models (MTA). Each model gives you a different lens to understand how your marketing channels contribute to revenue.
+
+## Attribution model overview
+
+| Model type | Models included |
+|------------|-----------------|
+| Simple attribution models | First Touch, Last Touch, Last Non-Direct Touch |
+| Multi-touch attribution models | Linear, Clicks-Only, Clicks + Views |
+
+## Simple single-touch attribution models
+
+Simple models assign 100% credit to one touchpoint, either first or last. These are familiar if you have used Google Analytics or platform-level reporting (Meta, Google Ads, TikTok, and others).
+
+### 1. First Touch
+
+**What it does:** Gives full credit to the first touchpoint in the journey.
+
+**Why it matters:** First-touch attribution is ideal for measuring which marketing channels are most effective at introducing new users to your brand and generating initial awareness.
+
+**Best for:**
+
+- Evaluating prospecting efforts (such as paid social, influencer, display)
+- Understanding how users enter your funnel
+- Measuring upper-funnel campaign effectiveness
+
+**Example:** A customer clicks a Facebook ad, opens an email newsletter, then clicks an Instagram retargeting ad. First-touch attribution gives 100% credit to the Facebook ad, since it started the journey.
+
+### 2. Last Touch
+
+**What it does:** Gives 100% credit to the last touchpoint a customer engages with before converting. This is also known as last-click attribution, popularized by tools like Google Analytics.
+
+**Why it matters:** This model is best for understanding which channels or campaigns help close conversions. It's especially useful for evaluating bottom-of-funnel performance, promotional efforts, or last-step retargeting.
+
+**Best for:**
+
+- Measuring closing efficiency of retargeting or branded search
+- Reviewing campaign trends and time-bound promotions
+- Aligning with familiar GA-style reporting
+
+**Example:** A customer clicks a Facebook ad, reads your email, clicks a Google Search ad, then converts via an Instagram ad. Last-touch attribution gives 100% credit to the Instagram ad.
+
+<Aside type="caution">
+While straightforward, last-touch attribution can undervalue demand generation channels that played a key role earlier in the journey. Use it in combination with other models for a complete view.
+</Aside>
+
+### 3. Last Non-Direct Touch (default model across most ad platforms)
+
+**What it does:** Similar to last touch, but direct traffic never gets credit. Attribution goes to the last non-direct interaction before a conversion. This is the default attribution model used by most ad platforms and mirrors the "Last Click (Non-Direct)" model in Google Analytics.
+
+**Why it matters:** It helps teams better evaluate lower-funnel channels like branded search, organic, email, and SMS without inflated credit from repeat direct visits.
+
+**Best for:**
+
+- Aligning with GA and ad platform reports
+- Measuring performance of channels that nudge users toward purchase
+- Reporting on CRM-driven and intent-based traffic
+
+**Example:** A customer clicks a Facebook ad, clicks a Google Search ad, returns via a direct visit, then converts. The model gives credit to the Google Search ad, because direct is excluded.
+
+<Aside type="caution">
+Direct traffic often comes from loyal or returning customers, but excluding it can sometimes oversimplify repeat behavior. Use this model when consistency with platform reporting is key.
+</Aside>
+
+Example credit split for a $90 purchase:
+
+| Touchpoint | Last Touch | Last Non-Direct Touch |
+|------------|-----------|------------------------|
+| Facebook Click | $0 | $0 |
+| Google Click | $0 | $90 |
+| Direct Visit | $90 | $0 |
+
+## Multi-touch attribution models (MTA)
+
+Most customer journeys aren't linear. They involve multiple touchpoints across channels before a conversion happens. Multi-touch attribution (MTA) accounts for this complexity by tracking every view and click, then distributing credit across the entire journey based on what actually influenced the conversion.
+
+Unlike single-touch models that often over-credit the first or last interaction, MTA offers a more balanced view, especially for understanding how top-of-funnel and mid-funnel efforts contribute to performance.
+
+### 4. Linear attribution
+
+**What it does:** Distributes equal credit across all touchpoints in the customer journey, regardless of order or impact. Also known as an even-weighted model.
+
+**Why it matters:** Linear attribution is great for evaluating the collective influence of your channels, especially those that support the mid-funnel, such as organic social, influencer content, or blog traffic.
+
+**Best for:**
+
+- Understanding holistic campaign performance
+- Recognizing mid-funnel engagement
+- Brands with long, multi-touch journeys
+
+**Example:** A customer engages with a Facebook ad, an email, a Google Search ad, and a product review site, then converts. Each channel receives 25% credit.
+
+<Aside type="caution">
+Linear attribution may overvalue less impactful touchpoints and undervalue key conversion drivers, since it treats all touchpoints equally.
+</Aside>
+
+## Future models
+
+### 5. Time-Decay attribution
+
+**What it does:** Gives more credit to touchpoints that occur closer to the conversion event. This model assumes recent actions, like a click right before checkout, played a bigger role in the final purchase decision.
+
+**Why it matters:** This model reflects how most buying decisions happen. Customers are influenced more by what they saw or did recently than by something they engaged with weeks ago.
+
+**Best for:**
+
+- Understanding the recency impact of marketing touchpoints
+- Giving appropriate credit to mid- to bottom-funnel activities
+- Campaigns with longer consideration periods (luxury, high-ticket, or multi-step journeys)
+- Teams looking to weigh conversion intent over awareness
+
+**Example:** A customer journey with a Facebook ad (21 days before), an email campaign (7 days before), a Google Search ad (2 days before), and an Instagram retargeting ad (same day) might assign 10% to Facebook, 20% to email, 30% to Google, and 40% to Instagram.
+
+Considerations:
+
+- Great for optimizing late-funnel spend and remarketing.
+- Requires more advanced tracking infrastructure and historical data.
+- Works best when paired with other models to understand full-funnel impact.
+
+### 6. Position-Based attribution
+
+**What it does:** Assigns weighted credit to multiple touchpoints based on where they occur (beginning, middle, or end). Unlike single-touch or evenly distributed models, these frameworks emphasize key milestones that typically influence conversion.
+
+**Why it matters:** This approach provides a more nuanced view of the journey, balancing early acquisition and final conversion activities.
+
+Common position-based models:
+
+- **U-Shaped attribution (40-40-20):** 40% credit to first touch, 40% to last touch, 20% evenly distributed across middle touchpoints. Best for understanding which sources introduce and convert customers, while still accounting for mid-funnel influence.
+- **W-Shaped attribution (30-30-30-10):** 30% credit to first touch, 30% to lead creation touch, 30% to opportunity creation touch, 10% evenly split across all others. Best for sales-driven organizations tracking lead-to-opportunity pipelines, common in B2B and high-consideration DTC categories.
+- **Z-Shaped attribution:** Weighted credit to four major stages: first touch, lead creation, opportunity creation, and customer conversion. Best for longer journeys or multi-stage funnels.
+
+When to use position-based models:
+
+- Your funnel has multiple high-value touchpoints.
+- You want to balance credit across acquisition and conversion.
+- Single-touch or linear models oversimplify impact.
+
+Not ideal for:
+
+- Short or single-touch journeys
+- Campaigns with few interactions
+
+### 7. Clicks-Only (Out of the Blue proprietary model)
+
+**What it does:** Distributes credit across all click-based touchpoints, but prioritizes upper-funnel channels. Lower-funnel channels (email, direct, branded search) only receive credit if no upper-funnel channel exists in the journey.
+
+Upper vs. lower funnel:
+
+- **Lower funnel:** Direct (Organic), Organic Search, Branded Search, Email, SMS
+- **Upper funnel:** All other channels (Paid Social, Paid Search non-brand, PMax, Influencer, Display, and others)
+
+**Why this matters:** Upper-funnel channels usually drive new customers, but often lose credit to lower-funnel channels like branded search. Clicks-Only helps fix that by pushing credit up the funnel.
+
+**Example 1 (journey with upper-funnel touchpoints):** FB Click, then TikTok Click, then Brand Search Click (conversion).
+
+| Channel | Revenue |
+|---------|---------|
+| Facebook | $45 |
+| TikTok | $45 |
+| Branded Search | $0 |
+
+Branded Search is lower funnel, so it receives no credit.
+
+**Example 2 (journey with only lower-funnel touchpoints):** Brand Search, then Direct, then Email (conversion). All are lower funnel, so credit splits evenly.
+
+| Channel | Revenue |
+|---------|---------|
+| Brand Search | $30 |
+| Direct | $30 |
+| Email | $30 |
+
+Why Clicks-Only is useful:
+
+- Emphasizes true prospecting performance
+- Helps identify channels driving incremental growth
+- Conservative and based only on hard click data
+
+## Model summary
+
+| Attribution model | Data used | How credit is assigned | Best for |
+|-------------------|-----------|------------------------|----------|
+| First Touch | Clicks | 100% to first touchpoint | Upper-funnel impact and identifying demand gen channels |
+| Last Touch | Clicks | 100% to last touchpoint | Bottom-funnel performance and closing channel analysis |
+| Last Non-Direct Touch | Clicks | 100% to last non-direct touch | Aligning with GA "Last Click" or branded search evaluation |
+| Linear | Clicks | Equal credit to every touchpoint | Mid-funnel support and awareness tracking |
+| Position-Based | Clicks | Weighted across first, middle, and last touchpoints (such as U-shaped) | Balanced view across entire journey |
+| Time-Based | Clicks | More credit to recent interactions, less to early ones | Retargeting and behavior closer to conversion |
+| Clicks-Only (OTB) | Clicks | Credit distributed across upper-funnel clicks only; lower-funnel channels only credited if no upper-funnel exists | Prospecting performance and cleaner signal benchmarking |
+
+## How to use these models in Out of the Blue
+
+### For daily optimization
+
+Use models that help you act and course-correct fast.
+
+- **Clicks-Only (OTB):** Ideal for budget allocation and prospecting visibility. Helps you scale top-of-funnel channels and avoid bottom-funnel over-crediting. Use it to spot underperforming ads, creative fatigue, and conversion friction in real time.
+- **Time-Based attribution:** Prioritizes recent touchpoints. Great for evaluating which recent campaigns or channels are influencing conversions today.
+
+### For monthly reporting
+
+Use balanced, broader-view models that show multi-channel collaboration.
+
+- **Linear attribution:** Understands the shared impact of all touchpoints. Ideal for analyzing customer journeys and identifying support channels that don't close, but still matter.
+- **Position-Based attribution (U-shaped, W-shaped, or custom):** A hybrid model that gives more weight to key moments like first and last touches. Use it when analyzing journeys with long or complex conversion paths.
+
+### For strategic planning
+
+Use models that help you allocate future budget or redesign campaign architecture.
+
+- **First Touch attribution:** Identify which channels introduce your best customers. Helps inform top-of-funnel strategy, awareness campaigns, and new customer acquisition planning.
+- **Last Touch attribution:** Understand what finally converts customers. Useful for evaluating end-stage promotions or retargeting efforts.
+- **Last Non-Direct Touch attribution:** Most aligned with GA and platform defaults. Helps you calibrate internal numbers with platform-reported ROAS or CPA metrics.

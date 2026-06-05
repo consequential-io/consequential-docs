@@ -1,0 +1,32 @@
+---
+title: Is it necessary to use a different property in GA4
+description: Learn whether to use a secondary GA4 property with EdgeTag, how to switch to your main property, and how to create a new GA4 property.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+## Is it necessary to use a different property in GA4 first if I want to use GA4 with EdgeTag and then move to the main property?
+
+Not necessarily. If you are okay with moving directly to your main property, you can do that. You must disconnect the existing source that sends events to avoid duplicate sources.
+
+The recommendation is usually not to send data to your main property directly. Instead, have EdgeTag send data to a secondary property in GA4 for a couple of days. Once the data looks good, switch to the main property in EdgeTag, and remove the existing source of your main property so that you don't have duplicate events when migrating.
+
+## How do I switch from EdgeTag sourcing events to a secondary property to sourcing events to the main property?
+
+Update the data stream details added in the GA4 integration form in EdgeTag. Once you update the data stream details of the secondary property with those of the main property, EdgeTag begins sending events to your main property. During this change, also remove your old source that sends events to the same property. Otherwise, you see duplicated events.
+
+## How do I create a new property in GA4?
+
+Follow these instructions to create a new property in GA4:
+
+<Steps>
+
+1. Go to your Google Analytics dashboard.
+2. Click **Admin** (the gear icon) in the left sidebar at the bottom.
+3. Click **Create** and select **Property**.
+4. Complete all the steps of entering the property name, business details, and objectives. In the **Data collection** step, select **Web** as the platform.
+5. Create a web stream. After you select **Web**, GA4 asks you to enter the website and stream name. Enter those fields and click **Create & Continue**. This action creates the property.
+
+</Steps>
+
+Once the property is created, follow the steps in onboarding to get the fields from the data stream.

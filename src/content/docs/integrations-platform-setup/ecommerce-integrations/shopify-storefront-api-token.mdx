@@ -1,0 +1,77 @@
+---
+title: How to create a Shopify Storefront API access token
+description: Create a custom Shopify app and generate a Storefront API access token to share with the Out of the Blue team.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This guide walks you through creating a custom Shopify app and generating a Storefront API access token to share with the Out of the Blue team.
+
+## Create a custom app
+
+<Steps>
+
+1. Log in to your Shopify store as the store owner.
+
+2. Click **Settings** in the admin section on the left sidebar.
+
+3. From the drop-down menu, click **Apps and sales channels**.
+
+4. Click **Develop apps**.
+
+5. Click **Allow custom app development**.
+
+6. Read the warning and information provided, then click **Allow custom app development** again.
+
+7. Click **Create an app**.
+
+8. Give your app a name and add your email in the **App developer** field.
+
+</Steps>
+
+## Configure API access for the app
+
+After creating the app, you are taken to the app's configuration page.
+
+<Steps>
+
+1. Click **Configure Storefront API scopes** under the **API credentials** tab.
+
+2. Enable the necessary permissions. To access products, collections, orders, and sessions, select the following scopes:
+
+   - `unauthenticated_read_product_listings` (product information)
+   - `unauthenticated_read_product_inventory` (inventory data)
+   - `unauthenticated_read_checkouts` (reading checkouts)
+   - `unauthenticated_read_orders` (reading orders)
+
+3. Click **Save**.
+
+</Steps>
+
+## Get the Storefront API access token
+
+<Steps>
+
+1. Go to the **API credentials** tab.
+
+2. Click **Install** in the **Access tokens** box.
+
+3. Confirm the installation by clicking **Install** in the window that appears.
+
+4. Your Admin API access token is generated. Click **Reveal token once** to see the token.
+
+5. Copy the token and keep it in a safe place, then share it with the Out of the Blue team.
+
+</Steps>
+
+<Aside type="note">
+The prefix on the token confirms the right token is shared:
+
+- `shpat_` (for public apps) — needed for Out of the Blue
+- `shpca_` (for custom apps)
+- `shppa_` (for legacy private apps)
+
+For more information, see [Shopify custom apps](https://help.shopify.com/en/manual/apps/app-types/custom-apps).
+</Aside>
+
+{/* TODO: image artifacts on DevRev ART-1340 could not be retrieved through the DevRev MCP — re-add manually. */}

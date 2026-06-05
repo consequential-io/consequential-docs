@@ -1,0 +1,224 @@
+---
+title: Recommended settings defaults and industry benchmarks
+description: Default values and industry benchmarks for the P&L Model Assumptions that drive Gross Profit, Contribution Margin, and EBITDA across dashboards.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The P&L Model Assumptions drive how Out of the Blue calculates Gross Profit, Contribution Margin (CM2, CM3), and EBITDA across all dashboards. Changing any value updates all P&L views immediately. If you set up a brand for the first time and don't yet have actuals, use the recommended defaults in the following tables. Once you have 3 or more months of data, calibrate each input against your real numbers.
+
+## Recommended defaults by industry
+
+The following tables cover five common e-commerce categories. Use the Recommended Default column as your starting point. Adjust toward the lower or upper end of the industry range based on your brand's actual posture.
+
+All ranges use benchmarks from DTC brands with annual revenue under $50M (2024–2025 data).
+
+## Revenue adjustments
+
+### Discount Rate %
+
+The effective discount percentage applied to gross revenue to arrive at net sales. Reflects sitewide promotions, coupon usage, loyalty discounts, and bundle pricing — not one-off negotiated deals.
+
+| Industry | Recommended Default | Typical Range | Notes |
+| --- | --- | --- | --- |
+| General e-commerce | 10% | 10–20% | Broad category; promo-reliant brands sit toward 20% |
+| Apparel | 15% | 15–25% | Seasonal clearance and discount-driven purchase behavior push this higher |
+| Consumables | 8% | 5–15% | Subscription and replenishment brands discount less; loyalty programs replace deep promos |
+| Home Goods | 10% | 10–20% | Sitewide sales common; AOV is higher so even small discount % has large absolute impact |
+| Beauty / Supplements | 10% | 10–20% | Bundle discounts common; avoid high default if brand is premium-positioned |
+
+Source context: Average coupon code discount across US e-commerce is 19% (Opensend, 2025). Promo-heavy brands can reach 25–30% during peak seasons. Luxury and premium-positioned brands typically stay at 5–10%.
+
+### Return Rate %
+
+The percentage of orders returned or refunded. Used to reduce net revenue and, optionally, to gross up COGS with reverse logistics cost.
+
+| Industry | Recommended Default | Typical Range | Notes |
+| --- | --- | --- | --- |
+| General e-commerce | 15% | 12–20% | NRF 2024 average: 16.9%. A safe conservative default for mixed-category brands |
+| Apparel | 25% | 20–35% | Size/fit returns are structurally high; bracketing behavior (buying multiple sizes) adds further pressure |
+| Consumables | 5% | 2–8% | Opened or partially used products can't be returned; category is structurally low-return |
+| Home Goods | 12% | 8–18% | Returns driven by damage in transit and size mismatch; higher for furniture, lower for décor |
+| Beauty / Supplements | 7% | 4–12% | Similar to consumables; hygiene policies limit returns; influencer-driven impulse buys add modest return risk |
+
+Source context: NRF (2024) puts the overall e-commerce return rate at 16.9–20.4%. Apparel consistently leads at 20–30%+. Consumables and beauty brands with strict hygiene return policies typically land at 3–8% (Shopify, 2025).
+
+## Cost of goods and fulfillment
+
+### COGS Rate %
+
+The cost of goods sold as a percentage of gross revenue. Includes product/manufacturing cost, inbound freight, duties, and packaging — everything up to the point of arrival at your warehouse.
+
+<Aside type="note">
+This field should reflect your full landed COGS as a percentage of revenue, not just one cost layer. If your upstream data already contains COGS actuals, this field acts as an override or adjustment layer — set it accordingly.
+</Aside>
+
+| Industry | Recommended Default | Typical Range | Notes |
+| --- | --- | --- | --- |
+| General e-commerce | 40% | 35–55% | Implies 45–65% gross margin, consistent with DTC benchmarks (Clearco, Finaloop, 2024) |
+| Apparel | 45% | 40–55% | Gross margins 45–60%; COGS compressed by sourcing volatility and seasonality |
+| Consumables | 35% | 25–45% | Repeat-purchase categories often command better supplier terms at scale |
+| Home Goods | 50% | 45–60% | Higher manufacturing and inbound freight costs; gross margins 40–55% |
+| Beauty / Supplements | 30% | 25–40% | Best gross margins in physical e-commerce; ingredient-based COGS is lower than average |
+
+Source context: Average DTC gross margin is 45–55% (Clearco, Opensend, 2024), implying COGS of 45–55% of revenue. Beauty/supplements lead with 50–70% gross margins (COGS 30–50%). Electronics and commodity goods have lowest margins (COGS 75–85%).
+
+### Shipping / Order $
+
+The average fulfillment and shipping cost per order in dollars. Includes carrier cost, pick-and-pack, and any 3PL per-order fees. Doesn't include return shipping unless your 3PL bundles it.
+
+| Industry | Recommended Default | Typical Range | Notes |
+| --- | --- | --- | --- |
+| General e-commerce | $8 | $6–$12 | Industry mid-point; 3PL brands land lower, in-house higher |
+| Apparel | $7 | $5–$10 | Lightweight poly-mailer shipments; returns processing adds hidden cost not captured here |
+| Consumables | $7 | $5–$10 | Repeat small-parcel shipments; subscription cadence enables 3PL rate negotiation |
+| Home Goods | $15 | $10–$25 | Bulky, heavy items significantly increase zone-based carrier costs; furniture can exceed $50/order |
+| Beauty / Supplements | $6 | $5–$9 | Small, lightweight parcels; low zone cost; 3PL-friendly category |
+
+Source context: Average fulfillment cost per order is $8–$15 for in-house and $4–$10 for 3PL (Opensend, GoBolt, 2024). UPS and FedEx implemented 5.9% rate increases in 2024–2025.
+
+### Transaction Fee %
+
+The payment processing fee charged per transaction as a percentage of order value. Typically deducted by your payment gateway before funds are deposited.
+
+| Industry | Recommended Default | Typical Range | Notes |
+| --- | --- | --- | --- |
+| All industries | 2.9% | 2.4–3.5% | Shopify Payments Basic: 2.9% · Advanced: 2.4% · PayPal: 3.49% · Stripe: 2.9% + $0.30 flat |
+
+<Aside type="note">
+The flat per-transaction fee (for example, $0.30 on Stripe) is more impactful on low-AOV orders. If your AOV is below $30, consider using a blended effective rate by dividing last month's total processing fees by total revenue.
+</Aside>
+
+## Marketing
+
+### Ad Spend %
+
+Paid media spend as a percentage of net revenue. Covers all performance channels: Meta, Google, TikTok, Pinterest, influencer, and any other paid acquisition spend. Doesn't include email, organic, or owned channels unless those carry a direct cost.
+
+| Industry | Recommended Default | Typical Range | Notes |
+| --- | --- | --- | --- |
+| General e-commerce | 20% | 15–25% | Median for brands with established CAC efficiency |
+| Apparel | 22% | 18–30% | Higher visual creative spend; strong Meta/TikTok channel mix |
+| Consumables | 18% | 15–25% | Retention and subscription reduce reliance on paid acquisition at scale |
+| Home Goods | 20% | 15–28% | Longer purchase consideration cycle; Google Search and retargeting heavy |
+| Beauty / Supplements | 25% | 20–35% | Influencer and UGC-heavy strategies; CAC can be high in competitive categories |
+
+Source context: 59% of e-commerce brands allocate over 30% of revenue to advertising (Marketing LTB, 2024). Healthy mature DTC brands target 15–25%. Growth-phase brands commonly run at 25–35%+. Mid-market brands ($10–50M) saw marketing as a % of revenue rise to 6.25% in 2024 — but this reflects paid + non-paid combined (EcomCFO, 2025).
+
+## Profitability preferences
+
+### Contribution Margin (CM2) %
+
+The contribution margin percentage used to calculate your iROAS profitability threshold. Represents the share of each revenue dollar left after COGS and fulfillment costs, before ad spend.
+
+| Industry | Recommended Default | Typical Range | Notes |
+| --- | --- | --- | --- |
+| General e-commerce | 30% | 25–40% | DTC median CM2 benchmark (Saras Analytics, Clearco, 2024) |
+| Apparel | 28% | 22–35% | High return rates compress contribution margin despite healthy gross margins |
+| Consumables | 40% | 35–55% | Low returns + repeat purchase economics improve CM significantly at scale |
+| Home Goods | 25% | 20–35% | High COGS and fulfillment cost compress margins; upsell and bundles help |
+| Beauty / Supplements | 40% | 35–55% | Best-in-class CM for physical goods; subscription models push toward upper end |
+
+## What's CM1, CM2, CM3, and EBITDA
+
+Contribution margin is calculated in layers. Each one strips out an additional cost category, giving progressively cleaner views of profitability. Out of the Blue uses these layers across dashboards and the P&L view.
+
+### CM1: gross contribution
+
+Revenue remaining after the cost of the product itself. Equivalent to Gross Margin. No operational costs are deducted at this stage.
+
+```text
+Net Revenue
+− COGS  (manufacturing, inbound freight, duties, packaging)
+─────────────────────────────────────────────────────────
+= CM1
+```
+
+### CM2: variable contribution
+
+CM1 minus all per-order fulfillment costs. This is the margin available before you spend on advertising — and the figure the Contribution Margin % field in Settings represents. The iROAS profitability threshold (1 ÷ CM2%) is calculated at this layer.
+
+```text
+CM1
+− Shipping per order
+− Transaction fees
+− Returns cost
+─────────────────────────────────────────────────────────
+= CM2
+```
+
+A positive CM2 means every order covers its own variable costs. If CM2 is negative, the business can't scale out of the problem with more ad spend alone.
+
+### CM3: marketing contribution
+
+CM2 minus paid advertising spend. This is the clearest signal of whether the business is actually working — whether each incremental order generates real profit after all variable costs including acquisition.
+
+```text
+CM2
+− Ad spend  (Meta, Google, TikTok, and all paid channels)
+─────────────────────────────────────────────────────────
+= CM3
+```
+
+A consistently positive CM3 is the prerequisite for scaling. A negative CM3 means paid acquisition is consuming more than the margin it generates.
+
+### Below CM3: fixed and semi-fixed costs
+
+These sit below the contribution margin layers and aren't driven by individual order volume:
+
+```text
+CM3
+− Salaries and headcount
+− Tech stack and SaaS tools
+− Agency retainers
+− Rent and overhead
+─────────────────────────────────────────────────────────
+= EBITDA
+```
+
+## How the settings inputs map to each layer
+
+| Setting | Layer it affects |
+| --- | --- |
+| Discount Rate, Return Rate | Net Revenue, feeds into CM1 |
+| COGS Rate | CM1 |
+| Shipping / Order, Transaction Fee | CM2 |
+| Ad Spend % | CM3 |
+| Contribution Margin % (Profitability tab) | Your CM2 target, sets the iROAS breakeven threshold |
+
+<Aside type="note">
+This value directly sets your Profitability Threshold (iROAS breakeven = 1 ÷ CM%). At 30% CM, channels must generate 3.33x or more incremental ROAS to be profitable. At 40% CM, the threshold drops to 2.5x — meaning you can consider the same ad spend profitable at a lower return.
+</Aside>
+
+## Quick reference: recommended defaults at a glance
+
+| Setting | General E-comm | Apparel | Consumables | Home Goods | Beauty / Supplements |
+| --- | --- | --- | --- | --- | --- |
+| Discount Rate | 10% | 15% | 8% | 10% | 10% |
+| Return Rate | 15% | 25% | 5% | 12% | 7% |
+| COGS Rate | 40% | 45% | 35% | 50% | 30% |
+| Shipping / Order | $8 | $7 | $7 | $15 | $6 |
+| Transaction Fee | 2.9% | 2.9% | 2.9% | 2.9% | 2.9% |
+| Ad Spend % | 20% | 22% | 18% | 20% | 25% |
+| Contribution Margin % | 30% | 28% | 40% | 25% | 40% |
+
+## Frequently asked questions
+
+**When should I switch from "Manual" to "From P&L" for contribution margin?** Switch once you have at least 3 months of complete P&L data in Out of the Blue. "From P&L" pulls your calculated CM2% automatically and keeps the iROAS threshold in sync with actuals.
+
+**Why does my Effective Margin in the Impact Preview look different from my gross margin?** Effective Margin accounts for COGS, discounts, and returns applied together. It's always lower than pure gross margin because it deducts the revenue lost to returns and promotions before applying COGS.
+
+**My COGS is low (under 10%), is that correct?** Only if your upstream data pipeline already contains actuals-based COGS and this field acts as an incremental adjustment. If this is your only COGS input, a value below 20% is almost certainly understated for any physical goods brand.
+
+**How do I find my actual transaction fee rate?** Divide last month's total payment processing fees (from Stripe, Shopify Payments, or PayPal statements) by total gross revenue. The result is your blended effective rate.
+
+## Sources
+
+- National Retail Federation — Consumer Returns in the Retail Industry 2024: [https://nrf.com/research-insights/retail-library/consumer-returns-retail-industry](https://nrf.com/research-insights/retail-library/consumer-returns-retail-industry)
+- Opensend — Ecommerce Discount Rate and Return Rate Statistics, 2025: [https://www.opensend.com/post/average-discount-rate-statistics-ecommerce](https://www.opensend.com/post/average-discount-rate-statistics-ecommerce)
+- Clearco — DTC Gross Profit and Contribution Margin Benchmarks, 2024: [https://www.clear.co/blog/how-to-calculate-ecommerce-product-gross-profit-contribution-margins](https://www.clear.co/blog/how-to-calculate-ecommerce-product-gross-profit-contribution-margins)
+- Finaloop / EcomCFO — Ecommerce P&L Benchmark Report 2024–2025: [https://ecomcfo.co/benchmark/](https://ecomcfo.co/benchmark/)
+- Saras Analytics — Ecommerce Contribution Margin Benchmarks, 2025: [https://www.sarasanalytics.com/blog/ecommerce-contribution-margin](https://www.sarasanalytics.com/blog/ecommerce-contribution-margin)
+- GoBolt — DTC Fulfillment Guide 2026: [https://www.gobolt.com/blog/dtc-fulfillment-guide/](https://www.gobolt.com/blog/dtc-fulfillment-guide/)
+- Shopify — Ecommerce Returns: Average Return Rate and How to Reduce It, 2025: [https://www.shopify.com/enterprise/blog/ecommerce-returns](https://www.shopify.com/enterprise/blog/ecommerce-returns)
+- Luca AI — Ecommerce Profit Margins for DTC Operators, 2026: [https://ask-luca.com/blogs/ecommerce-profit-margins](https://ask-luca.com/blogs/ecommerce-profit-margins)

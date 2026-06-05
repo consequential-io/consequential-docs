@@ -1,0 +1,57 @@
+---
+title: How to set up Out of the Blue Pixel (CDP)?
+description: Onboard the Out of the Blue Pixel (EdgeTag) by setting your platform, domain, DNS, and consent.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This guide covers prerequisites, platform selection, domain setup, DNS configuration, and consent for the Out of the Blue Pixel (EdgeTag).
+
+## Before you get started
+
+Starting with OTB Pixel (EdgeTag) is like working with any other JS/iOS/Android SDK. Enter your business email and the system walks you through setup step by step. You can add your teammates once you complete setup.
+
+You need the following access to complete the setup:
+
+- **Access to your DNS provider:** where you add DNS records for the site you want to add. This step certifies that you are the first party to the internet for your setup.
+- **Channel credentials:** for example, to add Meta you need a pixel ID and permission to access the pixel, available through setup.
+- **Access to your website code:** you add the snippet code and desired events to your site.
+
+Once you have these ready, go through onboarding. You can complete the entire process in less than an hour if you have all aspects handy.
+
+## Select your platform
+
+In the first step, select the platform of your site, such as Shopify, WooCommerce, or another platform.
+
+## Set up your site/app domain
+
+<Steps>
+
+1. Enter your site domain. If your site is `https://www.mysite.com`, enter `mysite.com`. Remove `https://` and `www.`
+2. Click **Verify Domain**. The system checks if the domain is valid and creates a first-party subdomain where you will have the OTB Pixel (EdgeTag) system.
+
+</Steps>
+
+For related setup, see [Cloudflare Hosting](https://support.devrev.ai/outoftheblue/settings/knowledge-base/articles/ART-1302).
+
+## Set up your DNS
+
+Once you enter and verify your domain, you receive two DNS records (1 TXT record and 1 CNAME record) that you must enter into your DNS to certify your setup as first party.
+
+<Steps>
+
+1. Add the TXT record to verify ownership of the domain you entered in the previous step.
+2. Click **Next record** and add the CNAME record. This record maps your newly created first-party subdomain to the edge and creates a certificate for your domain.
+3. Click **Verify Records** after adding both records. A green box confirms everything looks great.
+
+</Steps>
+
+## Consent
+
+Consent is important because Out of the Blue respects users' privacy. All events sent from the system are guarded by consent, so no data is sent without consent.
+
+## Next step
+
+In the next step of onboarding, select the channels you want to add. Refer to the documentation of each channel for detailed steps.
+
+{/* TODO: 25 image artifact(s) on DevRev ART-1298 could not be retrieved through the DevRev MCP — re-add manually. */}

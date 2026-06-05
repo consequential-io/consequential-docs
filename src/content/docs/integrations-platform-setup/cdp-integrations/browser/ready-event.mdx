@@ -1,0 +1,35 @@
+---
+title: Ready event
+description: Register a callback that runs for every EdgeTag tag initialization with the ready event.
+---
+
+To ensure that code runs after a tag initializes, use the ready event to register a callback that runs for every tag initialization.
+
+In contrast to the `edgetag-initialized` HTML custom event, this callback also fires if you register it after the tag has already initialized, so it always fires regardless of when you register it.
+
+## Properties
+
+| Property | Description |
+| --- | --- |
+| `destination` | EdgeTag URL for the tag that has initialized. |
+| `userId` | User ID. |
+| `sessionId` | Current session ID. |
+| `isNewUser` | `true` if this is the user's first visit to the site. |
+| `isNewSession` | `true` if this is the start of the user's session on this site. |
+| `consent` | Describes the user's consent configuration and is opt-in. |
+| `consentCategories` | Describes the user's consent category configuration and is opt-in. |
+| `consentSettings` | Describes the channel categories and whether consent is enabled for the tag. |
+
+## Example
+
+```javascript
+edgetag('ready', (params) => {
+  if (params.isNewUser) {
+    // this will only ever trigger once on the first visit
+    window.alert('Hello and welcome to our shop!')
+  } else if (params.isNewSession) {
+    // this will only trigger on subsequent visits once per session
+    window.alert('Hi and welcome back to our shop!')
+  }
+})
+```

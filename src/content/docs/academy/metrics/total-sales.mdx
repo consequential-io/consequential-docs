@@ -1,0 +1,21 @@
+---
+title: Total Sales
+description: Definition and formula for the Total Sales metric.
+sidebar:
+  order: 9
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Total sales are the total revenue from product sales after deducting all costs, including cost of goods, shipping costs, payment gateway costs, handling fees, and taxes.
+
+```text
+Total Sales = Order Revenue - (Refund Money - Refunded Tax)
+```
+
+<Aside type="note">
+Shopify uses the following definitions for its Sales reports, which may cause confusion when comparing sales between your Triple Whale and Shopify dashboard:
+
+- Gross Sales = Total Units Sold * Original Sales Price
+- Net Sales = Gross Sales - Discounts - Allowances - Returns
+</Aside>

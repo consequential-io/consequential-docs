@@ -1,0 +1,26 @@
+---
+title: Onboarding - Google Analytics 4
+description: Connect your GA4 property with EdgeTag using a measurement ID and API secret to stream events into Google Analytics.
+---
+
+Google Analytics channels offer a straightforward setup process that uses a measurement ID and API secret to link your GA4 property with EdgeTag. This connection streams events from your site into a Google Analytics property, providing product insights. The following sections walk through the steps.
+
+## Add channel
+
+To add a channel, enter the channel's name. Choose a name that clearly describes the channel you add, which assists with debugging if any issues arise. After you enter the name, get the measurement ID and API secret from the GA4 dashboard.
+
+If you want to create a new GA4 property and configure it with EdgeTag, follow the instructions in [Is it necessary to use a different property in GA4](https://app.gitbook.com/o/c0Wts1N48p0Ba5S58p8v/s/ZJWZKbUk0hRISkCIj2p4/~/changes/89/channels/google-analytics-4/faq#how-to-create-new-property-in-ga4) to create a new GA4 property.
+
+## Measurement ID and API secret
+
+Log in to the Google Analytics dashboard. Select the correct account and property you want to use with EdgeTag.
+
+To get the measurement ID, click the gear icon in the bottom of the left section and go to **Data Streams** under **Data collection and modification**. If you do not have an existing data stream, click **Create** and set up a new one. Follow the instructions for creating a data stream in [this guide](https://app.gitbook.com/o/c0Wts1N48p0Ba5S58p8v/s/ZJWZKbUk0hRISkCIj2p4/~/changes/89/channels/google-analytics-4/faq#how-to-create-new-property-in-ga4).
+
+Click the data stream. You find the measurement ID on the right under **Stream Details**. Copy the value and paste it into the **Measurement ID** field in the EdgeTag form.
+
+Go back to the data stream page in GA4, scroll down, and find **Measurement Protocol API Secrets** under the **Events** section. Click it.
+
+If you have not acknowledged the terms earlier, GA4 prompts you to review them. Review the terms. Click **Create**, give it a nickname, and click **Create**. GA4 generates the API secret. Copy the secret and add it to the **API Secret Key** field in the form.
+
+Click **Save & Deploy**. Proceed to the next section to explore additional configuration options.

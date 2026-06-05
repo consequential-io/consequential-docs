@@ -1,0 +1,54 @@
+---
+title: Syncing Products to Meta Commerce Manager Without Enabling Data Sharing
+description: Sync your Shopify products to Meta Commerce Manager without enabling Meta Pixel or Conversions API tracking.
+---
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The Facebook & Instagram app in Shopify automatically syncs your products to Meta Commerce Manager so you can sell on Facebook and Instagram. However, the app also tries to turn on Meta Pixel or Conversions API by default. Since our CDP already handles all customer data, events, and attribution, enabling Meta's tracking as well would create duplicate events and inaccurate reporting. This guide explains how to sync products without enabling any tracking.
+
+## How to sync products only (no Pixel, no CAPI)
+
+Follow these steps in your Shopify Admin:
+
+<Steps>
+
+1. Go to **Sales Channels** → **Facebook & Instagram** → **Settings**.
+2. Open **Data Sharing Settings**.
+3. Under **Customer Data Sharing**, keep data sharing turned off, or choose **Standard** if you are okay with minimal browser tracking.
+4. Click **Save**.
+
+</Steps>
+
+Your product catalog continues syncing to Meta Commerce Manager even when data sharing is disabled.
+
+## Why we recommend keeping Meta tracking off
+
+Our CDP already tracks:
+
+- All customer activity
+- All events
+- Full attribution paths
+
+Turning on Meta Pixel or Conversions API at the same time would cause:
+
+- Duplicate events
+- Conflicting attribution
+- Fragmented customer journeys
+- Incorrect reporting in both platforms
+
+Keeping Meta tracking off ensures clean, reliable data and avoids inconsistencies.
+
+## What you can still do
+
+You can continue to:
+
+- Sync products from Shopify to Meta Commerce Manager
+- List and sell products on Facebook and Instagram
+- Manage your catalog inside Meta Commerce Manager
+
+None of this requires Meta Pixel or Conversions API to be enabled.
+
+## Additional resources
+
+- [Shopify Help: Data Sharing Settings](https://help.shopify.com/en/manual/promoting-marketing/analyze-marketing/data-sharing)
+- [Shopify Help: Facebook & Instagram Sales Channel Setup](https://help.shopify.com/en/manual/online-sales-channels/facebook-instagram-by-meta)

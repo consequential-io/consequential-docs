@@ -1,0 +1,64 @@
+---
+title: How to create browser and server conversion actions?
+description: Create browser and server conversion actions in Google Ads, fix the blocked app error, and report profit margins with EdgeTag.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Create conversion actions in Google Ads so EdgeTag can send conversion data through the browser and the server.
+
+## Browser conversion action
+
+<Steps>
+
+1. Click **Goals** then **Summary**, and click **+ Create conversion action**.
+2. Confirm that the checkbox is enabled. If it's not, enable it. If the website isn't yet configured, click **Edit** and configure the website. Click **Continue**.
+3. Select the category for which you want to create a conversion action. This example selects **Purchase** to track purchase events.
+4. Click **Add conversion actions** and select the **Web** option, since you are creating a browser conversion action.
+5. In the pop-up, select **Set up manually using code** and configure the conversion action settings, such as the conversion action name and click-through windows.
+6. If you already have primary conversion actions, change **Action optimization** to **Secondary** so you don't affect existing campaigns. Once the data looks good, you can move it to primary.
+7. Click **Done** when the configuration is complete. Click **Save and Continue** to proceed.
+8. This creates the conversion action. Click **Done** to return to the Conversions summary page.
+
+</Steps>
+
+You now see the browser conversion action in the dashboard.
+
+## Server conversion action
+
+<Steps>
+
+1. Click **Goals** then **Summary**, and click **+ Create conversion action**.
+2. Confirm that the checkbox is enabled. If it's not, enable it. If the website isn't yet configured, click **Edit** and configure the website. Click **Continue**.
+3. Select the category for which you want to create a conversion action. This example selects **Purchase** to track purchase events.
+4. Click **Add conversion actions** and select the **Offline** option, since you are creating a server conversion action.
+5. After you select the offline source, a skeleton conversion appears. Click **Edit settings** and update the settings to your preference.
+6. In the pop-up, configure the conversion action settings, such as the conversion action name and click-through windows.
+7. If you already have primary conversion actions, change **Action optimization** to **Secondary** so you don't affect existing campaigns. Once the data looks good, you can move it to primary.
+8. Click **Save and Continue** to proceed. The conversion action is created. Click **Done** to return to the Conversions summary page.
+
+</Steps>
+
+You now see the server conversion action in the dashboard.
+
+## I get the "This app is blocked" error when I authenticate. How do I fix it?
+
+If you encounter this error, you don't need to worry. Some companies apply stricter rules for Google Workspaces. You must add the app to the list of trusted apps. To do this, you must be the administrator of your Google Workspace.
+
+<Steps>
+
+1. Go to your [Google Admin Console > Security > Access and data control > API controls](https://admin.google.com/ac/owl?hl=en) and click **Manage third-party app access**.
+2. Click **Add app** then **OAuth App Name or Client ID**.
+3. In the search, enter the App ID `235604523012-dnmgkj19ttdnvhqk4tas51ejlicu8pac.apps.googleusercontent.com`, click **Search**, and click the result.
+4. Select the checkbox and click **Select**.
+5. On the next screen, select **Trusted: Can access all Google services** and click **Configure**.
+
+</Steps>
+
+You have added the app to your list of allowed apps. Go back to the app and add the Google Ads provider again.
+
+## How do I report profit margins in Google Ads?
+
+To report profit margins in Google Ads, first send cart data with the conversion. Configure both the Merchant ID and Identifier format fields in the Google Ads form within EdgeTag if you haven't configured them yet. These fields are required to attach cart data to the conversion.
+
+Once that's done, refer to Google's official guide to [report profit margins](https://support.google.com/google-ads/answer/14944137?hl=en&ref_topic=14944136&sjid=284824452501880859-NC#zippy=%2Cset-up-with-google-ads) in Google Ads.

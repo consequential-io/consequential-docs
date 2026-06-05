@@ -1,0 +1,78 @@
+---
+title: Cloudflare Hosting
+description: Set up Cloudflare Workers, generate an API token, and configure custom domains for EdgeTag hosting.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This guide covers Cloudflare setup, token generation, and custom domains.
+
+## Setup
+
+### Prerequisite
+
+If you are on the free Cloudflare plan, switch to a paid plan. Click **Plans** in the left side navigation.
+
+### Worker
+
+Enable Workers in Cloudflare first. If you already use Workers, skip this step.
+
+<Steps>
+
+1. Go to the **Workers & Pages** page and click **Create Worker**.
+2. Click **Deploy**.
+3. Once the worker is created, click [Workers & Pages](https://dash.cloudflare.com/?to=/:account/workers-and-pages) in the left navigation to go back to the workers page.
+
+</Steps>
+
+### Analytics Engine
+
+On the [Workers & Pages page](https://dash.cloudflare.com/?to=/:account/workers-and-pages), enable Analytics Engine. This feature gives you insights about your usage.
+
+<Steps>
+
+1. Click **Set up** on the right side.
+2. Click **Enable Analytics Engine** to complete the setup.
+
+</Steps>
+
+### R2
+
+Enable R2 to store data if you enable it in the dashboard. Click [R2](https://dash.cloudflare.com/?to=/:account/r2) in the left side navigation. If you do not have a credit card added yet, add it. Then click **add R2**.
+
+### Queues
+
+Enable Queues last. Click [Queues](https://dash.cloudflare.com/?to=/:account/workers/queues) in the left side navigation. In the popup, agree to the charge. Queues is then enabled.
+
+## How to generate a Cloudflare token?
+
+<Steps>
+
+1. Go to the [API Tokens page](https://dash.cloudflare.com/profile/api-tokens) and click **Create token**.
+2. Use the **Cloudflare Workers** template. The template provides most of the permissions you need.
+3. Add the following permissions:
+   - **Account: Account Analytics (read)** — shows charts of your usage.
+   - **Zone: DNS (edit)** — creates the DNS record that links the worker with the domain.
+   - **Account: D1 (edit)** — creates the database used for saving errors.
+4. Click **Continue to summary** and click **Create Token**.
+
+</Steps>
+
+You now have a token to insert as part of host creation.
+
+## My domain is not hosted in Cloudflare
+
+If your domain is not hosted in Cloudflare but you want to use it in your Cloudflare account, select the **Custom hostname** option when adding a host in onboarding. This lets you use the Cloudflare custom hostname option to link your primary domain with your workers.
+
+<Steps>
+
+1. Enable the **Custom Hostnames** option in your Cloudflare account. Go to the [Custom Hostnames page](https://dash.cloudflare.com/?to=/:account/:zone/ssl-tls/custom-hostnames). If you have not set it up yet, enable it, add payment info, and purchase it. The first 100 domains are free.
+2. Add a fallback domain. Normally you set it as `fallback.somedomain.com`, where `somedomain.com` is your domain in Cloudflare.
+3. Add an AAAA record for `fallback.somedomain.com` in your DNS with the value `100::`. This maps your fallback domain to your workers.
+4. Update your existing API token to add two more permissions:
+   - **Account: SSL and Certificates (edit)** — used for domain creations.
+   - **Zone: Zone (read)** — used to check the fallback origin.
+
+</Steps>
+
+{/* TODO: 16 image artifact(s) on DevRev ART-1302 could not be retrieved through the DevRev MCP — re-add manually. */}

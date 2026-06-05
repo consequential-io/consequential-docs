@@ -1,0 +1,61 @@
+---
+title: Configuration - Meta (Blotout)
+description: Review every Meta channel configuration field in EdgeTag, from browser pixel to backup access token.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+After you complete the basic onboarding, review the remaining fields in the form and how to use them. The Dataset ID and Ads Account ID are already filled in during the basic onboarding, so this guide skips those two.
+
+## Enable browser pixel
+
+The browser pixel is one of the key concepts that Meta prioritizes. When you enable this option, EdgeTag begins sending browser events alongside the server events that you receive automatically. EdgeTag ensures that both the browser and server events share the same event ID, which lets Facebook deduplicate events and maximize the benefits from both sources.
+
+If you use the browser integration or any of the apps, enabling this feature works seamlessly. For headless applications, add the NPM package to your project to enable support. See [NPM packages](https://docs.edgetag.io/implementation/headless/browser-packages) for more.
+
+## Product ID mapping
+
+When you sync your product catalog with Facebook, you may use a different format than the one in your eCommerce platform. This can result in the content ID expected by Facebook differing from what you send from your website, which lowers your catalog match rate. This setting lets you specify which property from the event to send to Facebook as your product ID.
+
+To determine which ID you use:
+
+<Steps>
+
+1. Go to your Commerce Manager on Facebook.
+2. Click your catalog.
+3. Expand a product to find the Content ID.
+4. Compare this ID with the value in your eCommerce platform and find which type it is.
+5. Confirm that the type matches the setting configured in EdgeTag.
+
+</Steps>
+
+## Limited Data Use (LDU)
+
+When you enable this option, EdgeTag sends the LDU flag to Facebook, which may affect your campaign and retargeting performance. Read more in [the Meta documentation](https://developers.facebook.com/docs/marketing-api/overview/data-processing-options).
+
+## Event test code
+
+To verify that Facebook's server receives events correctly:
+
+<Steps>
+
+1. Open the [Events Manager](https://business.facebook.com/events_manager2/list/) and select your Dataset ID.
+2. Go to the **Test Events** tab.
+3. Click **Confirm your server's events are set up correctly**.
+4. A test code appears. Click **Copy** to copy this code.
+5. Paste the test code into the form.
+6. After you save, trigger some events. You see them on the Events Manager Test page.
+
+</Steps>
+
+Remove the test code before you go to production, as it prevents event recording in the Events Manager.
+
+## Backup access token
+
+Your connection can be dynamic when you travel or test your system in different browsers and countries using a VPN. As a security measure, Meta may invalidate your connections, which means you may need to log back in to Meta or solve a captcha. This also revokes your connection with EdgeTag. A backup access token solves this.
+
+To generate a backup access token, go to your [Events Manager](https://business.facebook.com/events_manager2/list/) and select the desired Dataset ID. Open the **Settings** tab, scroll down to the **Conversions API** section, click **Generate access token**, and copy the token. Keep this token secure, as it authenticates events sent to Meta.
+
+## Parameter builder library
+
+Meta introduced an option that lets you fix your Facebook click ID and browser ID using the Parameter Builder Library. Find more information in [the Meta documentation](https://developers.facebook.com/docs/marketing-api/conversions-api/parameter-builder-feature-library/client-side-onboarding). When you enable this option, EdgeTag loads the library onto your site.

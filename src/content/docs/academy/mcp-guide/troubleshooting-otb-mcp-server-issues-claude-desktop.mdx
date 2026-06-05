@@ -1,0 +1,87 @@
+---
+title: "Troubleshooting: OTB MCP server issues"
+description: Resolve common OTB MCP server connection, OAuth, and data issues in the Claude desktop app.
+---
+import { Steps } from '@astrojs/starlight/components';
+
+Applies to: Claude Desktop App (macOS).
+
+## Issue 1: Browser doesn't open for login / OAuth prompt doesn't appear
+
+Symptom: After you add the connector, no browser window opens and Claude can't authenticate.
+
+<Steps>
+
+1. Make sure you run the latest version of Claude Desktop or Claude Code.
+2. Start a new conversation. The OAuth prompt appears on first tool use.
+3. If you use Claude Code, run `claude mcp list` to confirm the server is registered.
+4. Check that your firewall or browser doesn't block `https://mcp.outoftheblue.ai`.
+
+</Steps>
+
+## Issue 2: Stuck on login page / redirected to dashboard instead of Claude
+
+Symptom: After you log in, you land on the Out of the Blue dashboard instead of being redirected back to Claude.
+
+Cause: The OAuth callback to Claude's local listener didn't complete, usually due to a slow or timed-out redirect.
+
+Fix:
+
+<Steps>
+
+1. Close the browser tab.
+2. In Claude, try again. A new OAuth flow starts.
+3. After "Authentication Successful — you can close this window" appears, return to Claude immediately.
+
+</Steps>
+
+If it keeps happening, try a different browser or disable extensions that may block `http://127.0.0.1` redirects.
+
+## Issue 3: "Authentication Successful" appears but Claude still not connected
+
+Symptom: The success page shows, but Claude still reports the server as disconnected.
+
+Fix:
+
+<Steps>
+
+1. Wait a few seconds. The token exchange can take a moment.
+2. Start a new conversation in Claude.
+3. If still disconnected, remove and re-add the connector and log in again.
+
+</Steps>
+
+For Claude Code:
+
+```bash
+claude mcp remove otb
+claude mcp add otb --transport http https://mcp.outoftheblue.ai/mcp
+```
+
+## Issue 4: "No data returned" or unexpected results
+
+- Check that your date range contains data.
+- Ask Claude to show the query it ran: "Show the SQL you executed."
+- Verify you ask about a metric your store has data for.
+
+## Collecting diagnostic logs
+
+If none of the above helps, collect logs and send them to [support@outoftheblue.ai](mailto:support@outoftheblue.ai).
+
+### Mac
+
+| File | Location |
+| --- | --- |
+| `mcp.log` | `~/Library/Logs/Claude/` |
+| `mcp-server-otb-gateway.log` | `~/Library/Logs/Claude/` |
+
+To access: Open Finder, go to the Go menu, hold Option (⌥), click Library, then go to Logs and Claude.
+
+### Windows
+
+| File | Location |
+| --- | --- |
+| `mcp.log` | `%APPDATA%\Claude\logs\` |
+| `mcp-server-otb-gateway.log` | `%APPDATA%\Claude\logs\` |
+
+To access: Press Win + R, type `%APPDATA%\Claude\logs`, then press Enter.

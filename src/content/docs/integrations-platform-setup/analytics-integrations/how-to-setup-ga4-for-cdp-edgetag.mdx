@@ -1,0 +1,156 @@
+---
+title: How to set up GA4 for CDP (EdgeTag)
+description: Configure Google Analytics 4 onboarding, browser setup, and event mappings for the EdgeTag CDP.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This guide covers GA4 onboarding, browser setup, events, and type definitions for the EdgeTag CDP.
+
+## Onboarding
+
+Google Analytics 4 has three fields:
+
+- **Measurement ID** (required) — used for GA4 to correctly attribute an event to your site.
+- **API Secret Key** (required) — used to authenticate EdgeTag to send data to Google.
+- **Debug mode** (optional) — enable debug mode to see event details in DebugView in the GA4 UI.
+
+For everything to work correctly, create a separate GA4 property for Blotout. This way you avoid duplicated records and mixed data. If you use an existing property, skip this step.
+
+### Create a property
+
+<Steps>
+
+1. Go to your Google Analytics 4 admin and click the **Admin** icon in the bottom left (gear icon).
+2. Click **Create Property** and enter the name of the property.
+3. Click **Next** and then **Create**. Select **Web** as the platform, then continue with this guide.
+
+</Steps>
+
+### Measurement ID
+
+<Steps>
+
+1. Go to [Google Analytics](https://analytics.google.com/) and, in the top left corner, select the site you want to send events to.
+2. Click the **Admin** button in the left menu at the bottom of the page.
+3. In admin, click **Data Streams** and **Add stream**, then select your platform.
+4. Enter your domain and the source's name, then create a stream.
+5. Open the newly created stream and copy the **Measurement ID**.
+
+</Steps>
+
+### API Secret Key
+
+<Steps>
+
+1. Click **Measurement Protocol API secrets** under the **Events** section.
+2. Click the button to create a new secret and name it.
+3. Copy the secret into the form.
+
+</Steps>
+
+## Browser setup
+
+When you use the SDK via the npm package, add the additional package for this channel to work correctly. Install [@blotoutio/providers-google-analytics-4-sdk](https://www.npmjs.com/package/@blotoutio/providers-google-analytics-4-sdk).
+
+After you install it, add it to your `init` call.
+
+```javascript
+import { init } from '@blotoutio/edgetag-sdk-js'
+import ga4 from '@blotoutio/providers-google-analytics-4-sdk'
+
+init({
+  edgeURL: 'https://d.mysite.com',
+  disableConsentCheck: true,
+  providers: [ga4]
+})
+```
+
+## Events
+
+These are standard events that [Google Analytics recommends](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference/events?client_type=gtag). EdgeTag maps their main events to standard events documented in [the EdgeTag guide](https://app.edgetag.io/docs/standard-events).
+
+### Event mappings
+
+Based on the event you want to track, use the EdgeTag suggested event name during the codification process.
+
+| Google Analytics event name | EdgeTag event name |
+| --- | --- |
+| `add_to_wishlist` | AddToWishlist |
+| `remove_from_cart` | RemoveFromCart |
+| `view_cart` | ViewCart |
+| `view_item_list` | ViewList |
+| `sign_up` | SignUp |
+| `login` | Login |
+
+The following payloads apply to events that are not defined in the standard events.
+
+### AddToWishlist
+
+The event signifies that an item was added to a wishlist.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | Yes | Currency of the items associated with the event, in 3-letter ISO 4217 format. |
+| `value` | number | Yes | The monetary value of the event. |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/google-analytics-4#contents) | No | The items for the event. |
+
+### RemoveFromCart
+
+This event signifies that an item was removed from a cart.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | Yes | Currency of the items associated with the event, in 3-letter ISO 4217 format. |
+| `value` | number | Yes | The monetary value of the event. |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/google-analytics-4#contents) | No | The items for the event. |
+
+### ViewCart
+
+This event signifies that a user viewed their cart.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | Yes | Currency of the items associated with the event, in 3-letter ISO 4217 format. |
+| `value` | number | Yes | The monetary value of the event. |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/google-analytics-4#contents) | No | The items for the event. |
+
+### ViewList
+
+Log this event when the user has been presented with a list of items of a certain category.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `listId` | string | No | The ID of the list in which the item was presented to the user. |
+| `listName` | string | No | The name of the list in which the item was presented to the user. |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/google-analytics-4#contents) | No | The items for the event. |
+
+### SignUp
+
+This event indicates that a user has signed up for an account.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `method` | string | No | The method used for sign up. |
+
+### Login
+
+Send this event to signify that a user has logged in.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `method` | string | No | The method used to login. |
+
+## Type definitions
+
+### Contents
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | string | Yes | The ID of the item. |
+| `title` | string | Yes | The name of the item. |
+| `quantity` | number | No | Item quantity. |
+| `item_price` | number | No | The monetary price of the item, in units of the specified currency parameter. |
+| `category` | string | No | The category of the item. |
+
+{/* TODO: 13 image artifact(s) on DevRev ART-1296 could not be retrieved through the DevRev MCP — re-add manually. */}

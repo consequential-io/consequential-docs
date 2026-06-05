@@ -1,0 +1,42 @@
+---
+title: Server-side cookie
+description: Understand server-side cookies, when to create one for headless sites, and how to set the available cookie options.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+A server-side cookie, or HTTP cookie, is sent from the server to the browser. You can read more about it in the web documentation. The system sends data from the server because browsers can verify its origin and extend its validity.
+
+For platforms like Shopify, WordPress, and others, we cover this for you — we automatically generate this cookie, and it originates from the server where your site is served. For headless sites, we do not have access to your server, so create the cookie yourself. The system still generates a server-side cookie with the EdgeTag user ID, but running both the server-side cookie and ours at the same time is beneficial. We map your server-side cookie to ours behind the scenes.
+
+## Cookie options
+
+Important options:
+
+- **Name**: The cookie name. Use a value that is not already used on your site or by any other provider on your site.
+- **Domain**: The domain the cookie is set for. Set it as `.mysite.com` so that it works with subdomains as well.
+- **Expires**: When the cookie should expire.
+- **SameSite**: The context in which the cookie should live.
+- **Secure**: Whether the cookie should be served only on HTTPS.
+- **HttpOnly**: Whether the cookie should be available only for requests.
+
+You can read more about it in the [web docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie).
+
+## How to create a cookie
+
+Include server-side cookies in the document response headers. This way, the system knows they came from the correct server.
+
+<Aside type="note">
+Create a cookie only if it does not exist yet.
+</Aside>
+
+The following example shows how to create a server-side cookie on your end:
+
+```javascript
+const crypto = require('crypto');
+
+const cookieName = 'truid'; // this is just an example name, you can change it to what you want
+const userId = `${crypto.randomUUID()}-${Date.now()}`;
+const expirationDate = new Date(2037, 11, 20).toUTCString();
+const domainCookie = '.mysite.com'; // change mysite.com to your domain
+```

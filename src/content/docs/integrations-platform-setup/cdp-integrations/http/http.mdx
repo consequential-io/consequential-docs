@@ -1,0 +1,23 @@
+---
+title: HTTP
+description: Send events from offline systems or sources outside your site using the EdgeTag HTTP approach.
+---
+
+If you need to send events from an offline system or have events triggered outside your site, use the HTTP approach to send them.
+
+EdgeTag operates using a server-side cookie to identify users. If possible, store the EdgeTag ID from the browser in your system. This lets you associate the same user when sending events through HTTP.
+
+If the system is not connected to your website, you can also connect users by email. Include the email in the payload using the `userEmail` property. EdgeTag searches for this email in its ID graph and connects it to the user. If the user is not found, EdgeTag creates a new user.
+
+If you use EdgeTag without a browser, you can define your own EdgeTag ID and use it as an identifier. For example, you use EdgeTag in your mobile app and use the mobile ID as the EdgeTag ID when sending events.
+
+## Error handling
+
+All APIs use the same error-handling mechanism.
+
+```json
+{
+  "message": "Value is not defined",
+  "code": "400"
+}
+```

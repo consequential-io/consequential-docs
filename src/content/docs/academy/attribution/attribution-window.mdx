@@ -1,0 +1,160 @@
+---
+title: Attribution Window
+description: Learn how attribution windows determine how marketing touchpoints earn credit for conversions over time.
+---
+import { Aside } from '@astrojs/starlight/components';
+
+Out of the Blue offers flexible attribution windows that help you understand how your marketing touchpoints influence conversions over time.
+
+Attribution windows are especially valuable for teams making data-driven decisions around ad spend, ROAS, CAC, LTV, and any conversion-based KPI.
+
+## What is an attribution window?
+
+An attribution window represents the length of time in which a marketing touchpoint (such as a click or view) can receive credit for a conversion.
+
+For example, with a 7-day window, any conversion that happens within 7 days after the touchpoint may be attributed to that touchpoint.
+
+<Aside type="note">
+Attribution windows are available only when you use Accrual Accounting Mode inside Out of the Blue.
+</Aside>
+
+## Available attribution windows
+
+The available windows depend on the attribution model you use.
+
+### Click-based attribution windows
+
+For all click models except Clicks + Modeled Views:
+
+- 1-Day Click
+- 3-Day Click
+- 7-Day Click
+- 14-Day Click
+- 30-Day Click
+- 90-Day Click
+- LTV (infinite window)
+
+### Clicks + Modeled Views attribution windows
+
+- 1-Day Click / 1-Day View
+- 3-Day Click / 1-Day View
+- 7-Day Click / 1-Day View
+- 14-Day Click / 1-Day View
+- 30-Day Click / 1-Day View
+- 90-Day Click / 1-Day View
+
+## Where attribution windows apply
+
+Attribution windows apply across all conversion-based metrics, including:
+
+- Revenue
+- Transactions
+- Email Sign-Ups
+- Subscription Orders
+- Custom Events
+
+They also extend to derived metrics, such as:
+
+- ROAS (Return on Ad Spend)
+- CAC (Customer Acquisition Cost)
+
+Metrics using a window display a "(d)" indicator, such as:
+
+- Attributed Revenue (1d)
+- ROAS (7d)
+- CAC (3d)
+- LTV Attributed Revenue
+- LTV ROAS
+
+## Attribution windows glossary
+
+| Attribution window | Meaning | Definition |
+|--------------------|---------|------------|
+| (1d) | 1-Day Window | Credit given for conversions ≤ 1 day after the touchpoint |
+| (3d) | 3-Day Window | Credit given for conversions ≤ 3 days after the touchpoint |
+| (7d) | 7-Day Window | Credit given for conversions ≤ 7 days after the touchpoint |
+| (14d) | 14-Day Window | Credit given for conversions ≤ 14 days after the touchpoint |
+| (30d) | 30-Day Window | Credit given for conversions ≤ 30 days after the touchpoint |
+| (60d) | 60-Day Window | Credit given for conversions ≤ 60 days after the touchpoint |
+| (90d) | 90-Day Window | Credit given for conversions ≤ 90 days after the touchpoint |
+| LTV | Infinite Window | Credit from any conversion after the touchpoint |
+
+## Attribution window examples
+
+This example uses a Linear (equal-weighting) model in Accrual Accounting Mode.
+
+Customer journey:
+
+- Jan 1: Facebook ad click
+- Jan 3: Google ad click
+- Jan 5: Direct visit, purchase of $90
+
+Because this uses Accrual Mode, each touchpoint only receives credit on the day it occurred.
+
+### Jan 1 performance (Facebook)
+
+| Platform | 1d | 3d | 7d | LTV |
+|----------|----|----|----|-----|
+| Facebook | $0 | $0 | $30 | $30 |
+| Google | $0 | $0 | $0 | $0 |
+| Direct | $0 | $0 | $0 | $0 |
+
+The purchase occurred 4 days after the Facebook click, so the 1-day and 3-day windows don't qualify. The 7-day and LTV windows qualify.
+
+### Jan 3 performance (Google)
+
+| Platform | 1d | 3d | 7d | LTV |
+|----------|----|----|----|-----|
+| Facebook | $0 | $0 | $0 | $0 |
+| Google | $0 | $30 | $30 | $30 |
+| Direct | $0 | $0 | $0 | $0 |
+
+The purchase occurred 2 days after the Google click, so the 1-day window doesn't qualify. The 3-day, 7-day, and LTV windows qualify.
+
+### Jan 5 performance (Direct)
+
+| Platform | 1d | 3d | 7d | LTV |
+|----------|----|----|----|-----|
+| Facebook | $0 | $0 | $0 | $0 |
+| Google | $0 | $0 | $0 | $0 |
+| Direct | $30 | $30 | $30 | $30 |
+
+The purchase occurred the same day as the direct visit, so all windows qualify (within 24 hours).
+
+### Jan 1 to 5 cumulative view
+
+| Platform | 1d | 3d | 7d | LTV |
+|----------|----|----|----|-----|
+| Facebook | $0 | $0 | $30 | $30 |
+| Google | $0 | $30 | $30 | $30 |
+| Direct | $30 | $30 | $30 | $30 |
+
+This shows how longer windows attribute more credit to earlier touchpoints, while shorter windows emphasize more recent interactions.
+
+## How to use this as a marketer
+
+Attribution windows let you answer key questions.
+
+### Short windows (1d to 3d)
+
+Ideal for channels with fast purchase cycles, such as:
+
+- Paid social retargeting
+- Email
+- High-intent performance ads
+
+### Long windows (14d, 30d, 90d)
+
+Ideal for slower-converting prospecting channels, such as:
+
+- Prospecting ads
+- YouTube
+- Display campaigns
+
+### LTV windows (infinite)
+
+Useful for:
+
+- Subscription businesses
+- High-margin products
+- Cohort retention strategies

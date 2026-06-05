@@ -1,0 +1,162 @@
+---
+title: How to integrate standard events with EdgeTag in your system
+description: Reference for EdgeTag standard events, their payload parameters, and shared type definitions.
+---
+
+These are standard events that are the same across all providers. Once an event is sent to the edge, EdgeTag transforms it into the correct payload for the provider.
+
+All parameters are optional except the ones marked required. EdgeTag generates the `eventId` automatically for you.
+
+## PageView
+
+This is the default pixel tracking page visits. A person lands on your website pages.
+
+## ViewContent
+
+A visit to a web page you care about (for example, a product page or landing page). ViewContent tells you if someone visits a web page's URL, but not what they see or do on that page. A person lands on a product details page.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/standard-events#contents) | No | A list of products or items related to this event. |
+| `currency` | string | No | The currency for the value specified. |
+| `value` | number | No | A numeric value associated with this event. |
+
+## AddToCart
+
+When a product is added to the shopping cart. A person clicks an add to cart button.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | Yes | The currency for the value specified. |
+| `value` | number | Yes | A numeric value associated with this event. |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/standard-events#contents) | No | A list of products or items related to this event. |
+| `checkoutUrl` | string | No | URL to go to the checkout page. |
+
+## RemoveFromCart
+
+When a product is removed from the shopping cart. A person removes a product from the cart.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | Yes | The currency for the value specified. |
+| `value` | number | Yes | A numeric value associated with this event. |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/standard-events#contents) | No | A list of products or items related to this event. |
+| `checkoutUrl` | string | No | URL to go to the checkout page. |
+
+## InitiateCheckout
+
+When a person enters the checkout flow prior to completing it. A person clicks a checkout button.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/standard-events#contents) | No | A list of products or items related to this event. |
+| `currency` | string | No | The currency for the value specified. |
+| `value` | number | No | A numeric value associated with this event. |
+| `checkoutUrl` | string | No | URL to go to the checkout page. |
+
+## AddShippingInfo
+
+When a user has submitted their shipping information.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/standard-events#contents) | No | A list of products or items related to this event. |
+| `currency` | string | No | The currency for the value specified. |
+| `value` | number | No | A numeric value associated with this event. |
+
+## AddPaymentInfo
+
+When payment information is added to the checkout flow. A person clicks a save billing information button.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/standard-events#contents) | No | A list of products or items related to this event. |
+| `currency` | string | No | The currency for the value specified. |
+| `value` | number | No | A numeric value associated with this event. |
+
+## Purchase
+
+When a purchase is made or the checkout flow is completed. A person finishes the purchase or checkout flow and lands on a thank you or confirmation page.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | Yes | The currency for the value specified. |
+| `value` | number | Yes | A numeric value associated with this event. |
+| `orderId` | string | Yes | The order ID for the transaction. |
+| `eventId` | string | Yes | The order ID for the transaction. |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/standard-events#contents) | No | A list of products or items related to this event. |
+| `discounts` | object[] | No | The discount codes used for the transaction. |
+
+The `discounts` object uses the following shape:
+
+```typescript
+discounts: {
+  code: string,
+  type?: 'FLAT' | 'PERCENTAGE',
+  value?: string
+}[]
+```
+
+## Subscribe
+
+When a person applies to start a paid subscription for a product or service you offer. A person subscribes to your streaming service.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `sourceId` | string | No | The unique identifier of the sign-up source. |
+| `currency` | string | No | The currency for the value specified. |
+| `value` | number | No | A numeric value associated with this event. |
+
+## Search
+
+When a search is made. A person searches for a product on your website.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `contents` | [Contents[]](https://app.edgetag.io/docs/standard-events#contents) | No | A list of products or items related to this event. |
+| `currency` | string | No | The currency for the value specified. |
+| `value` | number | No | A numeric value associated with this event. |
+| `search` | string | No | A search query made by a user. |
+
+## Lead
+
+When a sign-up is completed. A person clicks pricing.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `category` | string | No | Category of the item. |
+| `name` | string | No | Title of the product/page. |
+| `currency` | string | No | The currency for the value specified. |
+| `value` | number | No | A numeric value associated with this event. |
+
+## Type definitions
+
+### Contents
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | string | Yes | ID of the item, like product ID. |
+| `quantity` | number | Yes | Quantity of the item. |
+| `item_price` | number | Yes | Final price per unit of the content/product. |
+| `variantId` | string | No | Variation ID of the item. Required if variant ID is used as content ID for any channel. |
+| `sku` | string | No | SKU of the item. Required if SKU is used as content ID for any channel. |
+| `title` | string | No | Title of the listed item. |
+| `description` | string | No | Product description used for the item. |
+| `category` | string | No | Category of the item, comma separated. |
+| `brand` | string | No | Brand of the item. |
+| `type` | product \| product_group | No | Type of the item. |
+| `image` | string | No | Image URL of this item. |
+| `url` | string | No | URL of this item. |
+
+### Additional parameters
+
+Use the following parameters with every event.
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `eventId` | string | By default EdgeTag generates a unique ID for every event. To pass your own ID, use this parameter. |
+| `skipIPAddress` | boolean | Use this flag for an offline event where you do not know the IP of the user. |
+| `source` | online \| offline | Define the source of the event. EdgeTag sends `online` by default. |
+| `skipTransformation` | boolean | If you pass this flag, EdgeTag does not transform or normalize your data and passes it as you send it. |
+
+{/* TODO: 12 image artifact(s) on DevRev ART-1301 could not be retrieved through the DevRev MCP — re-add manually. */}

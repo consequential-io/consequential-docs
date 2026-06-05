@@ -1,0 +1,67 @@
+---
+title: Browser events
+description: Listen to EdgeTag custom event triggers, such as initialization and consent, in JavaScript.
+---
+
+Out of the Blue provides custom event triggers that you can listen to in JavaScript.
+
+## Initialization
+
+This event triggers when the SDK initializes.
+
+Event name: `edgetag-initialized`
+
+Event definition:
+
+```javascript
+{
+  destination: string,
+  userId: string,
+  isNewUser: boolean | undefined,
+  consent: Record<string, boolean | Record<string | boolean>> | null,
+  consentCategories: Record<string, boolean>,
+  consentSetting: Record<string, string[]>
+}
+```
+
+Example:
+
+```javascript
+window.addEventListener('edgetag-initialized', ({ detail }) => {
+  console.log({
+    userId: detail.userId,
+    isNewUser: detail.isNewUser,
+    consent: detail.consent,
+    consentSetting: detail.consentSetting
+  })
+})
+```
+
+## Consent
+
+This event triggers when the `consent` function is called.
+
+Event name: `edgetag-consent`
+
+Event definition:
+
+```javascript
+{
+  destination: string,
+  oldConsent: Record<string, boolean | Record<string | boolean>> | null,
+  newConsent: Record<string, boolean | Record<string | boolean>> | null,
+  oldConsentCategories: Record<string, boolean> | null,
+  newConsentCategories: Record<string, boolean> | null
+}
+```
+
+Example:
+
+```javascript
+window.addEventListener('edgetag-consent', ({ detail }) => {
+  console.log({
+    oldConsent: detail.oldConsent,
+    newConsent: detail.newConsent
+  })
+})
+```
