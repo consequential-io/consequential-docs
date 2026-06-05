@@ -24,7 +24,7 @@ The OutOfTheBlue Pulse JavaScript SDK enables third-party analytics for any eCom
 
 <Steps>
 
-1. Sign up with [outoftheblue.ai](https://outoftheblue.ai). The signup process involves filling in details on a set of pages.
+1. Sign up with [outoftheblue.ai](https://outoftheblue.ai). The sign-up process involves filling in details on a set of pages.
 2. Complete the signup process. You then land on the dashboard screen, which means onboarding is complete.
 
 </Steps>
@@ -41,7 +41,7 @@ Replace `OTB_EVENTS_TAG_ID` in the script with the Tag ID provided by the platfo
 
 ## Capturing errors
 
-You do not need to do anything extra to capture errors once you inject the script. The script includes a variable named `enableErrorTracking`, which you can set to `true` or `false`. When set to `true`, the script captures errors from the website.
+You don't need to do anything extra to capture errors once you inject the script. The script includes a variable named `enableErrorTracking`, which you can set to `true` or `false`. When set to `true`, the script captures errors from the website.
 
 ## Capturing customer events
 
@@ -53,11 +53,11 @@ window?.otbPulse?.pulsePush(event, event_name, "customer_event");
 
 All three parameters are mandatory:
 
-- `event`: The details object you want to send with the event. It is an object containing key-value pairs of data generated on the specific page where the event was triggered. The keys and expected values are detailed in the tables below.
+- `event`: The details object you want to send with the event. It contains key-value pairs of data generated on the specific page where the event occurs. The keys and expected values appear in the tables that follow.
 - `event_name`: One of the seven events listed below. The value must match exactly, otherwise the SDK throws an error.
 - `customer_event`: A string that must be passed as-is. It notifies the SDK that this is a customer event.
 
-Invoke the method whenever a user reaches a particular page. For example, invoke `page_viewed` when a user views any page. When a user views a product, invoke both `page_viewed` and `product_viewed`. The `page_viewed` event is invoked alongside every other event, while the rest are invoked only when they occur.
+Invoke the method whenever a user reaches a particular page. For example, invoke `page_viewed` when a user views any page. When a user views a product, invoke both `page_viewed` and `product_viewed`. The SDK invokes the `page_viewed` event alongside every other event, while the rest occur only when they happen.
 
 The SDK tracks the following customer events.
 

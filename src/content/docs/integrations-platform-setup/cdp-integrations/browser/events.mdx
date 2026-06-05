@@ -14,13 +14,13 @@ To support multiple channels without requiring you to worry about the payloads a
 | `name` | String | Yes | Name of the event that you are capturing. |
 | `data` | `Record<string, any>` | No | Additional data that you want to send as part of the event. |
 | `providers` | `Record<string, boolean>` | No | Define which providers you want to send this event to. By default, EdgeTag sends to all of them. |
-| `options` | `{ method?: 'beacon', sync?: true, destination?: string }` | No | See below. |
+| `options` | `{ method?: 'beacon', sync?: true, destination?: string }` | No | See the following section. |
 
 ## Options
 
 - `method`: If you provide the method with a value of `beacon`, EdgeTag sends this event through a beacon delivery mechanism instead of a regular fetch.
 - `sync`: Setting `sync` to `true` causes the request to wait for all channels to complete their actions before responding. This may lead to more canceled events in browsers, as some channels might need more time to respond.
-- `destination`: Specify the destination, especially if multiple EdgeTag instances exist on the website. If you do not, EdgeTag triggers the same event to multiple destinations. The destination value is the EdgeTag URL.
+- `destination`: Specify the destination, especially if multiple EdgeTag instances exist on the website. If you don't, EdgeTag triggers the same event to multiple destinations. The destination value is the EdgeTag URL.
 
 ## Examples
 
@@ -42,7 +42,7 @@ PageView that you only want to send to the Meta channel:
 edgetag('tag', 'PageView', {}, { facebook: true })
 ```
 
-PageView where you define the destination it should be sent to:
+PageView where you define the destination it should send data to:
 
 ```javascript
 edgetag('tag', 'PageView', {}, {}, { destination: 'https://d.domain.com' })

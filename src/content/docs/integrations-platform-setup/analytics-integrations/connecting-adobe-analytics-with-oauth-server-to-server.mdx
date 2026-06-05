@@ -1,11 +1,11 @@
 ---
 title: Connecting Adobe Analytics with OAuth Server-to-Server
-description: Connect Adobe Analytics to Out Of The Blue using OAuth Server-to-Server authentication.
+description: Connect Adobe Analytics to Out of the Blue using OAuth Server-to-Server authentication.
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-This guide walks you through connecting Adobe Analytics to Out Of The Blue (Supermetrics) using OAuth Server-to-Server authentication. You handle the initial Adobe setup, and Out Of The Blue (Supermetrics) manages all ongoing authentication automatically.
+This guide walks you through connecting Adobe Analytics to Out of the Blue (Supermetrics) using OAuth Server-to-Server authentication. You handle the initial Adobe setup, and Out of the Blue (Supermetrics) manages all ongoing authentication automatically.
 
 ## Prerequisites
 
@@ -13,20 +13,20 @@ Before you begin, ensure you have:
 
 - Admin access to Adobe Admin Console.
 - Access to Adobe Developer Console.
-- An Out Of The Blue account.
+- An Out of the Blue account.
 
 Time required: 15-20 minutes.
 
 ## Step 1: Configure permissions in Adobe Admin Console
 
-Set up the access rights that Out Of The Blue uses to read your Analytics data.
+Set up the access rights that Out of the Blue uses to read your Analytics data.
 
 <Steps>
 
 1. Log in to [Adobe Admin Console](https://adminconsole.adobe.com/enterprise).
 2. Click **Products** in the left sidebar and select **Adobe Analytics**.
 3. Create or select a Product Profile. Click an existing profile or create a new one and name it something clear like "OTB Integration".
-4. Click the **Permissions** tab and enable permissions for the data Out Of The Blue needs to access:
+4. Click the **Permissions** tab and enable permissions for the data Out of the Blue needs to access:
    - Report Suite access.
    - Analytics Tools (reporting, workspace, and similar).
    - Metrics and dimensions needed for your reports.
@@ -35,12 +35,12 @@ Set up the access rights that Out Of The Blue uses to read your Analytics data.
 </Steps>
 
 <Aside type="tip">
-Create a dedicated Product Profile for Out Of The Blue. This makes it easier to manage and audit access later.
+Create a dedicated Product Profile for Out of the Blue. This makes it easier to manage and audit access later.
 </Aside>
 
 ## Step 2: Create OAuth Server-to-Server credentials
 
-Generate the secure credentials that allow Out Of The Blue to authenticate with Adobe.
+Generate the secure credentials that allow Out of the Blue to authenticate with Adobe.
 
 <Steps>
 
@@ -56,20 +56,20 @@ Generate the secure credentials that allow Out Of The Blue to authenticate with 
 Treat your Client Secret like a password. Never share it in emails, chat, or public repositories.
 </Aside>
 
-## Step 3: Connect Out Of The Blue (Supermetrics)
+## Step 3: Connect Out of the Blue (Supermetrics)
 
-Provide your credentials to Out Of The Blue (Supermetrics). From here, everything is automated.
+Provide your credentials to Out of the Blue (Supermetrics). From here, the system automates everything.
 
 <Steps>
 
-1. Open the link from Out Of The Blue (powered by Supermetrics).
+1. Open the link from Out of the Blue (powered by Supermetrics).
 2. Paste your **Client ID** and **Client Secret**.
 3. For **Credentials name**, give it a clear name like "OTB Integration".
 4. Click **Start**.
 
 </Steps>
 
-Out Of The Blue (Supermetrics) handles the following automatically:
+Out of the Blue (Supermetrics) handles the following automatically:
 
 - Requests access tokens from Adobe.
 - Refreshes tokens before they expire.
@@ -77,11 +77,11 @@ Out Of The Blue (Supermetrics) handles the following automatically:
 - Securely stores credentials.
 - Makes API calls to fetch your data.
 
-You do not need to manage tokens, refreshes, or API calls manually.
+You don't need to manage tokens, refreshes, or API calls manually.
 
 ## Step 4: Ongoing maintenance
 
-Out Of The Blue (Supermetrics) handles authentication automatically, but review your Adobe setup periodically.
+Out of the Blue (Supermetrics) handles authentication automatically, but review your Adobe setup periodically.
 
 Quarterly checklist:
 
@@ -95,7 +95,7 @@ Set a calendar reminder to review access quarterly or after team changes.
 
 ## Troubleshooting
 
-### Connection fails in Out Of The Blue (Supermetrics)
+### Connection fails in Out of the Blue (Supermetrics)
 
 Check that:
 
@@ -108,9 +108,9 @@ Check that:
 Check that:
 
 - The Product Profile includes permissions for the specific Report Suites you query.
-- The API credential has not been deleted or disabled in Developer Console.
+- The API credential hasn't been deleted or disabled in Developer Console.
 
-### Need to revoke access?
+### Revoke access
 
 <Steps>
 
@@ -127,8 +127,8 @@ Check that:
 | Create Product Profile and assign permissions | You (Admin) |
 | Generate OAuth credentials (Client ID/Secret) | You (Admin) |
 | Enter credentials in Supermetrics | You (one time) |
-| Request and refresh access tokens | Out Of The Blue (automatic) |
-| Make API calls to fetch data | Out Of The Blue (automatic) |
+| Request and refresh access tokens | Out of the Blue (automatic) |
+| Make API calls to fetch data | Out of the Blue (automatic) |
 | Monitor and update permissions | You (periodic) |
 | Rotate credentials (if needed) | You (as required) |
 

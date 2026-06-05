@@ -9,7 +9,7 @@ To begin using EdgeTag, add the NPM package and initialize it. Add the package t
 npm i @blotoutio/edgetag-sdk-js
 ```
 
-After you install the package, initialize it. Initialize the package only once per full reload. Do not initialize it when navigating with a JavaScript router.
+After you install the package, initialize it. Initialize the package only once per full reload. Don't initialize it when navigating with a JavaScript router.
 
 Replace the example URL `https://d.mysite.com` with the one generated for you in the app.
 
@@ -27,8 +27,8 @@ Available parameters for the `init` function are:
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
 | `edgeURL` | String | Yes | EdgeTag URL that you received as part of onboarding. |
-| `disableConsentCheck` | Boolean | No | If you do not have consent on your site, disable it with this flag. |
-| `userId` | String | No | If you want to set a custom ID for your first-party cookie, pass a unique identifier. |
+| `disableConsentCheck` | Boolean | No | If you don't have consent on your site, disable it with this flag. |
+| `userId` | String | No | To set a custom ID for your first-party cookie, pass a unique identifier. |
 | `providers` | `Provider[]` | No | Browser pixels to add for specific channels. |
 
 To add browser pixels or scripts (such as a Meta pixel), install the corresponding NPM packages for that channel. See the [Browser packages](https://docs.edgetag.io/implementation/headless/browser-packages) docs for more information.

@@ -13,13 +13,13 @@ This redirects you to the Google Ads authorization flow, where you confirm your 
 
 After you complete the Google Ads process, you return to the app to finish the onboarding.
 
-Next, select the Google Ads ad account, map the conversions created in Google Ads, and you are done. The following sections cover how to set up these fields one by one.
+Next, select the Google Ads ad account, map the conversions created in Google Ads, and finish the setup. The following sections cover how to set up these fields one by one.
 
 ## Ad account ID
 
 In the provider form, the **Select Account** dropdown shows the list of ad accounts you can access. Select the correct ad account.
 
-To find the ad account ID of your Google Ads ad account, go to the Google Ads dashboard. In the top right, you see your name, ad account name, and ID. In the **Select Account** dropdown on the form, select the same ad account ID.
+To find the ad account ID of your Google Ads ad account, go to the Google Ads dashboard. In the header, you see your name, ad account name, and ID. In the **Select Account** dropdown on the form, select the same ad account ID.
 
 ## Sub account ID
 
@@ -31,7 +31,7 @@ After you select the ad account and sub-account (if applicable), EdgeTag retriev
 
 For example, map Purchase to a browser conversion and a server conversion. When the purchase occurs on the website, EdgeTag attempts to send the purchase event to the browser conversion via gtag. If that fails, EdgeTag sends the same purchase event to the server conversion.
 
-If you map only a browser conversion or only a server conversion to an event, EdgeTag sends the event from there and does not use the other flow.
+If you map only a browser conversion or only a server conversion to an event, EdgeTag sends the event from there and doesn't use the other flow.
 
 This way, you can map all the events that you want to receive in Google Ads. Before that, confirm that conversion actions for them are in place.
 
@@ -41,6 +41,6 @@ Enhanced conversions send the first-party customer data for conversions that wer
 
 You can set it to **Google Tag** or **Google Ads API**, and EdgeTag sends these enhanced conversions based on the setting.
 
-Confirm that the same option is selected in the Google Ads dashboard for enhanced conversions, otherwise this does not work.
+Confirm that you selected the same option in the Google Ads dashboard for enhanced conversions, otherwise this doesn't work.
 
 After you configure all the above fields, click **Save & Deploy**. The basic setup is now complete. Proceed to the next section to explore additional configuration options.

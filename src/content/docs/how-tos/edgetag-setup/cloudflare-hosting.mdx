@@ -11,7 +11,7 @@ This guide covers Cloudflare setup, token generation, and custom domains.
 
 ### Prerequisite
 
-If you are on the free Cloudflare plan, switch to a paid plan. Click **Plans** in the left side navigation.
+If you are on the free Cloudflare plan, switch to a paid plan. Click **Plans** in the navigation menu.
 
 ### Worker
 
@@ -21,7 +21,7 @@ Enable Workers in Cloudflare first. If you already use Workers, skip this step.
 
 1. Go to the **Workers & Pages** page and click **Create Worker**.
 2. Click **Deploy**.
-3. Once the worker is created, click [Workers & Pages](https://dash.cloudflare.com/?to=/:account/workers-and-pages) in the left navigation to go back to the workers page.
+3. After you create the worker, click [Workers & Pages](https://dash.cloudflare.com/?to=/:account/workers-and-pages) in the navigation to go back to the workers page.
 
 </Steps>
 
@@ -31,18 +31,18 @@ On the [Workers & Pages page](https://dash.cloudflare.com/?to=/:account/workers-
 
 <Steps>
 
-1. Click **Set up** on the right side.
+1. Click **Set up** next to **Analytics Engine**.
 2. Click **Enable Analytics Engine** to complete the setup.
 
 </Steps>
 
 ### R2
 
-Enable R2 to store data if you enable it in the dashboard. Click [R2](https://dash.cloudflare.com/?to=/:account/r2) in the left side navigation. If you do not have a credit card added yet, add it. Then click **add R2**.
+Enable R2 to store data if you enable it in the dashboard. Click [R2](https://dash.cloudflare.com/?to=/:account/r2) in the navigation menu. If you don't have a credit card added yet, add it. Then click **add R2**.
 
 ### Queues
 
-Enable Queues last. Click [Queues](https://dash.cloudflare.com/?to=/:account/workers/queues) in the left side navigation. In the popup, agree to the charge. Queues is then enabled.
+Enable Queues last. Click [Queues](https://dash.cloudflare.com/?to=/:account/workers/queues) in the navigation menu. In the popup, agree to the charge. Queues is then enabled.
 
 ## How to generate a Cloudflare token?
 
@@ -60,13 +60,13 @@ Enable Queues last. Click [Queues](https://dash.cloudflare.com/?to=/:account/wor
 
 You now have a token to insert as part of host creation.
 
-## My domain is not hosted in Cloudflare
+## Domains not hosted in Cloudflare
 
-If your domain is not hosted in Cloudflare but you want to use it in your Cloudflare account, select the **Custom hostname** option when adding a host in onboarding. This lets you use the Cloudflare custom hostname option to link your primary domain with your workers.
+If your domain isn't hosted in Cloudflare but you want to use it in your Cloudflare account, select the **Custom hostname** option when adding a host in onboarding. This lets you use the Cloudflare custom hostname option to link your primary domain with your workers.
 
 <Steps>
 
-1. Enable the **Custom Hostnames** option in your Cloudflare account. Go to the [Custom Hostnames page](https://dash.cloudflare.com/?to=/:account/:zone/ssl-tls/custom-hostnames). If you have not set it up yet, enable it, add payment info, and purchase it. The first 100 domains are free.
+1. Enable the **Custom Hostnames** option in your Cloudflare account. Go to the [Custom Hostnames page](https://dash.cloudflare.com/?to=/:account/:zone/ssl-tls/custom-hostnames). If you haven't set it up yet, enable it, add payment info, and purchase it. The first 100 domains are free.
 2. Add a fallback domain. Normally you set it as `fallback.somedomain.com`, where `somedomain.com` is your domain in Cloudflare.
 3. Add an AAAA record for `fallback.somedomain.com` in your DNS with the value `100::`. This maps your fallback domain to your workers.
 4. Update your existing API token to add two more permissions:

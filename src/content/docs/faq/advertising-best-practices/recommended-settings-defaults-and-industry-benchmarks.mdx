@@ -15,9 +15,9 @@ All ranges use benchmarks from DTC brands with annual revenue under $50M (2024�
 
 ## Revenue adjustments
 
-### Discount Rate %
+### Discount rate %
 
-The effective discount percentage applied to gross revenue to arrive at net sales. Reflects sitewide promotions, coupon usage, loyalty discounts, and bundle pricing — not one-off negotiated deals.
+The effective discount percentage applied to gross revenue to arrive at net sales. Reflects site-wide promotions, coupon usage, loyalty discounts, and bundle pricing — not one-off negotiated deals.
 
 | Industry | Recommended Default | Typical Range | Notes |
 | --- | --- | --- | --- |
@@ -29,7 +29,7 @@ The effective discount percentage applied to gross revenue to arrive at net sale
 
 Source context: Average coupon code discount across US e-commerce is 19% (Opensend, 2025). Promo-heavy brands can reach 25–30% during peak seasons. Luxury and premium-positioned brands typically stay at 5–10%.
 
-### Return Rate %
+### Return rate %
 
 The percentage of orders returned or refunded. Used to reduce net revenue and, optionally, to gross up COGS with reverse logistics cost.
 
@@ -45,7 +45,7 @@ Source context: NRF (2024) puts the overall e-commerce return rate at 16.9–20.
 
 ## Cost of goods and fulfillment
 
-### COGS Rate %
+### COGS rate %
 
 The cost of goods sold as a percentage of gross revenue. Includes product/manufacturing cost, inbound freight, duties, and packaging — everything up to the point of arrival at your warehouse.
 
@@ -63,23 +63,23 @@ This field should reflect your full landed COGS as a percentage of revenue, not 
 
 Source context: Average DTC gross margin is 45–55% (Clearco, Opensend, 2024), implying COGS of 45–55% of revenue. Beauty/supplements lead with 50–70% gross margins (COGS 30–50%). Electronics and commodity goods have lowest margins (COGS 75–85%).
 
-### Shipping / Order $
+### Shipping / order $
 
 The average fulfillment and shipping cost per order in dollars. Includes carrier cost, pick-and-pack, and any 3PL per-order fees. Doesn't include return shipping unless your 3PL bundles it.
 
 | Industry | Recommended Default | Typical Range | Notes |
 | --- | --- | --- | --- |
 | General e-commerce | $8 | $6–$12 | Industry mid-point; 3PL brands land lower, in-house higher |
-| Apparel | $7 | $5–$10 | Lightweight poly-mailer shipments; returns processing adds hidden cost not captured here |
+| Apparel | $7 | $5–$10 | Lightweight polymailer shipments; returns processing adds hidden cost not captured here |
 | Consumables | $7 | $5–$10 | Repeat small-parcel shipments; subscription cadence enables 3PL rate negotiation |
 | Home Goods | $15 | $10–$25 | Bulky, heavy items significantly increase zone-based carrier costs; furniture can exceed $50/order |
 | Beauty / Supplements | $6 | $5–$9 | Small, lightweight parcels; low zone cost; 3PL-friendly category |
 
 Source context: Average fulfillment cost per order is $8–$15 for in-house and $4–$10 for 3PL (Opensend, GoBolt, 2024). UPS and FedEx implemented 5.9% rate increases in 2024–2025.
 
-### Transaction Fee %
+### Transaction fee %
 
-The payment processing fee charged per transaction as a percentage of order value. Typically deducted by your payment gateway before funds are deposited.
+The payment processing fee charged per transaction as a percentage of order value. Your payment gateway typically deducts this fee before it deposits funds.
 
 | Industry | Recommended Default | Typical Range | Notes |
 | --- | --- | --- | --- |
@@ -91,7 +91,7 @@ The flat per-transaction fee (for example, $0.30 on Stripe) is more impactful on
 
 ## Marketing
 
-### Ad Spend %
+### Ad spend %
 
 Paid media spend as a percentage of net revenue. Covers all performance channels: Meta, Google, TikTok, Pinterest, influencer, and any other paid acquisition spend. Doesn't include email, organic, or owned channels unless those carry a direct cost.
 
@@ -107,7 +107,7 @@ Source context: 59% of e-commerce brands allocate over 30% of revenue to adverti
 
 ## Profitability preferences
 
-### Contribution Margin (CM2) %
+### Contribution margin (CM2) %
 
 The contribution margin percentage used to calculate your iROAS profitability threshold. Represents the share of each revenue dollar left after COGS and fulfillment costs, before ad spend.
 
@@ -123,9 +123,9 @@ The contribution margin percentage used to calculate your iROAS profitability th
 
 Contribution margin is calculated in layers. Each one strips out an additional cost category, giving progressively cleaner views of profitability. Out of the Blue uses these layers across dashboards and the P&L view.
 
-### CM1: gross contribution
+### CM1: Gross contribution
 
-Revenue remaining after the cost of the product itself. Equivalent to Gross Margin. No operational costs are deducted at this stage.
+Revenue remaining after the cost of the product itself. Equivalent to Gross Margin. This stage doesn't deduct any operational costs.
 
 ```text
 Net Revenue
@@ -134,7 +134,7 @@ Net Revenue
 = CM1
 ```
 
-### CM2: variable contribution
+### CM2: Variable contribution
 
 CM1 minus all per-order fulfillment costs. This is the margin available before you spend on advertising — and the figure the Contribution Margin % field in Settings represents. The iROAS profitability threshold (1 ÷ CM2%) is calculated at this layer.
 
@@ -149,7 +149,7 @@ CM1
 
 A positive CM2 means every order covers its own variable costs. If CM2 is negative, the business can't scale out of the problem with more ad spend alone.
 
-### CM3: marketing contribution
+### CM3: Marketing contribution
 
 CM2 minus paid advertising spend. This is the clearest signal of whether the business is actually working — whether each incremental order generates real profit after all variable costs including acquisition.
 
@@ -162,7 +162,7 @@ CM2
 
 A consistently positive CM3 is the prerequisite for scaling. A negative CM3 means paid acquisition is consuming more than the margin it generates.
 
-### Below CM3: fixed and semi-fixed costs
+### Below CM3: Fixed and semi-fixed costs
 
 These sit below the contribution margin layers and aren't driven by individual order volume:
 
@@ -204,7 +204,7 @@ This value directly sets your Profitability Threshold (iROAS breakeven = 1 ÷ CM
 
 ## Frequently asked questions
 
-**When should I switch from "Manual" to "From P&L" for contribution margin?** Switch once you have at least 3 months of complete P&L data in Out of the Blue. "From P&L" pulls your calculated CM2% automatically and keeps the iROAS threshold in sync with actuals.
+**When should I switch from "Manual" to "From P&L" for contribution margin?** Switch once you have at least 3 months of complete P&L data in Out of the Blue. "From P&L" pulls your calculated CM2% automatically and keeps the iROAS threshold in sync with actual results.
 
 **Why does my Effective Margin in the Impact Preview look different from my gross margin?** Effective Margin accounts for COGS, discounts, and returns applied together. It's always lower than pure gross margin because it deducts the revenue lost to returns and promotions before applying COGS.
 

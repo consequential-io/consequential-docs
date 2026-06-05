@@ -19,7 +19,7 @@ This guide covers the attribution models, grouped into simple attribution models
 
 Simple models assign 100% credit to one touchpoint, either first or last. These are familiar if you have used Google Analytics or platform-level reporting (Meta, Google Ads, TikTok, and others).
 
-### 1. First Touch
+### 1. First touch
 
 **What it does:** Gives full credit to the first touchpoint in the journey.
 
@@ -33,7 +33,7 @@ Simple models assign 100% credit to one touchpoint, either first or last. These 
 
 **Example:** A customer clicks a Facebook ad, opens an email newsletter, then clicks an Instagram retargeting ad. First-touch attribution gives 100% credit to the Facebook ad, since it started the journey.
 
-### 2. Last Touch
+### 2. Last touch
 
 **What it does:** Gives 100% credit to the last touchpoint a customer engages with before converting. This is also known as last-click attribution, popularized by tools like Google Analytics.
 
@@ -48,7 +48,7 @@ Simple models assign 100% credit to one touchpoint, either first or last. These 
 **Example:** A customer clicks a Facebook ad, reads your email, clicks a Google Search ad, then converts via an Instagram ad. Last-touch attribution gives 100% credit to the Instagram ad.
 
 <Aside type="caution">
-While straightforward, last-touch attribution can undervalue demand generation channels that played a key role earlier in the journey. Use it in combination with other models for a complete view.
+While straightforward, last-touch attribution can undervalue demand generation channels that played a key role earlier in the journey. Use it with other models for a complete view.
 </Aside>
 
 ### 3. Last Non-Direct Touch (default model across most ad platforms)
@@ -63,7 +63,7 @@ While straightforward, last-touch attribution can undervalue demand generation c
 - Measuring performance of channels that nudge users toward purchase
 - Reporting on CRM-driven and intent-based traffic
 
-**Example:** A customer clicks a Facebook ad, clicks a Google Search ad, returns via a direct visit, then converts. The model gives credit to the Google Search ad, because direct is excluded.
+**Example:** A customer clicks a Facebook ad, clicks a Google Search ad, returns via a direct visit, then converts. The model gives credit to the Google Search ad, because it excludes direct.
 
 <Aside type="caution">
 Direct traffic often comes from loyal or returning customers, but excluding it can sometimes oversimplify repeat behavior. Use this model when consistency with platform reporting is key.
@@ -103,11 +103,11 @@ Linear attribution may overvalue less impactful touchpoints and undervalue key c
 
 ## Future models
 
-### 5. Time-Decay attribution
+### 5. Time-decay attribution
 
 **What it does:** Gives more credit to touchpoints that occur closer to the conversion event. This model assumes recent actions, like a click right before checkout, played a bigger role in the final purchase decision.
 
-**Why it matters:** This model reflects how most buying decisions happen. Customers are influenced more by what they saw or did recently than by something they engaged with weeks ago.
+**Why it matters:** This model reflects how most buying decisions happen. What customers saw or did recently influences them more than something they engaged with weeks ago.
 
 **Best for:**
 
@@ -124,7 +124,7 @@ Considerations:
 - Requires more advanced tracking infrastructure and historical data.
 - Works best when paired with other models to understand full-funnel impact.
 
-### 6. Position-Based attribution
+### 6. Position-based attribution
 
 **What it does:** Assigns weighted credit to multiple touchpoints based on where they occur (beginning, middle, or end). Unlike single-touch or evenly distributed models, these frameworks emphasize key milestones that typically influence conversion.
 
