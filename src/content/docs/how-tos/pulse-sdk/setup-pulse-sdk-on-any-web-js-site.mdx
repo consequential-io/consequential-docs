@@ -1,0 +1,152 @@
+---
+title: Guide to setup OutOfTheBlue Pulse SDK on any Web / JS site
+description: Install the OutOfTheBlue Pulse JavaScript SDK on any web or JavaScript site to capture errors and standard customer events.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+## Introduction
+
+The OutOfTheBlue Pulse JavaScript SDK enables third-party analytics for any eCommerce store.
+
+### Purpose
+
+- Capture and send customer interaction data for insights and personalization.
+- Track any errors occurring on your website to see whether they block the customer experience.
+- Improve decision-making by tracking standard user events and errors directly from the storefront.
+
+### Key features
+
+- Collects standard customer events and sends them to OutOfTheBlue for processing.
+- Integrates with JavaScript-based frontend applications.
+
+## Prerequisites
+
+<Steps>
+
+1. Sign up with [outoftheblue.ai](https://outoftheblue.ai). The sign-up process involves filling in details on a set of pages.
+2. Complete the signup process. You then land on the dashboard screen, which means onboarding is complete.
+
+</Steps>
+
+## Install the script and enable event collection
+
+To enable the OutOfTheBlue Pulse SDK to capture standard customer events and errors from your website, add the following snippet before your website's closing `</head>` tag:
+
+```html
+<script type="text/javascript">window.otbPulse=window.otbPulse||[];otbPulse.load=function(t,e){if(!t)return void console.error("[OTB Pulse SDK] Missing OTB_EVENTS_TAG_ID. SDK will not function.");window.otb_pulse_events_tag_id=t,window.otb_pulse_config=e=e||{};var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://cdn.outoftheblue.ai/shopify/events/customer_events.min.js";var o=document.getElementsByTagName("script")[0];o?o.parentNode.insertBefore(n,o):(document.head||document.body).appendChild(n),e.enableErrorTracking&&(function(){var i=document.createElement("script");i.type="text/javascript",i.async=!0,i.src="https://cdn.outoftheblue.ai/shopify/error_events.min.js?otb_events_tag_id="+t,o?o.parentNode.insertBefore(i,o):(document.head||document.body).appendChild(i)})();for(var r=function(c){return function(){otbPulse.push([c].concat(Array.prototype.slice.call(arguments,0)))}},a=["addEventProperties","addUserProperties","clearEventProperties","identify","resetIdentity","track","pulsePush"],l=0;l<a.length;l++)otbPulse[a[l]]=r(a[l])};otbPulse.load("OTB_EVENTS_TAG_ID",{enableErrorTracking:true,enableEventTracking:true});</script>
+```
+
+Replace `OTB_EVENTS_TAG_ID` in the script with the Tag ID provided by the platform. If you run into issues, contact `connect@outoftheblue.ai`.
+
+## Capturing errors
+
+You don't need to do anything extra to capture errors once you inject the script. The script includes a variable named `enableErrorTracking`, which you can set to `true` or `false`. When set to `true`, the script captures errors from the website.
+
+## Capturing customer events
+
+OutOfTheBlue Pulse exposes an SDK that helps you push standard customer events to OutOfTheBlue. The SDK exposes a method called `pulsePush()`, which sends individual events to OutOfTheBlue:
+
+```javascript
+window?.otbPulse?.pulsePush(event, event_name, "customer_event");
+```
+
+All three parameters are mandatory:
+
+- `event`: The details object you want to send with the event. It contains key-value pairs of data generated on the specific page where the event occurs. The keys and expected values appear in the tables that follow.
+- `event_name`: One of the seven events listed below. The value must match exactly, otherwise the SDK throws an error.
+- `customer_event`: A string that must be passed as-is. It notifies the SDK that this is a customer event.
+
+Invoke the method whenever a user reaches a particular page. For example, invoke `page_viewed` when a user views any page. When a user views a product, invoke both `page_viewed` and `product_viewed`. The SDK invokes the `page_viewed` event alongside every other event, while the rest occur only when they happen.
+
+The SDK tracks the following customer events.
+
+### page_viewed
+
+Triggered when a user views any page. Send an empty object `{}` as the payload.
+
+```javascript
+window?.otbPulse?.pulsePush({}, "page_viewed", "customer_event");
+```
+
+### product_viewed
+
+Triggered when a customer views a specific product.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | No | The currency for the value specified. |
+| `value` | number | No | A numeric value associated with this event, such as a monetary value or a value in another metric. |
+
+```javascript
+window?.otbPulse?.pulsePush({currency: 'USD', value: 10.50}, "product_viewed", "customer_event");
+```
+
+### product_added_to_cart
+
+Triggered when a user adds a product to the cart.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | Yes | The currency for the value specified. |
+| `value` | number | Yes | A numeric value associated with this event, such as a monetary value or a value in another metric. |
+| `page_url` | string | No | Checkout page URL. |
+
+```javascript
+window?.otbPulse?.pulsePush({currency: 'USD', value: 10.50, page_url: 'https://mysite.com/summer-fun'}, "product_added_to_cart", "customer_event");
+```
+
+### checkout_started
+
+Triggered when a user starts the checkout process.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | No | The currency for the value specified. |
+| `value` | number | No | A numeric value associated with this event, such as a monetary value or a value in another metric. |
+| `checkoutUrl` | string | No | URL to go to the checkout page. |
+
+```javascript
+window?.otbPulse?.pulsePush({currency: 'USD', value: 10.50, url: 'https://mysite.com/summer-fun'}, "checkout_started", "customer_event");
+```
+
+### checkout_shipping_info_submitted
+
+Triggered when a user fills in shipping information.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | No | The currency for the value specified. |
+| `value` | number | No | A numeric value associated with this event, such as a monetary value or a value in another metric. |
+
+```javascript
+window?.otbPulse?.pulsePush({currency: 'USD', value: 10.50}, "checkout_shipping_info_submitted", "customer_event");
+```
+
+### payment_info_submitted
+
+Triggered when a user submits payment information.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | No | The currency for the value specified. |
+| `value` | number | No | A numeric value associated with this event, such as a monetary value or a value in another metric. |
+
+```javascript
+window?.otbPulse?.pulsePush({currency: 'USD', value: 10.50}, "payment_info_submitted", "customer_event");
+```
+
+### checkout_completed
+
+Triggered when a user places the order.
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `currency` | string | Yes | The currency for the value specified. |
+| `value` | number | Yes | A numeric value associated with this event, such as a monetary value or a value in another metric. |
+| `order_id` | string | Yes | The order ID for the transaction. |
+| `event_id` | string | No | Event UUID of the event generated as part of this action. |
+
+```javascript
+window?.otbPulse?.pulsePush({currency: 'USD', value: 31.00, order_id: '234234234234', event_id: '234234234234'}, "checkout_completed", "customer_event");
+```

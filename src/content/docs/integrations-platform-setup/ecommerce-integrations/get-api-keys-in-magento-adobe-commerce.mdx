@@ -1,0 +1,50 @@
+---
+title: How to get API keys in Magento (Adobe Commerce)?
+description: Create an integration in Magento 2 (Adobe Commerce) and obtain its API keys.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+## What are Magento 2 API keys?
+
+The Magento 2 API keys are unique identifiers used to authenticate external applications and services to interact with Magento 2.
+
+They include the following:
+
+- Consumer Key
+- Consumer Secret
+- Access Token
+- Access Token Secret
+
+Use them to integrate third-party applications or services with Magento 2. With the Magento 2 API credentials, you can extend the platform's capabilities, enhance user experience, and streamline operations.
+
+<Aside type="note">
+The Magento 2 API keys are not the same as authentication tokens, though they serve the same purpose. You can obtain admin or customer access tokens by passing credentials (such as username and password) using the respective endpoints.
+</Aside>
+
+## Get Magento API keys
+
+<Steps>
+
+1. Log in to your **Magento 2 Admin Panel** and go to **System** > **Extensions** > **Integrations**.
+2. Click the **Add New Integration** button.
+3. Enter the following details for the integration:
+   - **Name**: Enter a descriptive name for the integration. This helps identify the integration purpose.
+   - **Email**: Provide a contact email address for the integration.
+   - **Callback URL**: Enter the URL to which OAuth credentials are sent when using OAuth for token exchange. Use a secure URL (for example, one that starts with `https://`).
+   - **Identity Link URL**: Specify the URL where users are redirected to link their third-party account with these Magento 2 integration credentials.
+   - **Your Password**: Enter your current admin password. This confirms your identity and authorizes the integration.
+4. On the left panel, click the **API** tab and grant access to the required resources for the integration.
+5. Click **Save** to create the integration.
+6. Return to the **Integrations** grid. Find your new integration and click the **Activate** link next to it.
+7. Review the resources and permissions on the confirmation screen, then click **Allow**.
+
+</Steps>
+
+The following integration tokens appear on the screen: Consumer Key, Consumer Secret, Access Token, and Access Token Secret. These are essential for your API connectivity, so store this information securely.
+
+Your integration is complete, and the API keys (tokens) are ready to connect external applications to your Magento 2 store.
+
+<Aside type="important">
+Keep your API key secure and share it only with trusted applications and services. Regularly review and manage your integrations to maintain the security and efficiency of your Magento 2 store.
+</Aside>

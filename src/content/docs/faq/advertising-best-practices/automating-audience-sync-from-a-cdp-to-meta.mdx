@@ -1,0 +1,163 @@
+---
+title: Automating audience sync from a CDP to Meta
+description: Compare approaches to automate audience syncing from a CDP such as Blotout into Meta, and choose the right method for your scale and resources.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+This guide outlines the available approaches to automate audience syncing from a Customer Data Platform (CDP) such as Blotout into Meta. The appropriate method depends on scale, real-time requirements, and available engineering resources.
+
+## Implementation options
+
+There are three primary methods:
+
+- Event-based automation using the Meta Conversions API
+- Native CDP-to-Meta partner integration
+- Direct integration using the Meta Marketing API
+
+### 1. Using Conversions API (behavioral audiences: recommended)
+
+Best suited for retargeting, exclusion logic, and dynamic behavioral segmentation.
+
+Instead of syncing user lists, you send events to Meta via the Conversions API. Meta then builds audiences from event rules.
+
+Common event-based audiences:
+
+- Purchase
+- Purchase_NC
+- Purchase_RC
+- AddToCart
+- InitiateCheckout
+
+This approach works better for behavioral automation than for static CRM uploads.
+
+### 2. Partner integration (if supported by the CDP)
+
+Many CDPs offer native connectors for Meta Custom Audience syncing.
+
+Confirm whether Blotout supports:
+
+- Custom Audience sync
+- Segment-to-Audience mapping
+- Real-time sync
+- Delta updates
+- Automatic hashing
+
+If available:
+
+<Steps>
+
+1. Connect the Meta Ad Account.
+2. Map CDP segments to Meta Custom Audiences.
+3. Configure the sync frequency.
+
+</Steps>
+
+This reduces engineering overhead and maintenance.
+
+### 3. Direct integration via Meta Marketing API (popular)
+
+Best suited for high-volume CRM sync, suppression lists, full automation, and precise control.
+
+The CDP pushes hashed user identifiers (email, phone, external ID, and others) directly into Meta Custom Audiences using the Marketing API.
+
+## Implementation steps
+
+### 1. Create or use a system user
+
+In Meta Business Manager:
+
+- Create a system user.
+- Generate a permanent access token with `ads_management` and `business_management`.
+
+### 2. Create a custom audience (one-time setup)
+
+Via API or Ads Manager:
+
+- Audience type: Customer List
+- Capture and store the `audience_id`
+
+### 3. Hash identifiers
+
+Meta requires SHA-256 hashing of user identifiers before upload:
+
+- Email
+- Phone
+- First name / last name (if included)
+
+Normalize identifiers (lowercase, trimmed whitespace) before you hash them.
+
+### 4. Upload users via API
+
+Endpoint:
+
+```text
+POST https://graph.facebook.com/v19.0/{audience_id}/users
+```
+
+Example payload:
+
+```json
+{
+  "schema": ["EMAIL"],
+  "data": [
+    ["hashedemail1"],
+    ["hashedemail2"]
+  ]
+}
+```
+
+Chunk uploads (see the following limits).
+
+### 5. Automate sync
+
+Recommended patterns:
+
+- Scheduled batch (hourly or daily)
+- Event-triggered (segment membership change)
+
+Handle both additions and removals (removals are critical for suppression audiences).
+
+## Recommended enterprise architecture
+
+A typical architecture:
+
+```text
+CDP (Blotout) → Dynamic Segment Creation → Middleware (Server / Lambda / Cloud Function) → Meta Marketing API → Custom Audience
+```
+
+## Best practices
+
+- Send only delta updates (new and removed users).
+- Maintain a mapping table (CDP ID to Meta `audience_id`).
+- Monitor the match rate (target: 60–80%).
+- Respect API upload limits.
+- Log errors and implement retry logic.
+- Track sync status and failures.
+
+## Real-time vs. batch strategy
+
+| Use case | Recommended approach |
+| --- | --- |
+| Retargeting (ATC, VC) | Conversions API |
+| CRM list sync | Marketing API (batch) |
+| Suppression audiences | Real-time removal |
+| High-frequency updates | Hourly batch processing |
+
+## Important limits and constraints
+
+- Maximum ~10,000 users per API call (chunk uploads).
+- Rate limits apply to API usage.
+- Audiences under 100 users don't activate.
+- Match rate impacts effective audience size.
+
+## Implementation planning checklist
+
+Before you design the sync process, define the following:
+
+- Are you syncing CRM lists or behavioral segments?
+- Is real-time sync required, or is daily batching sufficient?
+- Is engineering support available?
+- What's the expected audience size and update frequency?
+
+Clarifying these factors determines whether the Marketing API, native CDP integration, or Conversions API is the appropriate solution.

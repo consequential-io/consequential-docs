@@ -1,0 +1,141 @@
+---
+title: Connecting Adobe Analytics with OAuth Server-to-Server
+description: Connect Adobe Analytics to Out of the Blue using OAuth Server-to-Server authentication.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This guide walks you through connecting Adobe Analytics to Out of the Blue (Supermetrics) using OAuth Server-to-Server authentication. You handle the initial Adobe setup, and Out of the Blue (Supermetrics) manages all ongoing authentication automatically.
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- Admin access to Adobe Admin Console.
+- Access to Adobe Developer Console.
+- An Out of the Blue account.
+
+Time required: 15-20 minutes.
+
+## Step 1: Configure permissions in Adobe Admin Console
+
+Set up the access rights that Out of the Blue uses to read your Analytics data.
+
+<Steps>
+
+1. Log in to [Adobe Admin Console](https://adminconsole.adobe.com/enterprise).
+2. Click **Products** in the left sidebar and select **Adobe Analytics**.
+3. Create or select a Product Profile. Click an existing profile or create a new one and name it something clear like "OTB Integration".
+4. Click the **Permissions** tab and enable permissions for the data Out of the Blue needs to access:
+   - Report Suite access.
+   - Analytics Tools (reporting, workspace, and similar).
+   - Metrics and dimensions needed for your reports.
+5. Save your changes.
+
+</Steps>
+
+<Aside type="tip">
+Create a dedicated Product Profile for Out of the Blue. This makes it easier to manage and audit access later.
+</Aside>
+
+## Step 2: Create OAuth Server-to-Server credentials
+
+Generate the secure credentials that allow Out of the Blue to authenticate with Adobe.
+
+<Steps>
+
+1. Go to [Adobe Developer Console](https://developer.adobe.com/console).
+2. Click **Add API** and select **Adobe Analytics**. Choose **OAuth Server-to-Server** authentication.
+3. Click **Create new project** or open an existing one. Give it a clear name like "OTB Integration".
+4. Select the Product Profile you created in Step 1. This connects your permissions to the credential.
+5. Copy the **Client ID** and **Client Secret** and store them securely.
+
+</Steps>
+
+<Aside type="caution">
+Treat your Client Secret like a password. Never share it in emails, chat, or public repositories.
+</Aside>
+
+## Step 3: Connect Out of the Blue (Supermetrics)
+
+Provide your credentials to Out of the Blue (Supermetrics). From here, the system automates everything.
+
+<Steps>
+
+1. Open the link from Out of the Blue (powered by Supermetrics).
+2. Paste your **Client ID** and **Client Secret**.
+3. For **Credentials name**, give it a clear name like "OTB Integration".
+4. Click **Start**.
+
+</Steps>
+
+Out of the Blue (Supermetrics) handles the following automatically:
+
+- Requests access tokens from Adobe.
+- Refreshes tokens before they expire.
+- Manages API scopes and permissions.
+- Securely stores credentials.
+- Makes API calls to fetch your data.
+
+You don't need to manage tokens, refreshes, or API calls manually.
+
+## Step 4: Ongoing maintenance
+
+Out of the Blue (Supermetrics) handles authentication automatically, but review your Adobe setup periodically.
+
+Quarterly checklist:
+
+- Review permissions in Adobe Admin Console. Are the right people/profiles still assigned? Do permissions match current needs?
+- Audit Product Profiles. Remove unused profiles and update permissions if data access requirements change.
+- Rotate Client Secrets when required by security policy. Generate a new secret in Developer Console, update Supermetrics with the new secret, and revoke the old secret.
+
+<Aside type="tip">
+Set a calendar reminder to review access quarterly or after team changes.
+</Aside>
+
+## Troubleshooting
+
+### Connection fails in Out of the Blue (Supermetrics)
+
+Check that:
+
+- The Client ID and Secret are copied correctly with no extra spaces.
+- The Product Profile is properly configured with Analytics permissions.
+- The OAuth credential is linked to the correct Product Profile.
+
+### "Access Denied" errors
+
+Check that:
+
+- The Product Profile includes permissions for the specific Report Suites you query.
+- The API credential hasn't been deleted or disabled in Developer Console.
+
+### Revoke access
+
+<Steps>
+
+1. Go to Adobe Developer Console.
+2. Open your project.
+3. Delete the OAuth Server-to-Server credential. Supermetrics immediately loses access.
+
+</Steps>
+
+## Who does what: quick reference
+
+| Task | Who handles it |
+| --- | --- |
+| Create Product Profile and assign permissions | You (Admin) |
+| Generate OAuth credentials (Client ID/Secret) | You (Admin) |
+| Enter credentials in Supermetrics | You (one time) |
+| Request and refresh access tokens | Out of the Blue (automatic) |
+| Make API calls to fetch data | Out of the Blue (automatic) |
+| Monitor and update permissions | You (periodic) |
+| Rotate credentials (if needed) | You (as required) |
+
+## Need further help?
+
+- Adobe Admin Console help: [Adobe Admin Console Documentation](https://helpx.adobe.com/enterprise/admin-guide.html)
+- Adobe Developer Console help: [Adobe Developer Documentation](https://developer.adobe.com/developer-console/docs/)
+- Supermetrics support: [Adobe Analytics with OAuth (server-to-server)](https://docs.supermetrics.com/v1/docs/how-to-connect-to-adobe-analytics-with-oauth-server-to-server)
+
+{/* TODO: 7 image artifact(s) on DevRev ART-1305 could not be retrieved through the DevRev MCP — re-add manually. */}

@@ -1,0 +1,59 @@
+---
+title: Consent
+description: Manage user consent per provider or category with the EdgeTag browser consent function.
+---
+
+Consent is essential because Out of the Blue respects users' privacy and strives to protect it. This commitment is one of the primary reasons Out of the Blue developed this product. Consent protects all events sent from the system, so no data is shared without proper consent.
+
+Call the `consent` function every time the user changes their consent.
+
+Provide consent for each provider or consent category. You must provide at least one.
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `consent` | `Record<string, boolean> \| null` | Yes / No | Tells which provider the user consented to and which they did not. |
+| `categories` | `Record<string, boolean>` | No | Tells which categories have consent and which do not. See [Categories](#categories). |
+| `options` | `{ destination?: string }` | No | See [Options](#options) later in this topic. |
+
+## Categories
+
+- `necessary`
+- `advertising`
+- `analytics`
+- `share_pii`
+- `functional`
+
+## Options
+
+- **Destination:** Specify the destination, especially if multiple EdgeTag instances exist on the website. If you don't, EdgeTag triggers the same event to multiple destinations. The destination value is the EdgeTag URL.
+
+## Examples
+
+Accepting all channels:
+
+```javascript
+edgetag('consent', { all: true })
+```
+
+Accepting only specific channels:
+
+```javascript
+edgetag('consent', { facebook: true, googleAnalytics4: false })
+```
+
+Specific channels and categories:
+
+```javascript
+edgetag('consent',
+  { all: false, facebook: true, tiktok: true, googleAnalytics4: false },
+  { all: false, necessary: true, advertising: true, analytics: false }
+)
+```
+
+Specifying only categories:
+
+```javascript
+edgetag('consent', null, { all: false, necessary: true, advertising: true })
+```

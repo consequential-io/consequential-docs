@@ -1,0 +1,95 @@
+---
+title: Guide to setup OutOfTheBlue Pulse JavaScript SDK on Shopify Headless stores
+description: Install and configure the OutOfTheBlue Pulse JavaScript SDK on a headless Shopify store.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+## Introduction
+
+The OutOfTheBlue Pulse JavaScript SDK enables third-party analytics for Shopify stores with a headless setup.
+
+### Purpose
+
+For headless Shopify stores, the standard Shopify App Pixel cannot gather customer events. This SDK bridges that gap by enabling the collection of standard customer events in headless setups.
+
+### Key features
+
+- Collects standard customer events as defined in the [Shopify Web Pixels API documentation](https://shopify.dev/docs/api/web-pixels-api).
+- Designed specifically for headless Shopify store architecture.
+- Integrates with JavaScript-based frontend applications.
+
+## Installation
+
+Add the following snippet before your website's closing `</head>` tag:
+
+```html
+<script type="text/javascript">window.otbPulse=window.otbPulse||[];otbPulse.load=function(t,e){if(!t)return void console.error("[OTB Pulse SDK] Missing OTB_EVENTS_TAG_ID. SDK will not function.");window.otb_pulse_events_tag_id=t,window.otb_pulse_config=e=e||{};var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://cdn.outoftheblue.ai/shopify/events/customer_events.min.js";var o=document.getElementsByTagName("script")[0];o?o.parentNode.insertBefore(n,o):(document.head||document.body).appendChild(n),e.enableErrorTracking&&(function(){var i=document.createElement("script");i.type="text/javascript",i.async=!0,i.src="https://cdn.outoftheblue.ai/shopify/error_events.min.js?otb_events_tag_id="+t,o?o.parentNode.insertBefore(i,o):(document.head||document.body).appendChild(i)})();for(var r=function(c){return function(){otbPulse.push([c].concat(Array.prototype.slice.call(arguments,0)))}},a=["addEventProperties","addUserProperties","clearEventProperties","identify","resetIdentity","track","pulsePush"],l=0;l<a.length;l++)otbPulse[a[l]]=r(a[l])};otbPulse.load("OTB_EVENTS_TAG_ID",{enableErrorTracking:false,enableEventTracking:true});</script>
+```
+
+Replace `OTB_EVENTS_TAG_ID` with the Tag ID provided to you by the platform.
+
+## Usage
+
+There are two ways to push standard customer events to OutOfTheBlue Pulse:
+
+- Using the Hydrogen Analytics UI SDK.
+- Placing the Pulse SDK in `onClick()` handlers (coming soon).
+
+### Using the Hydrogen Analytics UI SDK
+
+If the Hydrogen Analytics SDK is already installed in your frontend repository, integrating the Pulse SDK is more direct.
+
+<Steps>
+
+1. **Understand Hydrogen Analytics.** Refer to the [Hydrogen Analytics documentation](https://shopify.dev/docs/api/hydrogen/utilities/analytics) for background information.
+2. **Add event subscriptions.** In the `useEffect()` hook, add subscriptions for the following events:
+   - `page_viewed`
+   - `product_viewed`
+   - `product_added_to_cart`
+   - `checkout_started`
+   - `checkout_shipping_info_submitted`
+   - `payment_info_submitted`
+   - `checkout_completed`
+3. **Implement the Pulse SDK** using the following example.
+
+</Steps>
+
+```jsx
+import { useAnalytics } from '@shopify/hydrogen';
+import { useEffect } from 'react';
+import { pulsePush } from "@out-of-the-blue-ai/pulse";
+
+export function ThirdPartyAnalyticsIntegration() {
+  const { subscribe } = useAnalytics();
+  const { ready } = register('Third Party Analytics Integration');
+
+  useEffect(() => {
+    // Standard events
+    const events = [
+      'page_viewed',
+      'product_viewed',
+      'product_added_to_cart',
+      'checkout_started',
+      'checkout_shipping_info_submitted',
+      'payment_info_submitted',
+      'checkout_completed'
+    ];
+
+    events.forEach(event => {
+      subscribe(event, (data) => {
+        // Push the event data to the OTB Pulse platform.
+        // Failure conditions are handled.
+        window?.otbPulse?.pulsePush(event, data, "customer_event");
+      });
+    });
+
+    // Mark this analytics integration as ready
+    ready();
+  }, []);
+
+  return null;
+}
+```
+
+This component uses the `window?.otbPulse?.pulsePush()` function to send data to OutOfTheBlue Pulse whenever a subscribed event occurs.

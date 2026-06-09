@@ -1,0 +1,26 @@
+---
+title: Data
+description: Enrich your ID graph by sending standard or custom keys via the HTTP data endpoint.
+---
+
+Enriching our ID graph is crucial, so adding more data to it is highly beneficial.
+
+You can only send data if you have an EdgeTag ID from the user.
+
+You can send standard keys or custom keys. Custom keys let you modify a site or adjust funnels in the browser based on this key. All this data is available in the browser.
+
+```bash
+curl --request POST \
+  --url https://abc.domain.com/data \
+  --header 'Content-Type: application/json' \
+  --header 'EdgeTagUserId: 138fffcd-ee39-4fd1-b5b5-760f07454407-1662025231518' \
+  --data '{
+	"data": {
+		"email": "jsmith@test.com",
+		"firstName": "John",
+		"lastName": "Smith",
+		"color": "Blue",
+		"step": "5"
+	}
+}'
+```

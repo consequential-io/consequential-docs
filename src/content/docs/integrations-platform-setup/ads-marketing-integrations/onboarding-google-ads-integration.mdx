@@ -1,0 +1,46 @@
+---
+title: Onboarding - Google Ads integration
+description: Connect your Google Ads account with EdgeTag through OAuth and map conversions to start sending events.
+---
+
+Google Ads channels offer a seamless onboarding experience through the OAuth process, which connects your Google Ads account with EdgeTag. This integration enables your site to send events to Google Ads.
+
+Before you start, create conversion actions in the Google Ads dashboard first. Follow [these instructions](https://app.gitbook.com/o/c0Wts1N48p0Ba5S58p8v/s/ZJWZKbUk0hRISkCIj2p4/~/changes/95/channels/google-ads/faq#how-to-create-browser-conversion-action) to create one browser and one server conversion action. If you prefer to run the integration purely on the browser side or the server side, create only those conversion actions.
+
+To add a channel, enter the channel's name. Choose a name that clearly describes the dataset you add, which assists with debugging if any issues arise. After you enter the name, click **Sign in with Google**.
+
+This redirects you to the Google Ads authorization flow, where you confirm your identity and grant the necessary permissions for the system to function correctly. Enable the checkbox if you authenticate for the first time.
+
+After you complete the Google Ads process, you return to the app to finish the onboarding.
+
+Next, select the Google Ads ad account, map the conversions created in Google Ads, and finish the setup. The following sections cover how to set up these fields one by one.
+
+## Ad account ID
+
+In the provider form, the **Select Account** dropdown shows the list of ad accounts you can access. Select the correct ad account.
+
+To find the ad account ID of your Google Ads ad account, go to the Google Ads dashboard. In the header, you see your name, ad account name, and ID. In the **Select Account** dropdown on the form, select the same ad account ID.
+
+## Sub account ID
+
+If an MCC or Manager ad account manages your ad account, this field is mandatory. Select the ad account ID of your sub-account in the **Select sub-account** dropdown. This identifies the exact sub-account the data goes to.
+
+## Conversions mapping
+
+After you select the ad account and sub-account (if applicable), EdgeTag retrieves all browser and server conversion actions created in the ad account. Map the EdgeTag events that you capture on the website to Google Ads conversion actions. Based on the mapping, EdgeTag sends the event data to the mapped conversion actions.
+
+For example, map Purchase to a browser conversion and a server conversion. When the purchase occurs on the website, EdgeTag attempts to send the purchase event to the browser conversion via gtag. If that fails, EdgeTag sends the same purchase event to the server conversion.
+
+If you map only a browser conversion or only a server conversion to an event, EdgeTag sends the event from there and doesn't use the other flow.
+
+This way, you can map all the events that you want to receive in Google Ads. Before that, confirm that conversion actions for them are in place.
+
+## Google Ads enhanced conversions setting
+
+Enhanced conversions send the first-party customer data for conversions that were already captured. This helps identify cross-device attributions. It does not generate extra conversions, but it helps Google Ads attribute conversions more clearly with these first-party identifiers.
+
+You can set it to **Google Tag** or **Google Ads API**, and EdgeTag sends these enhanced conversions based on the setting.
+
+Confirm that you selected the same option in the Google Ads dashboard for enhanced conversions, otherwise this doesn't work.
+
+After you configure all the above fields, click **Save & Deploy**. The basic setup is now complete. Proceed to the next section to explore additional configuration options.

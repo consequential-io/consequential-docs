@@ -1,0 +1,169 @@
+---
+title: Snowflake connection guide
+description: Permissions and steps to connect Snowflake data to Out of the Blue using OAuth2 or key-pair authentication.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This guide contains all permissions and requirements for connecting Snowflake data to Out of the Blue.
+
+## Required permissions
+
+You can authenticate your Snowflake connection in two ways: with OAuth2 or with key-pair authentication.
+
+### Permissions when connecting with OAuth2
+
+To connect with [OAuth](https://docs.snowflake.com/en/user-guide/oauth-intro), you need the following:
+
+- A Snowflake account with the Account admin role
+- OAuth client ID and client secret
+- Account/Server URL
+- Full table name
+- Warehouse name
+
+### Permissions when connecting with key-pair authentication
+
+To connect with [key-pair authentication](https://docs.snowflake.com/en/user-guide/key-pair-auth#overview), you need the following:
+
+- A Snowflake account with the Account admin role
+- Account/Server URL
+- Full table name
+- Username
+- Private key
+- Passphrase (enter "none" if the key is not encrypted)
+- Warehouse name
+
+<Aside type="note">
+These values are case sensitive when connecting to the Snowflake connector. The Snowflake table must contain a DATE or DATETIME column to support date range filtering. Identify compatible columns by opening the Columns tab of your table in Snowflake and sorting by Type.
+</Aside>
+
+## Step 1: Choose either OAuth2 or key-pair authentication
+
+For the first step, choose to authenticate the connection using either OAuth2 or key-pair authentication. The following sections outline both methods. Follow only the instructions for your selected method, then continue with step 2.
+
+### How to create an OAuth client ID and client secret
+
+<Steps>
+
+1. Log in to Snowflake and click **SYSADMIN**.
+2. Click **Change**, and select the **ACCOUNTADMIN** role.
+3. Run the following two commands in a worksheet.
+
+   First command:
+
+   ```sql
+   CREATE SECURITY INTEGRATION
+   "XXXX App"
+   TYPE = OAUTH
+   ENABLED = TRUE
+   OAUTH_CLIENT = CUSTOM
+   OAUTH_CLIENT_TYPE = 'CONFIDENTIAL'
+   OAUTH_REDIRECT_URI = 'https://xxxxxxx.com/login-complete';
+   ```
+
+   Second command:
+
+   ```sql
+   SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS('Supermetrics App');
+   ```
+
+4. Click row 1 in the output. You find this at the bottom of the screen. A popup opens with 3 key-value pairs in JSON format.
+5. Copy the values after the keys `OAUTH_CLIENT_ID` and `OAUTH_CLIENT_SECRET`. These are your client ID and client secret — keep them safe.
+
+</Steps>
+
+### How to create your private key and passphrase
+
+For encrypted keys (with passphrase) — recommended:
+
+<Steps>
+
+1. Use OpenSSL to generate an encrypted private key and public key pair.
+
+   ```bash
+   openssl genrsa 2048 | openssl pkcs8 -topk8 -v2 des3 -inform PEM -out rsa_key.p8
+   openssl rsa -in rsa_key.p8 -pubout -out rsa_key.pub
+   ```
+
+2. When prompted, create a passphrase to protect your private key.
+3. Have an admin with the ACCOUNTADMIN role register your public key in Snowflake using this command:
+
+   ```sql
+   ALTER USER username SET RSA_PUBLIC_KEY='MIIBIjANBgkqh...';
+   ```
+
+</Steps>
+
+To authenticate the connector, use the following values from the private key:
+
+- **Private key**: Copy the entire content of your private key file, including the beginning and end markers: `-----BEGIN ENCRYPTED PRIVATE KEY-----` to `-----END ENCRYPTED PRIVATE KEY-----`.
+- **Passphrase**: The password you created when generating your private key.
+
+For unencrypted keys (without passphrase):
+
+<Steps>
+
+1. Use OpenSSL to generate an unencrypted private key and public key pair.
+
+   ```bash
+   openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -inform PEM -out rsa_key.p8
+   openssl rsa -in rsa_key.p8 -pubout -out rsa_key.pub
+   ```
+
+2. Have an admin with the ACCOUNTADMIN role register your public key in Snowflake using this command:
+
+   ```sql
+   ALTER USER username SET RSA_PUBLIC_KEY='MIIBIjANBgkqh...';
+   ```
+
+</Steps>
+
+To authenticate the connector, use the following values from the private key:
+
+- **Private key**: Copy the entire content of your private key file, including the begin and end markers: `-----BEGIN PRIVATE KEY-----` to `-----END PRIVATE KEY-----`.
+- **Passphrase**: Enter `none` (case sensitive).
+
+## Step 2: Find your Account/Server URL
+
+<Steps>
+
+1. Log in to Snowflake.
+2. In the user menu, click your username.
+3. Hover over **Account** in the menu that appears and click **View account details**.
+4. Copy the value for Account/Server URL.
+
+</Steps>
+
+## Step 3: Find your full table name
+
+<Steps>
+
+1. Log in to Snowflake.
+2. In the navigation pane, click **Catalog → Database explorer**.
+3. Select the database and schema that contain your table.
+4. Select the table you want to fetch data from.
+5. At the selected table, the database name, schema, and table name appear at the top, separated by slashes in this format: `DATABASE_NAME / SCHEMA_NAME / TABLE_NAME`.
+6. Copy these names and enter them in the following format when connecting: `DATABASE_NAME.SCHEMA_NAME.TABLE_NAME`.
+
+</Steps>
+
+## Step 4: Find your warehouse name
+
+<Steps>
+
+1. Log in to Snowflake.
+2. In the navigation pane, click **Catalog → Database explorer**.
+3. Select the database and schema where your table is located.
+4. Select the table you want to fetch data from.
+5. Open the **Data preview** tab.
+6. The warehouse name is visible next to the number of rows. Copy the warehouse name.
+
+</Steps>
+
+## Query types
+
+If prompted, select a query type to pull data.
+
+- **Table**: Fetch data from your table in Snowflake.
+
+{/* TODO: 1 image artifact(s) on DevRev ART-1385 could not be retrieved through the DevRev MCP — re-add manually. */}

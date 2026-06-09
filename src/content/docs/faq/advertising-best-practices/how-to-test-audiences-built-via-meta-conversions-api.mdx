@@ -1,0 +1,144 @@
+---
+title: How to test audiences built via Meta Conversions API
+description: Verify that event-based audiences from the Meta Conversions API build correctly, from event delivery to audience activation.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+If you send events to Meta via the Conversions API, Meta doesn't automatically expose a visible audience list. You must explicitly create audiences from those events and then validate them. This guide explains how to verify that your event-based audiences build correctly.
+
+## 1. Confirm Meta is receiving events
+
+Before you validate audiences, confirm that events successfully reach Meta.
+
+### Check in Events Manager
+
+Go to: **Events Manager → Data Source (Pixel) → Test Events**
+
+Verify that:
+
+- Events (Purchase, AddToCart, Lead, and others) appear
+- `event_id` is present (for deduplication if you use browser and CAPI)
+- No major warnings appear
+- The Event Match Quality score is acceptable
+
+Then review: **Events Manager → Diagnostics**
+
+Look for:
+
+- Low Event Match Quality
+- Missing parameters (`value`, `currency`, `content_ids`)
+- Deduplication issues
+- Processing errors
+
+If events aren't clean, audiences don't populate correctly.
+
+## 2. Validate event volume
+
+Go to: **Events Manager → Overview**
+
+Confirm that:
+
+- Event counts match expected traffic levels
+- The activity timeline aligns with actual site traffic
+
+If event volume is low, the audience may remain below Meta's minimum threshold (100 users).
+
+## 3. Create or inspect the audience
+
+Meta doesn't automatically create audiences from Conversions API events. You must create them manually.
+
+### Create a new audience
+
+Go to: **Ads Manager → Audiences → Create Audience → Custom Audience → Website**
+
+Select:
+
+- Your Pixel
+- The event (for example, AddToCart)
+- A lookback window (for example, 30 days)
+
+### Inspect an existing audience
+
+Open the audience and check its size and availability status.
+
+Status meanings:
+
+| Status | Meaning |
+| --- | --- |
+| Populating | Events are being received but volume is still building |
+| Ready | Audience is usable for targeting |
+| Too Small | Below the minimum size threshold |
+
+## 4. Validate by running a test campaign
+
+To confirm the audience is usable:
+
+<Steps>
+
+1. Create a test campaign.
+2. Target only the specific audience.
+3. Set a small budget ($5–$10).
+4. Run it for 24 hours.
+
+</Steps>
+
+Results:
+
+- If ads deliver, the audience is valid and active.
+- If no delivery occurs, the audience may be too small or misconfigured.
+
+## 5. Use audience overlap (advanced validation)
+
+To validate segmentation logic, go to: **Audiences → Select two audiences → Actions → Show Audience Overlap**
+
+Use this to confirm that:
+
+- Purchasers are excluded from AddToCart
+- CRM lists do not heavily overlap retargeting pools
+- Suppression logic works correctly
+
+## 6. Validate exclusion logic
+
+If you use logic such as AddToCart (30 days) and exclude Purchase (30 days), confirm the following:
+
+- Same lookback window
+- Same Pixel selected
+- Exact event name match (case-sensitive)
+
+Any mismatch breaks exclusion logic.
+
+## 7. What Meta doesn't show
+
+Meta doesn't provide:
+
+- A downloadable user list
+- Individual matched users
+- Per-user inclusion visibility
+
+You can view only the estimated audience size, status, and event source.
+
+## 8. Common issues when using only Conversions API
+
+If you use server-side events without a browser pixel, audience sizes may be smaller due to match rate limitations.
+
+Check:
+
+- The Event Match Quality score
+- The presence of hashed identifiers (email, phone, `external_id`)
+- Proper formatting and hashing
+
+Low match quality results in lower audience population.
+
+## Quick diagnostic checklist
+
+Use this checklist when you troubleshoot:
+
+- Events visible in Test Events?
+- Event Match Quality above 6/10?
+- Audience size above 100 users?
+- Audience status is "Ready"?
+- Event name matches exactly between event and audience rule?
+- Exclusion audiences configured with matching logic?
+
+If you confirm these and issues persist, review the match rate and identifier coverage in your Conversions API payload.

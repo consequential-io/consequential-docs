@@ -1,0 +1,150 @@
+---
+title: How to Share CRM (Sales & Refund Data) with Out of the Blue
+description: Send CRM and commerce data to Out of the Blue through a shared Google Sheet or CSV.
+---
+import { Aside } from '@astrojs/starlight/components';
+
+If you don't use Shopify, BigCommerce, or Magento, you can still send CRM and commerce data to Out of the Blue (OTB) by pushing it through a shared Google Sheet or CSV file. This guide covers what data to send, how to format it, and daily sync expectations.
+
+## General share rules
+
+- Use no spaces in column names ("Refund Amount" becomes `Refund_Amount`).
+- Format all dates as `YYYY-MM-DD HH:MM:SS`.
+- Store order numbers as plain text.
+- Keep amounts numeric only, with no commas (`1200.00`, not `1,200.00`).
+- Upload data as it becomes available. We recommend daily uploads.
+
+## Recommended datasets
+
+Send distinct files (optionally Sheets) for each dataset:
+
+- Sales or order data
+- Refund data
+
+You can add more datasets if needed.
+
+### Sales and order data
+
+Required fields:
+
+- `Order_ID` (text)
+- `Order_Date`
+- `Sold_At` (Web/App/POS)
+- `Status` (Pending, Fulfilled, Cancelled)
+- `Amount`
+- `Total_Discount`
+- `Total_Tax_Amount`
+- `Payment_Status`
+- `Payment_Mode`
+- `Customer_Type` (New/Returning)
+- `Customer_Status`
+- `Shipping_City`
+- `Shipping_State`
+- `Shipping_Country`
+- `Shipping_Code`
+- `Order_Source` (Web/App/Marketplace)
+- `Assisted` (Yes/No)
+- `Modified_Time`
+
+Optional fields:
+
+- `Product_Name` / `SKU`
+- `Quantity`
+
+Required if you need attribution:
+
+- Channel name (Google/Meta/Google Organic)
+- Campaign ID (`utm_campaign`)
+- Campaign name
+- Ad ID
+- Ad name
+- Source/Medium (`utm_source`/`utm_medium`)
+
+### Refund data
+
+Required fields:
+
+- `Refund_ID`
+- `Order_ID`
+- `Refund_Date`
+- `Refund_Amount`
+- `Refund_Reason`
+- `Refund_Status`
+
+Optional fields:
+
+- `Original_Order_Date`
+- `Refund_Notes`
+
+Required if you need attribution:
+
+- Channel name (Google/Meta/Google Organic)
+- Campaign ID (`utm_campaign`)
+- Campaign name
+- Ad ID
+- Ad name
+- Source/Medium (`utm_source`/`utm_medium`)
+
+## Metrics we compute
+
+Sales metrics:
+
+- Total Orders
+- Cancelled Orders Count
+- Average Order Value (AOV)
+- Total Sales Amount
+- Gross Sales Amount
+- Net Sales Amount
+- Total Shipping Cost
+- Average Discount Amount
+
+Refund metrics:
+
+- Refund Amount (aggregated)
+- Refund Count
+
+Inventory metrics (if provided):
+
+- Total Stock Available
+- Inventory Value
+- Inventory Turnover Ratio
+
+## Dimensions we segment on
+
+Sales dimensions:
+
+- `Order_Status`
+- `Product_Name` / `SKU`
+- `Order_Date`
+- Channel
+- Campaign
+- Ad
+
+Refund dimensions:
+
+- `Refund_Reason`
+- `Refund_Status`
+- `Refund_Date`
+- `Original_Order_Date`
+- Channel
+- Campaign
+- Ad
+
+### Additional fields (optional)
+
+These fields are optional but helpful:
+
+- `status` (general status fields outside the Sales/Refund modules)
+- `Payment_Mode` (already included, but variations allowed)
+- `Payment_Status` (already included, but variations allowed)
+- `Additional Amount`
+
+## Daily sync expectation
+
+Push updated rows once per day, ideally at the end of your async data cycle. The Google Sheet should always represent the latest complete day.
+
+## Ways to share
+
+- Share a Google Sheet with viewer privileges to [connect@outoftheblue.ai](mailto:connect@outoftheblue.ai).
+- Dump a CSV file into a Google Storage bucket (created on request).
+- Send a CSV file as an email attachment to [connect@outoftheblue.ai](mailto:connect@outoftheblue.ai).

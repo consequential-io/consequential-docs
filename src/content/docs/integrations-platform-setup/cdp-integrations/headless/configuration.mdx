@@ -1,0 +1,31 @@
+---
+title: Configuration
+description: Configure the EdgeTag headless SDK with the config function and its parameters.
+---
+
+Use this function to configure the SDK if you want.
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `pageUrl` | String | No | Send a custom page URL. |
+| `destination` | String | No | Set configuration only for a specific EdgeTag instance. |
+
+## Examples
+
+For all instances:
+
+```javascript
+import { config } from '@blotoutio/edgetag-sdk-js'
+
+config({ pageUrl: 'https://mysite.com/page' })
+```
+
+Set configuration for a specific instance:
+
+```javascript
+import { config } from '@blotoutio/edgetag-sdk-js'
+
+config({ pageUrl: 'https://mysite.com/page', destination: 'https://d.mysite.com' })
+```

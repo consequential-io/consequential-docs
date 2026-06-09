@@ -1,0 +1,115 @@
+---
+title: Naming convention best practices for ads
+description: Recommended naming conventions for structuring ad campaigns across stores, languages, and funnel stages for cleaner reporting and attribution.
+---
+
+This guide outlines the recommended naming conventions for structuring ad campaigns across multiple stores, languages, and funnel stages. Consistent naming improves reporting accuracy, simplifies debugging, and ensures alignment across marketing, analytics, and BI teams.
+
+## Why naming conventions matter
+
+A structured naming system enables:
+
+- Faster reporting and segmentation (for example, NC vs. RC, TOFU vs. BOFU)
+- Better auditing and troubleshooting
+- Easier collaboration between internal teams and agencies
+- Cleaner dashboards in Meta, Google, and BI tools
+- Consistent campaign setup across regions (US, EU, UK, CA, and more)
+
+## Standard naming structure
+
+All campaign names should follow this format:
+
+```text
+<GEO> | <Language> | <Channel/Type> | <Funnel Stage> | <Audience Type> | <Theme/Category> | <Objective/Bidding> | <Notes/Variant>
+```
+
+Example:
+
+```text
+US | EN | PMax | MOFU | NC | High-value | tROAS | V1
+```
+
+The following table defines each component:
+
+| Component | Meaning and examples |
+|-----------|----------------------|
+| GEO | US, EU, UK, CA, AU |
+| Language | EN, FR, DE, HI, ES |
+| Channel/Type | Search, PMax, Meta, AdvPlus, Shopping, Brand, Display |
+| Funnel Stage | TOFU, MOFU, BOFU |
+| Audience Type | NC (new), RC (returning), Broad, LAL, Generic, Specific |
+| Theme/Category | High-value, All-Products, Seasonal, Specific_Product, SKU123 |
+| Objective/Bidding | tROAS, tCPA, CBO, ABO, Sales, MaxConvValue |
+| Notes/Variant | V1, TestA, Promo25 (optional) |
+
+## Funnel stages explained
+
+- **TOFU (top of funnel):** awareness and discovery. Typical audiences: Broad, Lookalike, NC. Channels: Meta Awareness, YouTube, PMax Discovery, Broad Search.
+- **MOFU (middle of funnel):** consideration and education. Typical audiences: Engagers 14–30 days, NC. Channels: Meta Consideration, Category Search, PMax.
+- **BOFU (bottom of funnel):** high-intent conversion. Typical audiences: RC, ViewContent 7 days, ATC. Channels: Meta DPA, SKU Search, PMax Shopping-heavy.
+
+## Naming examples
+
+**Google Search**
+
+```text
+EU | EN | Search | TOFU | Generic | All-Products | tROAS
+US | EN | Search | MOFU | NC | Category_Shoes | tCPA
+CA | FR | Search | BOFU | Specific | Product_SKU123 | tROAS
+```
+
+**Meta (CBO/ABO)**
+
+```text
+US/CA | FR | Meta | BOFU | RC | Specific_Product | CBO
+EU | EN | Meta | TOFU | Broad | Seasonal_FW25 | Reach
+UK | EN | Meta | MOFU | NC | Bundle_Offer | Sales
+```
+
+**Google Performance Max (PMax)**
+
+```text
+US | HI | PMax | MOFU | NC | High-value | tROAS
+EU | EN | PMax | BOFU | RC | AllProducts | MaxConvValue
+UK | EN | PMax | TOFU | NC | NewArrivals | MaxClicks
+```
+
+**Meta Advantage+ Shopping**
+
+```text
+US | EN | AdvPlus | BOFU | RC | DPA | Sales
+EU | EN | AdvPlus | MOFU | NC | AllProducts | Sales
+UK | EN | AdvPlus | TOFU | Broad | AllProducts | Sales
+```
+
+## Best practices for multi-store and multi-language accounts
+
+- Always include GEO and Language to avoid mixing traffic between locales.
+- Separate NC (new customers) and RC (returning customers) to maintain control over budget allocation and performance tracking.
+- Keep the funnel stage early in the name to improve attribution clarity (TOFU/MOFU/BOFU).
+- Use pipe separators (`|`) for readability in dashboards.
+- Avoid adding currencies (USD, GBP) in names; use reporting layers instead.
+- Use short tokens (EN, FR, BOFU, tROAS) for concise naming.
+- Limit the Notes/Variant field to true experiments (for example, V1, Promo25).
+- Ensure agencies adopt the same structure for consistency across accounts.
+
+## Suggested internal dictionary
+
+To avoid inconsistent naming, teams should adhere to a unified dictionary:
+
+- **GEO:** US, EU, UK, CA, AU
+- **Language:** EN, FR, DE, ES, HI
+- **Channel:** Search, PMax, Meta, AdvPlus, Shopping, Brand, RC
+- **Funnel:** TOFU, MOFU, BOFU
+- **Audience:** NC, RC, Broad, LAL, Generic, Specific
+- **Objective:** tROAS, tCPA, CBO, ABO, MaxConv, Sales
+- **Theme:** All-Products, High-value, SKU, Category_X, Seasonal_FW25
+
+## Benefits of using this structure
+
+- Easier automated reporting (Looker Studio, Power BI, Tableau, BigQuery)
+- Consistent naming across multiple agencies
+- Improved campaign diagnostics
+- Cleaner attribution modeling
+- Better tracking of funnel efficiency (TOFU → BOFU)
+- Clear performance segmentation between NC and RC

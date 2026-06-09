@@ -1,0 +1,30 @@
+---
+title: Configuration
+description: Configure the EdgeTag SDK using the config function and its parameters.
+---
+
+You can use this function to configure the SDK if you wish.
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `pageUrl` | String | No | If you would like to send a custom page url. |
+| `destination` | String | No | If you would like to set configuration only for a specific EdgeTag instance. |
+
+## Examples
+
+For all instances:
+
+```js
+edgetag('config', { pageUrl: 'https://mysite.com/page' })
+```
+
+Set configuration for a specific instance:
+
+```js
+edgetag('config', {
+  pageUrl: 'https://mysite.com/page',
+  destination: 'https://d.mysite.com'
+})
+```

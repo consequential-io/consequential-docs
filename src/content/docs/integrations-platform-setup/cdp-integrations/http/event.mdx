@@ -1,0 +1,110 @@
+---
+title: Event
+description: Send events to the HTTP endpoint, connect a user via EdgeTag ID or email, and follow standard event requirements.
+---
+
+The URL for your endpoint is available in the app dashboard.
+
+## User
+
+When you send events, handle the user correctly. You have two options for connecting a user.
+
+### Via EdgeTag ID
+
+If you have the option, store the EdgeTag ID (use the `getUserId` function) from the browser in your own system database. When you send events from your system to EdgeTag, include the ID in the request headers as `EdgeTagUserId`.
+
+```bash
+curl --request GET \
+  --url https://abc.domain.com/tag \
+  --header 'Content-Type: application/json' \
+  --header 'EdgeTagUserId: 138fffcd-ee39-4fd1-b5b5-760f07454407-1662025231518' \
+  --data '{
+	"data": {
+		"value": 10.50,
+		"currency": "USD",
+		"contents": [
+			{
+				"id": "123123123",
+				"quantity": 1,
+				"item_price": 10.50,
+				"title": "Summer Fun",
+				"category": "bracelets",
+				"image": "https://domain.com/product/fun-main.jpg",
+				"url": "https://domain.com/summer-fun"
+			}
+		]
+	},
+	"eventId": "c2RrX3N0YXJ0-72a6410e-4b6d-4bfa-be5f-d17c294c73bc-1285.1000",
+	"eventName": "AddToCart",
+	"pageTitle": "T-Shirt",
+	"pageUrl": "https://domain.com/product/shirt",
+	"providers": {
+		"all": true
+	},
+	"referrer": "https://google.com",
+	"search": "?utm_campaign=online",
+	"timestamp": 1671443880281,
+	"userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.102 Safari/537.36 Brave",
+	"storage": {
+		"edgeTag": {
+			"consent": {
+				"all": true
+			}
+		}
+	}
+}'
+```
+
+### Via email
+
+If you only have an email, you can integrate the browser (online) with your offline system. Provide an email in the payload through the `userEmail` key.
+
+```bash
+curl --request GET \
+  --url https://abc.domain.com/tag \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"data": {
+		"value": 10.50,
+		"currency": "USD",
+		"contents": [
+			{
+				"id": "123123123",
+				"quantity": 1,
+				"item_price": 10.50,
+				"title": "Summer Fun",
+				"category": "bracelets",
+				"image": "https://domain.com/product/fun-main.jpg",
+				"url": "https://domain.com/summer-fun"
+			}
+		],
+		"userEmail": "user@gmail.com"
+	},
+	"eventId": "c2RrX3N0YXJ0-72a6410e-4b6d-4bfa-be5f-d17c294c73bc-1285.1000",
+	"eventName": "AddToCart",
+	"pageTitle": "T-Shirt",
+	"pageUrl": "https://domain.com/product/shirt",
+	"providers": {
+		"all": true
+	},
+	"referrer": "https://google.com",
+	"search": "?utm_campaign=online",
+	"timestamp": 1671443880281,
+	"userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.102 Safari/537.36 Brave",
+	"storage": {
+		"edgeTag": {
+			"consent": {
+				"all": true
+			}
+		}
+	}
+}'
+```
+
+## Sending an event
+
+When you send standard events, follow the standard events documentation.
+
+When consent is enabled, include it in the request as well; see the examples earlier in this topic (the `storage` key).
+
+The Event ID must be unique to prevent signal loss.

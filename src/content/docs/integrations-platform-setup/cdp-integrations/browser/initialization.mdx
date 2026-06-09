@@ -1,0 +1,35 @@
+---
+title: Initialization
+description: Load and initialize the EdgeTag browser script and configure the init function parameters.
+---
+import { Aside } from '@astrojs/starlight/components';
+
+For optimal performance, insert the code directly into your site, rather than using tag managers like Google Tag Manager. Otherwise, you may experience data losses or discrepancies. Place it in the header of the site.
+
+To begin using EdgeTag, load the script and initialize it. The script loads from the `/load` endpoint. This script is dynamically generated based on your channel configurations, so it includes only the necessary components to maintain your website's optimal performance. EdgeTag automatically includes all browser pixels that you configured.
+
+<Aside type="note">
+Replace the example URL `https://d.mysite.com` with the one generated for you in the app.
+</Aside>
+
+```html
+<script>
+  window.edgetag=window.edgetag||function(){(edgetag.stubs=edgetag.stubs||[]).push(arguments)};
+
+  edgetag('init', {
+    edgeURL: 'https://d.mysite.com',
+    disableConsentCheck: true
+  })
+</script>
+<script async type="text/javascript" src="https://d.mysite.com/load"></script>
+```
+
+The second part of the snippet is the initialization, specifically the call to the `init` function. Available parameters for the `init` function are:
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `edgeURL` | String | Yes | EdgeTag URL that you received as part of onboarding. |
+| `disableConsentCheck` | Boolean | No | If you don't have consent on your site, you can disable it with this flag. |
+| `userId` | String | No | To set a custom ID for your first-party cookie, pass a unique identifier. |
+
+Now that you have a snippet on the site and have initialized it, you can use multiple EdgeTag instances on the same site.

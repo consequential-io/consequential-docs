@@ -1,0 +1,47 @@
+---
+title: Configuration - Google Ads
+description: Configure the remaining Google Ads fields in EdgeTag, including merchant ID, identifier format, and custom query key.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+After you complete the basic onboarding, review the remaining fields in the form and how to use them. The Ad Account ID, Conversions Mapping, and Enhanced conversions settings are already filled in during the basic onboarding, so this guide skips those fields.
+
+## Merchant ID
+
+The merchant ID attaches the conversion data to your product catalog.
+
+To find the merchant ID, go to the Merchant Center [dashboard](https://merchants.google.com/). From the account selector, select the correct merchant account to see the associated ID.
+
+## Identifier format
+
+The identifier format is the value of the Item ID in the Google Merchant Center. Add text in the form based on the format. For example, if the Item IDs in your merchant center use the format `Shopify_US_8983767843098_47917121077530`, where the first number indicates the product ID and the second indicates the variant ID, the text for the identifier format is `Shopify_US_{productId}_{variantId}`. Assuming you pass the product ID and variant ID fields with the EdgeTag event, EdgeTag generates the Item ID for purchased products and sends cart data to Google Ads.
+
+You can use the `{productId}`, `{variantId}`, and `{sku}` variables to add the format, assuming all these fields are sent with EdgeTag events in the [Content](https://docs.edgetag.io/channels/google-ads/configuration#contents) object.
+
+To find the identifier format, go to the Merchant Center [dashboard](https://merchants.google.com/). In the navigation menu, click **products**. You see a list of products in the table. Obtain the format of the Item ID used for the products, and add the text for the identifier format in the form.
+
+## Skip consent
+
+If you already use Google consent mode with another provider, you can skip setting consent data for Google consent states. This helps you manage Google consent across states and avoid conflicts when two providers use gtag.
+
+## Custom query key
+
+As browsers implement changes, you may need to set a custom click ID query parameter for your Google Ads. Use a custom query key to do this.
+
+To set it up, first decide at which level in Google Ads to establish this parameter: account, campaign, or ad level. Set it at the account level for optimal management.
+
+### Account level
+
+<Steps>
+
+1. Go to [Account settings](https://ads.google.com/aw/settings/account) within the Admin menu.
+2. Click the **Tracking** section.
+3. Select your custom key. This example uses `glid`, but you can pick your own. The key must be unique and not used by any other platform. Enter `glid={gclid}` in the **Final URL suffix** box and click **Save**.
+4. Go back to the EdgeTag Google Ads form, enter `glid` (or the one you chose) into the **Custom Query key**, and click **Save**.
+
+</Steps>
+
+### Campaign or ad level
+
+For the rest, read how to do it in the [Add a Final URL suffix - Google Ads](https://support.google.com/google-ads/answer/9054021?hl=en#zippy=%2Cadd-a-final-url-suffix-at-the-account-level) documentation.

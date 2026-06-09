@@ -1,0 +1,48 @@
+---
+title: SOP — Onboarding Meta channel (BlotOut)
+description: Step-by-step instructions to add and configure the Meta channel in BlotOut using the OAuth process.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Meta channels offer a seamless onboarding experience through the OAuth process, which connects your Meta account with EdgeTag. This integration enables your site to send events to Meta.
+
+**Purpose:** Step-by-step instructions to add and configure the Meta channel (this example uses an EU pixel dataset).
+
+**Scope:** For BlotOut users onboarding a Meta/Meta Pixel integration.
+
+## Prerequisites
+
+- You have access to the BlotOut onboarding UI (or the integrations area).
+- You have admin access to the Meta Business/Ads account that owns the pixel and ad account.
+- Pixel ID and Ad Account ID are available (or you have access to Events Manager / Business Settings to copy them).
+
+## Onboarding steps
+
+<Steps>
+
+1. **Open the integration flow.** In BlotOut, go to the **Onboarding** section (or **Integrations > Add Integration**). If you are in a dedicated onboarding channel, select the Meta channel from that channel.
+2. **Start adding Meta.** Click **Add Meta**.
+3. **Name the integration.** Enter a name that explains the dataset and scope. Suggested format: Region - Pixel - Purpose (for example, `EU - Pixel - PurchaseTracking`).
+4. **Select use case / dataset.** Choose the use case field if present. For this example, select **EU pixel** (or whatever dataset/region applies).
+5. **Authenticate and link accounts.** Click **Authenticate**. A popup window opens; click **Edit Settings**. Click **Done** when authentication completes. When prompted to link accounts, click **OK** to confirm.
+6. **Find Pixel ID / Ads Account.** Open Meta Events Manager. If you don't see Events Manager, click **All Tools** and look under **Advertise > Events Manager**. Select the correct account/organization and then the dataset (pixel) you want to use. Go to **Settings** for that dataset and click the dataset entry to copy the **Pixel ID**. Paste the Pixel ID into the **Pixel ID** field in the BlotOut integration form.
+7. **Provide Ads Account ID.** In the BlotOut form, locate the **Ad Account ID** field. Copy the Ad Account ID from Meta Business Settings or Ads Manager and paste it into that field.
+8. **Complete additional configuration.** Finish any remaining configuration fields in the form and review entries for correctness.
+9. **Finish.** Click **Save / Submit / Finish** to complete the onboarding.
+
+</Steps>
+
+## Authorization
+
+To add a channel, enter the channel's name. Choose a name that clearly describes the dataset you are adding. This assists with debugging if any issues arise. Once you enter the name, click **Authenticate**.
+
+This redirects you to the Facebook authorization flow, where you confirm your identity and the permissions required for the system to function. After completing the Facebook process, the app redirects you back to finish onboarding.
+
+## Fill in channel details
+
+Add the Dataset ID. First, go to the **Events Manager** in your Facebook Business account and select your dataset. Click **Settings** and copy the Dataset ID. Return to the app and paste the Dataset ID into the designated field. Return to the Events Manager, copy the Ad Account ID, and paste it into the **Ad Account ID** field.
+
+Click **Save & Deploy**. The basic setup is now complete. Proceed to the next section to explore additional configuration options.
+
+{/* TODO: 5 image artifact(s) on DevRev ART-1306 could not be retrieved through the DevRev MCP — re-add manually. */}

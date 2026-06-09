@@ -1,0 +1,67 @@
+---
+title: How to integrate EdgeTag - codify your shop
+description: Capture the key eCommerce events and user flows with EdgeTag, then connect the browser pixel and verify.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This guide covers the implementation of EdgeTag into your shop and what events to capture.
+
+## Before you get started
+
+Before you start, read the following docs, which explain all the APIs used here:
+
+- [Step-by-step](https://support.devrev.ai/outoftheblue/settings/knowledge-base/articles/ART-1299)
+- JavaScript SDK
+- Standard events
+
+## Init
+
+Add the EdgeTag snippet in your code as the first step. The code is entirely asynchronous and doesn't block your rendering engine. The SDK is only 4 KB.
+
+If you have a cookie banner on your site, see how to handle consent in the [docs](https://app.edgetag.io/docs/step-by-step#consent).
+
+## Events
+
+Once you initialize the SDK, start capturing events. For eCommerce, capture the following events:
+
+- **PageView** — every time a page loads.
+- **ViewContent** — when a product page loads.
+- **AddToCart** — when a user adds something to a cart.
+- **InitiateCheckout** — when a user clicks checkout.
+- **Purchase** — when a user completes a purchase.
+- **Lead** — when a user subscribes to a newsletter.
+
+For full payload definitions, see the standard events.
+
+When the purchase event triggers, you normally get the full user profile, which you send to the system to continue building the ID graph. Do the data call first and then the tag.
+
+## User flows
+
+Even though EdgeTag doesn't send these events to channels, capture user information from them to continue building your ID graph of the customer.
+
+Flows you would normally capture:
+
+- **Login** — when a user logs in.
+- **Registration** — when a user registers.
+- **Billing step** — when a user fills the billing form.
+- **Shipping step** — when a user fills the shipping form.
+
+## Connect browser pixel
+
+If you use the browser pixel, map browser and server pixels together so events aren't counted twice. To enable the browser pixel, log in to the dashboard and select the channel you want to enable it for. Select the browser pixel box in the provider.
+
+<Aside type="note">
+If you use the npm package, check each provider for the package you must install. For example, Meta. If you don't add npm packages for providers, the browser pixel doesn't work.
+</Aside>
+
+EdgeTag automatically:
+
+- Links events with the server pixel.
+- Links the user with the server pixel.
+
+## Verification
+
+Once you finish coding, check that everything is working correctly. See the verification doc to make sure everything is correct.
+
+{/* TODO: 13 image artifact(s) on DevRev ART-1300 could not be retrieved through the DevRev MCP — re-add manually. */}

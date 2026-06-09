@@ -1,0 +1,236 @@
+---
+title: "Out of the Blue: MCP Prompt Guide"
+description: Example prompts you can ask MCP to analyze your business performance, grouped by topic and complexity.
+---
+import { Aside } from '@astrojs/starlight/components';
+
+This guide provides examples of questions you can ask MCP to analyze your business performance. This guide groups prompts by topic and classifies them by complexity:
+
+- Simple prompts: quick lookups, trends, and comparisons.
+- Complex prompts: multi-variable analysis, root-cause investigation, and strategic insights.
+
+These examples help you understand what kinds of questions MCP can answer.
+
+<Aside type="note" title="Important disclaimer">
+The responses MCP provides and the types of questions it can answer depend on your current setup. These results depend on:
+
+- The data sources currently connected to the Out of the Blue application.
+- The data models and integrations configured in your environment.
+- The business context available to MCP, such as metrics definitions, customer segmentation, marketing data, and operational signals.
+
+If a question depends on data or context that's not now connected or configured, MCP may not be able to provide a direct answer. You can still guide MCP by providing additional context, definitions, or assumptions in your question. Often, MCP analyzes the information available and provides helpful insights. Refer to the Tips for getting better results section at the end of this guide.
+</Aside>
+
+## 1. Sales and revenue performance
+
+Understand how your store performs across revenue, orders, and transaction behavior.
+
+### Simple prompts
+
+- Show total sales for the last week.
+- What's the daily breakdown of sales for last month?
+- Compare gross sales versus net sales for this quarter.
+- How many orders did we process yesterday?
+- What's our average order value this month compared to last month?
+- Show sales by country for the past 30 days.
+- Which discount codes generated the most revenue?
+- What's our return rate this month?
+- What's the revenue trend over the past 30 days?
+- What percentage of revenue comes from returning customers?
+
+### Complex prompts
+
+- Decompose revenue performance into traffic volume, conversion rate, and average order value.
+- Identify the main drivers of revenue changes between two time periods.
+- Analyze revenue contribution by geography, channel, and product category.
+- Determine which factors most strongly correlate with high-revenue days.
+- Provide a high-level performance summary of revenue, orders, and customer mix.
+
+## 2. Campaign and advertising performance
+
+Evaluate how your marketing campaigns and ad platforms contribute to growth.
+
+### Simple prompts
+
+- Which campaigns have the highest conversion rates?
+- What's our return on ad spend by advertising platform?
+- Compare performance across major advertising platforms.
+- Which ad creatives are performing best?
+- Show ad spend versus revenue by campaign this month.
+- What channels are driving the most traffic?
+
+### Complex prompts
+
+- Identify which campaigns are driving the most profitable growth.
+- Determine which marketing channels generate the highest customer lifetime value.
+- Recommend where to allocate additional marketing budget.
+- Analyze diminishing returns across advertising channels.
+- Identify the most effective combinations of marketing channels in the customer journey.
+
+## 3. Customer analysis
+
+Understand how customers discover, purchase, and return to your store.
+
+### Simple prompts
+
+- Break down new versus returning customer orders.
+- Which campaigns are bringing in new customers?
+- What's our customer acquisition cost?
+- Show the distribution of customers by spending tier.
+- Which channels drive the most first-time purchases?
+- Compare conversion rates for new versus returning customers.
+- What's the average number of orders per customer?
+- What percentage of revenue comes from repeat customers?
+
+### Complex prompts
+
+- Identify which customer segments generate the most long-term value.
+- Analyze customer retention patterns across acquisition channels.
+- Determine which first purchases lead to higher repeat purchase rates.
+- Segment customers by behavioral patterns such as loyalty or promotion sensitivity.
+- Identify early indicators that high-value customers may churn.
+
+## 4. Creative performance analysis
+
+Evaluate individual ad creatives: grade health, compare winners versus underperformers, and track performance trends over time.
+
+### Simple prompts
+
+- What can you tell me about the best performing creative in the last X days by ad provider?
+- What's working and what's not working with it?
+- How do I replicate its success with other creatives?
+- Show the top 10 ad creatives for this week.
+- Which creatives need iteration?
+- List my winning creatives on Facebook Ads for the last 30 days.
+- Which creatives have the worst ROAS this month?
+- Show me active creatives sorted by spend.
+- What are my top creatives by orders this quarter?
+- Show me the health grades for creative `{ad_id}`.
+- What's the daily performance trend for creative `{ad_id}` over the past 14 days?
+- Show me paused creatives that had the highest spend last month.
+- Which Google Ads creatives are in the "winners" segment right now?
+
+### Complex prompts
+
+- For each iteration-needed creative this month, identify which health dimension (hook, click, convert, watch) is dragging the overall score down and recommend a focus area for the next iteration. (For details on health dimensions, contact the CS team.)
+- Compare daily ROAS trends for the top 3 winning creatives over the last 30 days and identify which one is fatiguing fastest.
+- For the campaign "Spring Launch", compare current period performance to the prior period and rank creatives by ROAS delta. Highlight which ones improved and which declined.
+- Investigate why creative `{ad_id}` dropped in CTR last week. Show the daily trend and compare it to the 30-day baseline.
+- Across all platforms, surface creatives whose spend grew week-over-week but whose ROAS declined, and explain why.
+- Identify creatives launched in the last 14 days that are already performing well, and describe the similarities they share. These are patterns worth doubling down on.
+
+## 5. Conversion and website performance
+
+Analyze how visitors move through your website and where friction occurs.
+
+### Simple prompts
+
+- What's our current conversion rate?
+- Where do users drop off in the purchase funnel?
+- What's the cart abandonment rate?
+- How does conversion rate differ by device type?
+- Which landing pages drive the most conversions?
+- What's the average time from first visit to purchase?
+
+### Complex prompts
+
+- Diagnose why conversion rate changed during a specific time.
+- Identify which step of the funnel is responsible for the largest drop-off.
+- Compare conversion performance between traffic sources and customer segments.
+- Analyze how site performance issues affect purchase behavior.
+- Map the most common paths customers take before purchasing.
+
+## 6. Promotions and discounts
+
+Understand how promotions affect revenue, profitability, and customer behavior.
+
+### Simple prompts
+
+- What percentage of orders used a discount?
+- Which promotions generated the most revenue?
+- How does average order value compare between discounted and full-price orders?
+- What's the overall discount rate trend?
+- Which channels generate the most promotional orders?
+
+### Complex prompts
+
+- Determine whether promotions generate incremental sales or shift existing demand.
+- Evaluate the profitability of different promotion types.
+- Identify the optimal discount depth that maximizes revenue and retention.
+- Model how changing promotion strategy would affect revenue and margin.
+- Analyze whether promotions primarily attract new customers or repeat buyers.
+
+## 7. Product and category performance
+
+Analyze how products and categories contribute to revenue.
+
+### Simple prompts
+
+- Which products generate the most revenue?
+- What categories are growing or declining?
+- What's the average number of items per order?
+- Which products have high views but low conversion?
+- What's the revenue mix by category?
+
+### Complex prompts
+
+- Identify products that drive repeat purchasing behavior.
+- Analyze which products are commonly purchased together.
+- Determine which product categories are driving new customer acquisition.
+- Estimate revenue risk from low inventory on top-selling products.
+- Identify cross-sell or bundle opportunities.
+
+## 8. Customer retention and lifecycle
+
+Understand long-term customer value and engagement patterns.
+
+### Simple prompts
+
+- What's our repeat purchase rate?
+- What percentage of customers have placed multiple orders?
+- How many customers haven't purchased recently?
+- What's the average time between purchases?
+- What portion of revenue comes from high-value customers?
+
+### Complex prompts
+
+- Identify which customer cohorts retain the best over time.
+- Analyze customer value migration between segments.
+- Detect early warning signals of churn among high-value customers.
+- Evaluate the long-term value of customers acquired through different channels.
+- Assess how promotional purchasing affects long-term retention.
+
+## 9. Anomaly investigation
+
+Investigate unexpected changes in key business metrics.
+
+### Simple prompts
+
+- Why did event counts drop on a specific date?
+- There was a dip in page views. What might explain this?
+- Were there any external events affecting performance?
+- Why did our conversion rate change last week?
+- Investigate a spike in returns on a particular date.
+- What caused the drop in ad impressions yesterday?
+
+### Complex prompts
+
+- Identify the root cause of sudden changes in traffic or revenue.
+- Determine whether performance changes are due to traffic mix, site behavior, or marketing activity.
+- Detect anomalies in key metrics compared to historical trends.
+- Compare affected metrics across customer segments and channels.
+- Identify whether anomalies represent temporary fluctuations or structural changes.
+
+## Tips for getting better results
+
+- Be specific about time periods. For example, "last week" or a specific date range.
+- Ask follow-up questions. If MCP finds an insight, ask deeper questions to understand why.
+- Investigate anomalies. When metrics change, ask MCP to analyze the root cause.
+- Compare time periods. For example, compare performance between months, campaigns, or customer segments.
+- Use common eCommerce metrics such as revenue, conversion rate, average order value, customer acquisition cost, and return rate.
+- Provide additional context when needed. If your question requires data that may not now exist in the connected sources, add context directly in the prompt. For example:
+  - Define how you calculate a metric.
+  - Provide assumptions about campaigns or segments.
+  - Clarify business definitions used in your organization.
+
+Providing this context helps MCP interpret your question more accurately and produce better answers.

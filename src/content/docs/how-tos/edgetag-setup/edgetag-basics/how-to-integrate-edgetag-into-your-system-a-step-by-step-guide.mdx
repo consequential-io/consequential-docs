@@ -1,0 +1,75 @@
+---
+title: "How to integrate EdgeTag into your system: a step-by-step guide"
+description: Implement EdgeTag in your system, from initialization and consent to events, browser pixel, and verification.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This guide covers the implementation of EdgeTag into your system, including best practices.
+
+## Before you get started
+
+Before you start, you need your EdgeTag account and your site added. If you haven't added it yet, follow the [onboarding](https://support.devrev.ai/outoftheblue/settings/knowledge-base/articles/ART-1298) guide first.
+
+If you have more specific questions about which parameters are available and their definitions for SDKs, keep the detailed docs open while going through this guide.
+
+## Set things up
+
+Add or install the EdgeTag package/snippet in your code as the first step. The code is entirely asynchronous and doesn't block your rendering engine. The SDK is only 4 KB.
+
+## Initialization
+
+The `init` call ensures the SDK knows which channels you have and what data it needs. EdgeTag automatically captures things like click IDs from URLs or pixel IDs from cookies. The `init` call doesn't send any data to the edge yet; it downloads your manifest.
+
+### With Consent Mode
+
+Consent Mode runs by default. The system doesn't send any signal until the user gives consent. Provide the URL to the subdomain you generated as part of onboarding in the `init` function.
+
+### No Consent Mode
+
+In some circumstances or countries, websites do not have consent mode added. If this is your case, optimize the initialization process by disabling Consent Mode. Set the `disableConsentCheck` flag to `true`.
+
+## Consent
+
+This section applies only if you didn't set the `disableConsentCheck` flag and you use Consent Mode.
+
+EdgeTag gives you a mechanism to define consent in fine granularity for providers. If you have a simple consent system where users can accept or decline everything, pass `true` or `false` in the consent function. If you have a more complex system, allow consent per provider.
+
+Tie the consent call to your CMP (Consent Management Provider) on your site or app. EdgeTag doesn't provide a CMP interface.
+
+## Add user data
+
+User information is vital when building your funnels. EdgeTag provides a specific API for it that persists user information on your edge, enriching every event that follows. Capture it as soon as a user interacts with your site (newsletter form, promotion popup, and similar).
+
+<Aside type="note">
+Personal information is delicate. Treat it carefully and guard it behind Consent Mode. The SDK supports this in version 0.3.0+ and the edge in version 2.0.0+.
+</Aside>
+
+To send multiple items at the same time, use the data API.
+
+## Send events
+
+Handle consent and add user data, then send events to the server. The function has two main parameters: event name and payload.
+
+For the name, use [standard events](https://app.edgetag.io/docs/standard-events) provided by the providers so their engines can optimize your data. The payload varies based on the event name. EdgeTag simplifies keys to be consistent between different providers, so you send one event and EdgeTag sends it to multiple providers.
+
+By default, EdgeTag sends an event to all providers you defined. To send an event to a single provider, pass a third parameter that defines all providers that receive the event.
+
+## Connect browser pixel
+
+If you use the browser pixel, map browser and server pixels together so events aren't counted twice. To enable the browser pixel, log in to the dashboard and select the provider you want to enable it for. Select the browser pixel box in the provider.
+
+<Aside type="note">
+If you use the npm package, check each provider for the package you must install. For example, Meta. If you don't add npm packages for providers, the browser pixel doesn't work.
+</Aside>
+
+EdgeTag automatically:
+
+- Links events with the server pixel.
+- Links the user with the server pixel.
+
+## Verification
+
+Once you finish coding, check that everything is working correctly. See the verification doc to make sure everything is correct.
+
+{/* TODO: 7 image artifact(s) on DevRev ART-1299 could not be retrieved through the DevRev MCP — re-add manually. */}
