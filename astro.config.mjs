@@ -61,46 +61,46 @@ export default defineConfig({
 				{
 					label: "How To's",
 					items: [
-						{ label: 'Onboarding Hub', autogenerate: { directory: 'how-tos/onboarding' } },
-						{ label: 'OutOfTheBlue Pulse SDK Setup', autogenerate: { directory: 'how-tos/pulse-sdk' } },
+						{ label: 'Onboarding Hub', items: [{ autogenerate: { directory: 'how-tos/onboarding' } }] },
+						{ label: 'OutOfTheBlue Pulse SDK Setup', items: [{ autogenerate: { directory: 'how-tos/pulse-sdk' } }] },
 						{
 							label: 'EdgeTag Setup & Implementation',
 							items: [
 								{ slug: 'how-tos/edgetag-setup/cloudflare-hosting' },
-								{ label: 'EdgeTag Basics', autogenerate: { directory: 'how-tos/edgetag-setup/edgetag-basics' } },
+								{ label: 'EdgeTag Basics', items: [{ autogenerate: { directory: 'how-tos/edgetag-setup/edgetag-basics' } }] },
 							],
 						},
-						{ label: 'How CDP works & How to begin', autogenerate: { directory: 'how-tos/cdp' } },
+						{ label: 'How CDP works & How to begin', items: [{ autogenerate: { directory: 'how-tos/cdp' } }] },
 					],
 				},
 				{
 					label: "FAQ's",
 					items: [
-						{ label: 'ROAS, Performance & Growth Strategy', autogenerate: { directory: 'faq/roas-growth-strategy' } },
-						{ label: 'Integrations & Setup', autogenerate: { directory: 'faq/integrations-setup' } },
-						{ label: 'TikTok & Creative Insights', autogenerate: { directory: 'faq/tiktok-creative-insights' } },
-						{ label: 'Advertising Best Practices', autogenerate: { directory: 'faq/advertising-best-practices' } },
+						{ label: 'ROAS, Performance & Growth Strategy', items: [{ autogenerate: { directory: 'faq/roas-growth-strategy' } }] },
+						{ label: 'Integrations & Setup', items: [{ autogenerate: { directory: 'faq/integrations-setup' } }] },
+						{ label: 'TikTok & Creative Insights', items: [{ autogenerate: { directory: 'faq/tiktok-creative-insights' } }] },
+						{ label: 'Advertising Best Practices', items: [{ autogenerate: { directory: 'faq/advertising-best-practices' } }] },
 					],
 				},
 				{
 					label: 'Account & User Management',
-					autogenerate: { directory: 'account-management' },
+					items: [{ autogenerate: { directory: 'account-management' } }],
 				},
 				{
 					label: 'Integrations & Platform Setup',
 					items: [
-						{ label: 'Analytics Integrations', autogenerate: { directory: 'integrations-platform-setup/analytics-integrations' } },
-						{ label: 'Ads & Marketing Integrations', autogenerate: { directory: 'integrations-platform-setup/ads-marketing-integrations' } },
-						{ label: 'E-Commerce Platform Integrations', autogenerate: { directory: 'integrations-platform-setup/ecommerce-integrations' } },
+						{ label: 'Analytics Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/analytics-integrations' } }] },
+						{ label: 'Ads & Marketing Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/ads-marketing-integrations' } }] },
+						{ label: 'E-Commerce Platform Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/ecommerce-integrations' } }] },
 						{
 							label: 'CDP Integrations',
 							items: [
 								{ slug: 'integrations-platform-setup/cdp-integrations/overview-to-integrate-our-system-into-your-site-or-app' },
 								{ slug: 'integrations-platform-setup/cdp-integrations/server-side-cookie' },
 								{ slug: 'integrations-platform-setup/cdp-integrations/validation' },
-								{ label: 'Browser', autogenerate: { directory: 'integrations-platform-setup/cdp-integrations/browser' } },
-								{ label: 'Headless', autogenerate: { directory: 'integrations-platform-setup/cdp-integrations/headless' } },
-								{ label: 'HTTP', autogenerate: { directory: 'integrations-platform-setup/cdp-integrations/http' } },
+								{ label: 'Browser', items: [{ autogenerate: { directory: 'integrations-platform-setup/cdp-integrations/browser' } }] },
+								{ label: 'Headless', items: [{ autogenerate: { directory: 'integrations-platform-setup/cdp-integrations/headless' } }] },
+								{ label: 'HTTP', items: [{ autogenerate: { directory: 'integrations-platform-setup/cdp-integrations/http' } }] },
 							],
 						},
 					],
@@ -108,14 +108,14 @@ export default defineConfig({
 				{
 					label: 'Out of the Blue Academy',
 					items: [
-						{ label: 'Metrics', autogenerate: { directory: 'academy/metrics' } },
-						{ label: 'Attribution', autogenerate: { directory: 'academy/attribution' } },
-						{ label: 'MCP Guide', autogenerate: { directory: 'academy/mcp-guide' } },
+						{ label: 'Metrics', items: [{ autogenerate: { directory: 'academy/metrics' } }] },
+						{ label: 'Attribution', items: [{ autogenerate: { directory: 'academy/attribution' } }] },
+						{ label: 'MCP Guide', items: [{ autogenerate: { directory: 'academy/mcp-guide' } }] },
 					],
 				},
 				{
 					label: 'Out of the Blue vs Other Tools (Comparisons)',
-					autogenerate: { directory: 'comparisons' },
+					items: [{ autogenerate: { directory: 'comparisons' } }],
 				},
 				// API reference pages auto-generated from `src/schemas/api.yaml`.
 				...openAPISidebarGroups,

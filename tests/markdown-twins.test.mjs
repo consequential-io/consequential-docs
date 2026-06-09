@@ -170,7 +170,7 @@ test('home page (/index.md) and 404 page (/404.md) both exist as .md', () => {
 test('sample of expected /<slug>.md files exist (canonical convention)', () => {
 	const canonical = [
 		'concepts/glossary.md',
-		'get-started/quickstart.md',
+		'get-started/overview.md',
 		'reference/errors.md',
 		'changelog.md',
 	];
