@@ -1,0 +1,115 @@
+---
+title: View and interpret your daily report
+description: Open your daily report in Consequential, read each section, and regenerate a report when you need a fresh run.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The daily report is a narrative summary of how your store performed on a given day, compared against a baseline of recent comparable days. It highlights the metrics that moved the most, explains likely causes, and breaks key metrics down by dimension so you can decide where to act.
+
+This guide shows you how to open a report, read each section, and regenerate a report when you need a fresh run.
+
+## Prerequisites
+
+- Access to your Consequential account with a connected store.
+- At least one day of data so a report can be generated. New stores need enough history before Consequential can build a baseline to compare against.
+- To regenerate a report, the **Owner** or **Admin** role on the store.
+
+## View your reports
+
+<Steps>
+
+1. In Consequential, open **Reports** from the sidebar. The page lists your recent reports, most recent first, each with its date and a status.
+2. Click a report date to open its detail view.
+
+</Steps>
+
+If the list is empty, no reports have been generated yet. Once your store has enough data, reports appear here for each day.
+
+### Report statuses
+
+Each report in the list shows a status that tells you whether it's ready to read:
+
+| Status | What it means |
+| --- | --- |
+| **Ready** | The report is generated and ready to read. |
+| **Generating** | Consequential is building the report. The page refreshes on its own and shows the report when it's ready. |
+| **No baseline** | There isn't enough comparable history to build a report for this date yet. |
+| **Failed** | Report generation didn't finish. Regenerate the report to try again. |
+| **None** | No report exists for this date yet. Open the date to generate one. |
+
+<Aside type="note">
+	A report stays in a generating state while Consequential snapshots your data and writes the narrative. The detail page updates automatically — you don't need to refresh your browser.
+</Aside>
+
+## Understand each section of a report
+
+A report reads top to bottom, from the headline takeaway down to the supporting detail. Not every section appears in every report — Consequential includes only the sections that are relevant for the day.
+
+### Header
+
+The header shows the report date, when it was generated, and the model that produced it. If you have the **Owner** or **Admin** role, a **Regenerate** button appears here.
+
+### Summary
+
+A short narrative that captures the day's headline story — what changed, by how much, and the most likely cause. Read this first to get the overall picture before you dig into the detail.
+
+### Notable movers
+
+The metrics whose change was statistically unusual compared with their recent history. Consequential surfaces these first because they're the most likely to need your attention.
+
+Each metric card shows:
+
+- The metric's display name and its value for the day.
+- The change versus the baseline, as both an absolute amount and a percentage. A green up arrow (▲) marks an increase; a red down arrow (▼) marks a decrease.
+- A `z` badge. The z-score measures how far the day's value sits from its baseline — the larger the number, the more unusual the move. Cards with this badge have an outline to stand out.
+
+### Callouts
+
+Plain-language observations that connect the numbers to a likely cause or recommended focus. Each callout has a severity that sets its color:
+
+| Severity | Color | Meaning |
+| --- | --- | --- |
+| **High** | Red | Needs attention now — a large or business-critical change. |
+| **Medium** | Amber | Worth reviewing — a meaningful but less urgent change. |
+| **Low** | Green | Context or a positive signal. |
+
+### Drilldowns
+
+A breakdown of one metric across a dimension — for example, revenue by channel. Each row shows the dimension value, a bar that scales with its size, the value for the day, and the percentage change versus the baseline. Decreases appear in red and increases appear in green. An **Other** row groups the remaining smaller values, and a short narrative below the table calls out what drove the change.
+
+### Context
+
+Supporting signals grouped by source — such as marketing, funnel, or product mix — that help explain the day's results. Each item pairs a short title with a one-line narrative.
+
+### All metrics
+
+A collapsible grid of every metric in the report, not only the notable movers. Click **All metrics** to expand it when you want the full picture, including metrics that stayed flat.
+
+## Regenerate a report
+
+Regenerate a report when generation failed, or when you want a fresh run after you've corrected or updated your underlying data. Regenerating is available to the **Owner** and **Admin** roles.
+
+<Steps>
+
+1. Open the report you want to refresh.
+2. Click **Regenerate** in the header. For a date that has no report yet, click **Generate report** instead.
+3. Wait for generation to finish. The report moves to a generating state and the page updates on its own when the new version is ready.
+
+</Steps>
+
+A confirmation message tells you that regeneration has started. If a report is already being generated, Consequential lets you know rather than starting a second run.
+
+## Troubleshooting
+
+| Problem | Cause and resolution |
+| --- | --- |
+| The **Regenerate** button is missing | Regenerating requires the **Owner** or **Admin** role. Ask a store owner or admin to run it. |
+| The report shows **No baseline** | Your store doesn't yet have enough comparable history for this date. Reports become available as more data accumulates. |
+| Generation **Failed** | Click **Regenerate** to try again. If it keeps failing, contact [support@outoftheblue.ai](mailto:support@outoftheblue.ai). |
+| "Report is already generating" | A run is already in progress. Wait for it to finish — the page updates on its own. |
+
+## Related
+
+- [How it works](/concepts/how-it-works/) — the mental model behind Consequential's data and metrics.
+- [Glossary](/concepts/glossary/) — definitions for the terms used across these docs.
