@@ -59,6 +59,10 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Daily reports',
+					items: [{ autogenerate: { directory: 'daily-reports' } }],
+				},
+				{
 					label: "How To's",
 					items: [
 						{ label: 'Onboarding Hub', items: [{ autogenerate: { directory: 'how-tos/onboarding' } }] },
