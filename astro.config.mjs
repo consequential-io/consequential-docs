@@ -51,6 +51,7 @@ export default defineConfig({
 					label: 'Get started with Out of the Blue',
 					items: [
 						{ label: 'Overview', slug: 'get-started/overview' },
+						{ label: 'Connect your data', slug: 'get-started/connect-your-data' },
 						{ label: 'Connect Meta Ads Manager', slug: 'get-started/connect-meta-ads-manager' },
 						{ label: 'Connect Google Ads', slug: 'get-started/connect-google-ads' },
 						{ label: 'Connect Google Analytics 4', slug: 'get-started/connect-ga4' },
