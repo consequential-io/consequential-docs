@@ -1,0 +1,103 @@
+---
+title: Manage your team
+description: Invite teammates, assign roles, and manage pending invitations from the Team settings page.
+sidebar:
+  order: 1
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Invite colleagues to your Consequential workspace, control what each person can do with roles, and manage invitations that are still pending. You manage everyone who has access to a workspace from the **Team** settings page.
+
+## Prerequisites
+
+- A Consequential workspace at [app.consequential.ai](https://app.consequential.ai).
+- An **Owner**, **Admin**, or **Manager** role in the workspace to view the team.
+- An **Owner** or **Admin** role to invite people, change roles, or remove members. Managers can view the team but can't make changes.
+
+## Roles
+
+Every member has one role per workspace. The role controls what the member can do.
+
+| Role | Access |
+|------|--------|
+| Owner | Full access, including billing and workspace ownership. Assigned to the workspace creator. You can't change this role from the Team page. |
+| Admin | Manage workspace settings, integrations, and team members. |
+| Manager | View the workspace and its team. Can't change team members or workspace settings. |
+| Editor | Work with dashboards and reports. Can't manage the team or workspace settings. |
+| Viewer | Read-only access to the workspace. |
+
+<Aside type="note">
+You can't assign the **Owner** role from the Team page. Ownership stays with the workspace creator.
+</Aside>
+
+## View your team
+
+<Steps>
+
+1. Log in to [app.consequential.ai](https://app.consequential.ai).
+2. Open **Settings**, then select the **Team** tab.
+3. Review the **Members** list. Each row shows the member's name, email, role, and when they were last active. Your own row is marked with a **You** badge.
+
+</Steps>
+
+## Invite people
+
+Send invitations to up to 5 people at a time. Each invitee receives an email with a link to join your workspace.
+
+<Steps>
+
+1. On the **Team** page, find the **Invite people** section.
+2. Enter the invitee's email address in the **Email address** field.
+3. Select a role from the **Role** dropdown. You can assign **Admin**, **Manager**, **Editor**, or **Viewer**.
+4. To invite more people, add another row and repeat. You can send up to 5 invitations per batch.
+5. Select **Send invitations**.
+
+</Steps>
+
+After you send, a confirmation shows the result for each email, such as how many invitations were sent, how many people were already invited, and how many were already members.
+
+<Aside type="tip">
+Invitations expire after a set period. If someone's invitation expires before they accept it, revoke it and invite them again.
+</Aside>
+
+## Change a member's role
+
+<Steps>
+
+1. On the **Team** page, find the member in the **Members** list.
+2. Select a new role from the role dropdown on their row.
+
+</Steps>
+
+The change takes effect immediately. You can't change your own role or the Owner's role.
+
+## Remove a member
+
+Removing a member revokes their access to the workspace.
+
+<Steps>
+
+1. On the **Team** page, find the member in the **Members** list.
+2. Select **Remove** on their row.
+3. Confirm the removal in the dialog.
+
+</Steps>
+
+You can't remove yourself or the Owner.
+
+## Manage pending invitations
+
+Invitations that have been sent but not yet accepted appear in the **Pending invitations** list, along with the invitee's email, assigned role, who invited them, and the expiry date.
+
+To revoke a pending invitation:
+
+<Steps>
+
+1. On the **Team** page, find the invitation in the **Pending invitations** list.
+2. Select **Revoke**.
+3. Confirm in the dialog.
+
+</Steps>
+
+Revoking an invitation invalidates its link. To invite the person again, send a new invitation.
