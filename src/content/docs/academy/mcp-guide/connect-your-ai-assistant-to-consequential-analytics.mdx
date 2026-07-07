@@ -1,0 +1,111 @@
+---
+title: Connect your AI assistant to Consequential Analytics
+description: Connect Claude or ChatGPT to your Consequential workspace and ask about your marketing analytics in plain language.
+---
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This guide is for Consequential customers who want to use their AI assistant — Claude (claude.ai, Claude Desktop, Claude Code) or ChatGPT — to ask questions about their marketing analytics.
+
+The Consequential Analytics connector links your assistant to your Consequential workspace. Ask questions in plain language and get live answers from the same data your dashboards use. Access is **read-only** and scoped to the workspaces your Consequential account is authorized for.
+
+## Before you begin
+
+You need:
+
+- An active Consequential account — the same one you use to sign in at [app.consequential.io](https://app.consequential.io) — with access to at least one workspace.
+- One of the supported assistants below.
+
+Every setup uses the same server URL:
+
+```
+https://mcp.consequential.io/mcp
+```
+
+<Aside type="note">
+Not a Consequential customer yet? Visit [consequential.io/support](https://consequential.io/support) to get in touch.
+</Aside>
+
+## Set up in claude.ai (web)
+
+<Steps>
+
+1. Open **Settings → Connectors**.
+2. Click the **Add custom connector** button.
+3. Enter a name (for example, `Consequential Analytics`) and the server URL above, then click **Add**.
+4. Click **Connect**. Your browser opens the Consequential sign-in page — sign in with your usual Consequential credentials.
+5. Review the consent screen and click **Approve**.
+
+</Steps>
+
+In any chat, Consequential Analytics now appears in the tools menu (the search-and-tools icon in the composer). Enable it for the conversation, then ask your question.
+
+## Set up in Claude Desktop
+
+Claude Desktop shares the same connectors as claude.ai. Follow the claude.ai steps described under **Settings → Connectors**, and the connector becomes available in the desktop app once connected.
+
+## Set up in Claude Code
+
+Run the following command from a terminal:
+
+```bash
+claude mcp add --transport http consequential-analytics https://mcp.consequential.io/mcp
+```
+
+Then start a Claude Code session and run `/mcp`, select **consequential-analytics**, and choose **Authenticate**. Your browser opens the Consequential sign-in and consent flow. Once you approve, the tools are available in your session.
+
+## Set up in ChatGPT
+
+Custom connectors in ChatGPT require developer mode. To enable it, open **Settings → Apps & Connectors → Advanced settings** and turn on the **Developer mode** toggle.
+
+<Steps>
+
+1. Open **Settings → Apps & Connectors → Create** (or **Add connector**).
+2. Enter a name and the server URL above, select **OAuth** authentication, and save.
+3. ChatGPT redirects you to the Consequential sign-in page — sign in and approve the connection.
+4. In a chat, enable the connector from the tools menu and ask a question. ChatGPT can also surface Consequential results in its search panel.
+
+</Steps>
+
+## Signing in and permissions
+
+When you connect, you sign in with your existing Consequential account and approve a consent screen. The connection:
+
+- is **read-only** — your assistant can query analytics, never change anything;
+- sees only the workspaces your account is a member of — the same access you have in the Consequential app;
+- stays signed in automatically (short-lived access tokens are refreshed behind the scenes);
+- can be revoked at any time from your assistant's connector settings. Reconnecting later repeats the sign-in and consent flow.
+
+## What you can ask
+
+Once connected, your assistant can:
+
+- **Discover your workspaces** — which workspaces and stores you have access to, with their currency and timezone.
+- **Browse your metric catalog** — every metric available to your workspace, with formats and available breakdowns.
+- **Query business metrics** — revenue, orders, AOV, customer mix, and more, over any period, with breakdowns, filters, and period-over-period comparisons.
+- **Analyze acquisition performance** — channels, campaigns, ad sets, creatives, and landing pages, under platform-reported or attributed models (last-click, first-click).
+- **Pull daily history** — day-by-day grades and metrics for any campaign, ad set, or creative.
+- **Check service health** — confirm the connection and data service are up.
+
+Example prompts:
+
+> What was my revenue and AOV over the last 30 days compared to the previous period?
+
+> Which campaigns had the best ROAS last week under last-click attribution?
+
+> Break down last month's orders by channel and show me the top landing pages.
+
+> Show me the daily performance history for my top Meta campaign this quarter.
+
+## Troubleshooting
+
+| Problem | What to do |
+|---------|------------|
+| **"Connection expired" or authentication errors** | Disconnect and reconnect the connector from your assistant's settings. You are asked to sign in again. |
+| **`TENANT_NOT_ALLOWED`** | You asked about a workspace your account isn't a member of. Ask your workspace admin to invite you at [app.consequential.io](https://app.consequential.io). |
+| **`CORE_UNAVAILABLE`** | The data service is briefly unreachable. Ask your assistant to check the service status, then retry in a minute. |
+| **Acquisition numbers look stale** | Acquisition views can lag up to 24 hours after a data refresh. Metric queries are unaffected. |
+| **Anything else** | Contact us at [consequential.io/support](https://consequential.io/support). |
+
+## Security and data handling
+
+The connector talks only to Consequential's own backend (a first-party API). It accesses the analytics of workspaces the signed-in user is authorized for, plus the user's account email for authorization. It is read-only, and no data is retained by the connector beyond the OAuth connection records (purged automatically after expiry) and standard service logs. For full details, see the [Consequential privacy policy](https://consequential.io/privacy).
