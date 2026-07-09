@@ -1,0 +1,110 @@
+---
+title: How to configure performance badges
+description: Build badge rules that label campaigns, ad sets, creatives, and pages in your acquisition tables.
+sidebar:
+  order: 8
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Performance badges are colored labels that Consequential applies to each row in your acquisition tables — campaigns, ad sets, creatives, and pages. You define the rules that decide which badge a row receives, so the tables surface the segments you care about (for example, scaling winners or declining ads) at a glance.
+
+Use the **Badges** settings page to create, edit, prioritize, and color your badge rules.
+
+## Before you begin
+
+- You need a role that can edit tenant settings. If you have view-only access, the page shows a read-only banner and the controls are disabled.
+- Your workspace starts with a default set of badges (Scaling, Active, Declining, Testing, and Paused). You can edit these, replace them, or reset to them at any time.
+
+## How badge rules work
+
+Each badge rule has a **name**, a **color**, and one or more **conditions**. A condition compares a metric against a value using an operator — for example, `ROAS >= 2`. You join multiple conditions with **AND** or **OR**.
+
+Consequential evaluates your rules from top to bottom and applies the **first** badge whose conditions match. The order of the rules is their priority, so put your most specific or most important badges first.
+
+<Aside type="note">
+The video metrics **Thumbstop Rate** and **Hold Rate** only apply to creatives. A rule that uses them never matches campaigns, ad sets, or pages.
+</Aside>
+
+### Available metrics
+
+| Metric | Unit |
+| --- | --- |
+| Ad Age | days |
+| Spend | currency |
+| Impressions | count |
+| Clicks | count |
+| CTR | percent |
+| CPC | currency |
+| CPM | currency |
+| Conversion Value | currency |
+| Purchases | count |
+| Click CVR | percent |
+| ROAS | ratio |
+| CPA | currency |
+| AOV | currency |
+| Thumbstop Rate | percent |
+| Hold Rate | percent |
+
+For percent metrics, the threshold you enter is a percentage — a `%` suffix appears next to the value field.
+
+### Limits
+
+| Limit | Value |
+| --- | --- |
+| Badges per workspace | 20 |
+| Conditions per badge | 10 |
+| Badge name length | 1–50 characters |
+| Operators | `>=`, `>`, `<=`, `<` |
+| Colors | 5-color palette |
+
+## Create a badge rule
+
+<Steps>
+
+1. In Consequential, go to **Settings** and select the **Badges** tab.
+2. Click **Add badge**. A new rule appears at the bottom of the list.
+3. Enter a **name** for the badge in the name field.
+4. Select a **color** from the palette. This color tints the badge pill in your acquisition tables.
+5. Set the first condition:
+   - Select a **metric** from the dropdown.
+   - Select an **operator** (`>=`, `>`, `<=`, or `<`).
+   - Enter a **threshold value**.
+6. To add more conditions, click **Add condition**, then set its metric, operator, and value. Click the **AND/OR** toggle between two conditions to switch how they combine.
+7. Click **Save**.
+
+</Steps>
+
+A confirmation toast reads "Badge rules saved," and the badge appears on matching rows in your acquisition tables right away.
+
+## Reorder, rename, and remove
+
+- **Reorder** — Use the up and down arrows on a badge card to change its priority. The system evaluates rules from top to bottom, and the first match wins.
+- **Rename or recolor** — Edit the name field or select a different color, then click **Save**.
+- **Remove a condition** — Click the remove icon next to a condition. Each badge must keep at least one condition, so you can't remove the last one.
+- **Delete a badge** — Click the delete icon on the badge card, then click **Save**.
+
+<Aside type="tip">
+The **Save** bar appears once you have unsaved changes. To abandon your edits before saving, click **Discard** to restore the last saved rules.
+</Aside>
+
+## Reset to defaults
+
+To discard your custom rules and return to the default badge set, click **Reset to defaults** at the top of the Badge rules section. This button appears only after you have saved a custom configuration.
+
+## Verify your badges
+
+<Steps>
+
+1. Open an acquisition table (for example, **Campaigns** or **Creatives**).
+2. Confirm that rows show the expected badge pill in the color you assigned.
+3. If a row shows no badge, check that its metrics satisfy at least one rule's conditions.
+
+</Steps>
+
+## Troubleshooting
+
+- **The Save button is disabled.** One of your rules is invalid — a name is empty or longer than 50 characters, or a threshold value is missing. Fix the highlighted rule, and the button re-enables.
+- **A rule never matches campaigns, ad sets, or pages.** Check whether it uses **Thumbstop Rate** or **Hold Rate** — those metrics only apply to creatives.
+- **A row shows the wrong badge.** Because the first matching rule wins, a broader rule higher in the list can claim rows before a more specific rule lower down. Move the more specific rule up.
+- **You can't edit the rules.** Your role has view-only access to tenant settings. Ask a workspace admin to grant edit access.
