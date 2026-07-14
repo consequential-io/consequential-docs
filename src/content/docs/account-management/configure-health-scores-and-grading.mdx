@@ -1,0 +1,95 @@
+---
+title: Configure health scores and grading
+description: Adjust the grade thresholds, performance segments, and health-pillar weights that score your ads, campaigns, and creatives.
+sidebar:
+  order: 8
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+Consequential scores every ad, campaign, ad set, and creative in **Analyze → Acquisitions** so you can see what is working at a glance. Each row gets:
+
+- An **overall health score** from 0 to 100.
+- A **letter grade** (A, B, C, or D) derived from that score.
+- A **performance segment**: Winners, BAU (business as usual), or Underperformers.
+- Six **health pillars** that explain *why* a row scored the way it did.
+
+On the **Scores & Grading** settings page you control how all three are calculated. Changes apply to your tenant only and take effect the next time you load an Acquisitions view—no recompute or redeploy.
+
+## Goal
+
+Adjust the grade thresholds, performance-segment cutoffs, and health-pillar weights to match how your team judges ad performance.
+
+## Prerequisites
+
+- An Owner or Admin role on the tenant. Other roles see the settings page in read-only mode.
+- Acquisition data in your account. Tenants without ad data have nothing to grade.
+
+> **Note**: The default values reproduce Consequential's standard grading. If you never change these settings, your grades and segments stay exactly as they are out of the box.
+
+## Configure grading
+
+<Steps>
+
+1. Open Consequential and go to **Settings → Scores & Grading**.
+
+2. Set the **Letter grades** cutoffs.
+
+   Each value is a point on the 0–100 overall health score. A row earns the grade whose threshold it meets or exceeds:
+
+   | Grade | Earned when the health score is | Default |
+   |-------|---------------------------------|---------|
+   | A     | At or above the A threshold     | 75      |
+   | B     | At or above the B threshold     | 50      |
+   | C     | At or above the C threshold     | 25      |
+   | D     | Below the C threshold           | —       |
+
+   The thresholds must decrease in order: the A threshold must be greater than B, and B must be greater than C. **Save** stays disabled until the values are valid.
+
+3. Set the **Performance segments** cutoffs.
+
+   Segments rank each row against its peers by overall health score:
+
+   | Segment        | Definition                        | Default |
+   |----------------|-----------------------------------|---------|
+   | Winners        | Top *N*% of rows                  | Top 20% |
+   | BAU            | Everything between the two cutoffs | 60%     |
+   | Underperformers | Bottom *N*% of rows              | Bottom 20% |
+
+   Set **Winners (top %)** and **Underperformers (bottom %)**. BAU is the remainder, so the two values together cannot exceed 100.
+
+4. Set the **Health weightage**.
+
+   The overall health score is a weighted blend of six pillars. Enter a weight from 0 to 100 for each:
+
+   | Pillar  | What it measures                          | Default weight |
+   |---------|-------------------------------------------|----------------|
+   | Signals | Strength of the conversion and event signal | 15           |
+   | Reach   | Audience reach and impressions            | 10             |
+   | Click   | Click-through performance                 | 15             |
+   | Convert | Conversion rate, ROAS, and cost efficiency | 30            |
+   | Hook    | Early video retention (video creatives)   | 15             |
+   | Watch   | Sustained video retention (video creatives) | 15           |
+
+   Weights are normalized by their sum, so only the proportions matter—`30/20/10/10/10/10` and `3/2/1/1/1/1` produce the same score. At least one weight must be greater than 0.
+
+   > **Note**: Hook and Watch apply only to video creatives. Consequential scores ad sets on the four non-video pillars—Signals, Reach, Click, and Convert.
+
+5. Click **Save**.
+
+</Steps>
+
+## Verify your changes
+
+1. Go to **Analyze → Acquisitions**.
+2. Reload the view.
+3. Confirm the grades, segment counts, and grade distribution reflect your new settings. For example, raising the A threshold from 75 to 85 moves some rows out of grade A on the next load.
+
+## Reset to defaults
+
+To return to Consequential's standard grading, set each field back to its default value from the earlier tables and click **Save**.
+
+## Related
+
+- [How to update "My Metrics"](/account-management/update-my-metrics/)
+- [Attribution models](/academy/attribution/attribution-models/)
