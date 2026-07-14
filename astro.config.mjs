@@ -60,9 +60,7 @@ export default defineConfig({
 				},
 				{
 					label: 'Daily reports',
-					items: [
-						{ label: 'Daily reports', slug: 'guides/daily-reports' },
-					],
+					items: [{ autogenerate: { directory: 'daily-reports' } }],
 				},
 				{
 					label: "How To's",
