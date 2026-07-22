@@ -11,8 +11,8 @@ against your recent history, flags the movements that matter, and explains them
 in plain language — so you start the day knowing what changed and why, without
 building a single query.
 
-This guide shows you how to find your reports, read each section, regenerate a
-report on demand, and customize the prompts that shape how reports read.
+This guide shows you how to find your reports, read each section, and regenerate
+a report on demand.
 
 ## Where to find your reports
 
@@ -87,78 +87,17 @@ generate it again.
 	current report for that date, so the previous version isn't kept.
 </Aside>
 
-## Customize report prompts
-
-Reports are generated from a set of editable **prompts** — the instructions that
-tell the AI how to structure the report, which details to drill into, and how to
-write the narrative. Owners and admins can tailor these prompts so reports match
-your team's voice and priorities.
-
-To edit prompts, open **Settings** and select **Report prompts**.
-
-### How prompts are organized
-
-Your reports are produced in three passes, and you can edit the prompt for each:
-
-- **Structure** — decides which metrics and callouts appear in the report.
-- **Drill** — decides which movements to break down by dimension.
-- **Narrative** — writes the summary and callout text.
-
-Each pass has a system prompt and a user prompt. Prompts can include
-placeholders, written as `{{variable}}`, that Consequential fills in with your
-data and brand guidelines when the report runs. Keep the placeholders that a
-prompt requires — Consequential checks for them before you can publish.
-
-### Edit, publish, and version
-
-Your workspace starts on the shared global default prompts. The first time you
-customize, Consequential clones the current defaults into a draft for your
-workspace, so you always edit from a working starting point rather than a blank
-page.
-
-<Steps>
-
-1. On the **Report prompts** page, select **Customize for my tenant**. This
-   creates a draft from the active prompts.
-
-2. Edit any of the three passes. Consequential highlights a prompt if a required
-   `{{variable}}` placeholder is missing.
-
-3. Select **Save draft** to keep your edits without affecting live reports.
-
-4. When you're ready, select **Publish**. Publishing validates your prompts,
-   assigns the next version number, and makes the prompts live for future
-   reports.
-
-</Steps>
-
-Every published version is kept. The **Version history** section lists each
-version with its number and the time it was last updated, and marks the version
-that's currently active. To roll back, select **Activate** on an earlier
-version — this makes it live again without creating a new version.
-
-<Aside type="note">
-	Each report records the prompt version that produced it, so you can always
-	trace a report back to the exact prompts that shaped it. Changing prompts
-	affects future reports only; existing reports are unchanged.
-</Aside>
-
 ## For developers
 
 The Reports tab is backed by a REST API scoped to your workspace (tenant).
-Reading reports is available to any workspace member; regenerating reports and
-editing prompts require the owner or admin role.
+Reading reports is available to any workspace member; regenerating reports
+requires the owner or admin role.
 
 | Method & path | Purpose |
 |---------------|---------|
 | `GET /api/v1/tenants/:tenantId/reports` | List recent daily reports. |
 | `GET /api/v1/tenants/:tenantId/reports/:date` | Fetch a single report by `YYYY-MM-DD` date. |
 | `POST /api/v1/tenants/:tenantId/reports/:date/regenerate` | Rebuild the report for a date. |
-| `GET /api/v1/tenants/:tenantId/prompt-sets` | List prompt versions for your workspace. |
-| `POST /api/v1/tenants/:tenantId/prompt-sets/draft` | Create or fetch the working draft. |
-| `PUT /api/v1/tenants/:tenantId/prompt-sets/draft` | Save edits to the draft. |
-| `POST /api/v1/tenants/:tenantId/prompt-sets/draft/publish` | Publish the draft as a new version. |
-| `POST /api/v1/tenants/:tenantId/prompt-sets/:versionId/activate` | Activate an existing version. |
 
 ## Related
 
