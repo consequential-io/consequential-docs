@@ -1,188 +1,2870 @@
 openapi: 3.1.0
 info:
-  title: Example API
-  version: "2026-05-10"
-  summary: A small, generic API used to demonstrate the OpenAPI reference in this template.
+  title: Consequential API
+  version: "1.0.0"
+  summary: Consequential's REST API — analytics, acquisition, tenant/store management, billing, and integrations.
   description: |
-    Replace this schema with your own OpenAPI document. `starlight-openapi` will
-    regenerate the reference pages under `/api/` automatically on the next build.
+    This is Consequential's REST API, served by the `core` service. All endpoints
+    are mounted under `/api/v1`.
 
-    The endpoints below describe a fictional `widgets` resource — enough to show
-    request bodies, path parameters, error responses, and authentication.
+    **Authentication**: most endpoints require a Bearer JWT (obtained via
+    `/auth/login`, `/auth/magic-link/verify`, or an OAuth provider). Tenant-scoped
+    resources additionally require either an `X-Tenant-ID` header or a `:tenantId`
+    path parameter — this varies by domain and is noted on each endpoint.
+
+    **Response envelope**: nearly every endpoint wraps its response in a standard
+    envelope (see `SuccessEnvelope` / `ErrorEnvelope` below):
+
+    ```json
+    { "success": true, "statusCode": 200, "message": "...", "data": { }, "meta": { "timestamp": "..." } }
+    { "success": false, "message": "...", "code": "SOME_ERROR_CODE", "statusCode": 400, "errors": { }, "meta": { "timestamp": "...", "location": "..." } }
+    ```
+
+    The one exception is **OAuth** (`/oauth/*`): the MCP connector OAuth 2.1
+    Authorization Server surface returns raw RFC-shape JSON per RFC 6749/7591/8414,
+    not this envelope — see that section for details.
+
+    **What's intentionally excluded from this reference**:
+    - Routes under `/internal/*` — these are HMAC-authenticated, service-to-service
+      only, and explicitly not exposed via the public ingress. No external caller,
+      including a customer's own integration, can ever reach them.
+    - `GET /daily-reports/approve` — a human-facing HTML approval link sent to
+      internal reviewer emails (security model: an unguessable UUIDv7 report ID,
+      not a JSON API), not something an API integration would call.
   contact:
-    name: Your team
-    url: https://example.com/support
-    email: support@example.com
-  license:
-    name: MIT
+    name: Consequential support
+    url: https://consequential.io/support
+    email: support@consequential.io
 servers:
-  - url: https://api.example.com/v1
+  - url: https://api.consequential.io/api/v1
     description: Production
-  - url: https://api.sandbox.example.com/v1
-    description: Sandbox
+  - url: http://localhost:4040/api/v1
+    description: Local development
 security:
   - bearerAuth: []
 tags:
-  - name: Widgets
-    description: Create, retrieve, and manage widgets.
-paths:
-  /widgets:
-    get:
-      tags: [Widgets]
-      summary: List widgets
-      description: Returns a paginated list of widgets owned by the authenticated account.
-      parameters:
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 20
-          description: Maximum number of widgets to return.
-        - in: query
-          name: cursor
-          schema:
-            type: string
-          description: Pagination cursor returned by a previous response.
-      responses:
-        "200":
-          description: A page of widgets.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/WidgetList"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-    post:
-      tags: [Widgets]
-      summary: Create a widget
-      description: Creates a new widget on the authenticated account.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/WidgetCreate"
-      responses:
-        "201":
-          description: The newly created widget.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Widget"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-  /widgets/{widgetId}:
-    parameters:
-      - in: path
-        name: widgetId
-        required: true
-        schema:
-          type: string
-        description: The unique identifier of the widget.
-    get:
-      tags: [Widgets]
-      summary: Retrieve a widget
-      responses:
-        "200":
-          description: The requested widget.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Widget"
-        "404":
-          $ref: "#/components/responses/NotFound"
-    delete:
-      tags: [Widgets]
-      summary: Delete a widget
-      responses:
-        "204":
-          description: The widget was deleted.
-        "404":
-          $ref: "#/components/responses/NotFound"
+  - name: Auth
+  - name: Signup
+  - name: OAuth
+    description: MCP connector OAuth 2.1 Authorization Server. Raw RFC JSON, not the standard envelope.
+  - name: Profile
+  - name: Invitations
+  - name: Shopify Connect
+  - name: Supermetrics Connect
+  - name: Billing
+  - name: Tenants
+  - name: Tenant Settings
+  - name: Tenant Integrations
+  - name: Stores
+  - name: Users
+  - name: Consents
+  - name: Agencies
+  - name: Admin
+    description: Platform staff only (platform-level OWNER/ADMIN role) — not usable by ordinary customers.
+  - name: Acquisition
+    description: Backs the Acquisition Dashboard (Channels/Campaigns/Ad sets/Creatives/Pages).
+  - name: Attribution
+  - name: Conversion
+  - name: Lens
+    description: An older analytics surface with a different attribution-model vocabulary than Acquisition/Attribution/Conversion (first_touch/last_touch/linear/time_decay/position_based vs. last_click/first_click). Confirm with the Consequential team whether this is still actively maintained before integrating against it.
+  - name: Metrics
+  - name: Metric Alerts
+  - name: Chat
+  - name: Creative Feedback
+  - name: Onboarding
+  - name: Reports
+    description: The Daily Reports feature.
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: API key
-      description: |
-        Send your API key as a bearer token in the `Authorization` header:
-        `Authorization: Bearer sk_live_...`
+      bearerFormat: JWT
+  parameters:
+    TenantIdHeader:
+      name: X-Tenant-ID
+      in: header
+      required: true
+      description: Tenant context for the request.
+      schema:
+        type: string
+        format: uuid
+    StoreIdHeaderOptional:
+      name: X-Store-ID
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+    PeriodPreset:
+      name: period
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [7d, 30d, 90d, mtd, ytd]
+    FromDate:
+      name: from
+      in: query
+      required: false
+      description: ISO date (YYYY-MM-DD). Used together with `to` instead of `period`.
+      schema:
+        type: string
+        format: date
+    ToDate:
+      name: to
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
   schemas:
-    Widget:
+    SuccessEnvelope:
       type: object
-      required: [id, name, created_at]
       properties:
-        id:
-          type: string
-          example: wdg_01H8Z9XJ7M3K4P5Q6R7S8T9V0W
-        name:
-          type: string
-          example: My first widget
-        description:
-          type: string
-          nullable: true
-          example: Optional human-readable description.
-        created_at:
-          type: string
-          format: date-time
-    WidgetCreate:
-      type: object
-      required: [name]
-      properties:
-        name:
-          type: string
-          example: My first widget
-        description:
-          type: string
-    WidgetList:
-      type: object
-      required: [data, has_more]
-      properties:
-        data:
-          type: array
-          items:
-            $ref: "#/components/schemas/Widget"
-        has_more:
+        success:
           type: boolean
-          description: Whether more widgets are available beyond this page.
-        next_cursor:
-          type: string
-          nullable: true
-          description: Cursor to pass on the next request to fetch the following page.
-    Error:
-      type: object
-      required: [code, message]
-      properties:
-        code:
-          type: string
-          example: invalid_request
+        statusCode:
+          type: integer
         message:
           type: string
-          example: The `name` field is required.
-        request_id:
+        data:
+          type: object
+        meta:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+      required: [success, data]
+    ErrorEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
           type: string
-          example: req_01H8Z9XJ7M3K4P5Q6R7S8T9V0W
-  responses:
-    BadRequest:
-      description: The request was malformed.
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-    Unauthorized:
-      description: Authentication failed or was not provided.
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-    NotFound:
-      description: The requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
+        code:
+          type: string
+        statusCode:
+          type: integer
+        errors:
+          type: object
+        meta:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+            location:
+              type: string
+      required: [success, message, code, statusCode]
+    AnalyticsEnvelope:
+      type: object
+      description: Response shape shared by Attribution and Conversion cards.
+      properties:
+        available:
+          type: boolean
+          description: False when the tenant doesn't have the required capability enabled (e.g. blotoutFunnelEnabled, ordersAvailable), or when model=platform is requested on a card with no platform-reported equivalent.
+        data:
+          type: object
+          nullable: true
+        meta:
+          type: object
+          properties:
+            period:
+              type: object
+              properties:
+                start: { type: string, format: date }
+                end: { type: string, format: date }
+            filters_applied:
+              type: object
+            generated_at:
+              type: string
+              format: date-time
+            cache_hit:
+              type: boolean
+      required: [available]
+
+paths:
+  # ───────────────────────── Auth ─────────────────────────
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+                firstName: { type: string }
+                lastName: { type: string }
+      responses:
+        "201":
+          description: User registered
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SuccessEnvelope" }
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Log in with email and password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+                rememberMe: { type: boolean }
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          accessToken: { type: string }
+                          user: { type: object }
+                          tenant: { type: object, nullable: true }
+                          store: { type: object, nullable: true }
+                          stores: { type: array, items: { type: object } }
+  /auth/email/verify:
+    post:
+      tags: [Auth]
+      summary: Verify email with a token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties: { token: { type: string } }
+      responses:
+        "200": { description: Verified, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /auth/verify-email:
+    get:
+      tags: [Auth]
+      summary: Email verification link (redirect-based)
+      security: []
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "302": { description: Redirects to the plan picker on success, or /verify-email/error?reason= on failure }
+  /auth/email/resend-verification:
+    post:
+      tags: [Auth]
+      summary: Resend the verification email (rate-limited)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [email], properties: { email: { type: string, format: email } } }
+      responses:
+        "200": { description: Generic response (anti-enumeration), content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /auth/password/forgot:
+    post:
+      tags: [Auth]
+      summary: Request a password reset email (rate-limited)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [email], properties: { email: { type: string, format: email } } }
+      responses:
+        "200": { description: Generic response, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /auth/password/verify-reset-token:
+    post:
+      tags: [Auth]
+      summary: Verify a password reset token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [token], properties: { token: { type: string } } }
+      responses:
+        "200": { description: Valid reset token, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /auth/password/reset:
+    post:
+      tags: [Auth]
+      summary: Reset password with a token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties: { token: { type: string }, password: { type: string } }
+      responses:
+        "200": { description: Password reset, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /auth/password/change:
+    post:
+      tags: [Auth]
+      summary: Change password (authenticated, rate-limited)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [currentPassword, newPassword]
+              properties: { currentPassword: { type: string }, newPassword: { type: string } }
+      responses:
+        "200": { description: Password changed, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /auth/magic-link/request:
+    post:
+      tags: [Auth]
+      summary: Request a magic sign-in link (rate-limited)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [email], properties: { email: { type: string, format: email } } }
+      responses:
+        "200": { description: Generic response, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /auth/magic-link/verify:
+    post:
+      tags: [Auth]
+      summary: Verify a magic link token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [token], properties: { token: { type: string } } }
+      responses:
+        "200":
+          description: Authenticated (same shape as /auth/login)
+          content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } }
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh an access token
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { refreshToken: { type: string, description: "May also be supplied via cookie." } } }
+      responses:
+        "200":
+          description: New tokens issued
+          content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } }
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Log out (invalidates the current session)
+      responses:
+        "200": { description: Logged out, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /auth/providers:
+    get:
+      tags: [Auth]
+      summary: List enabled OAuth sign-in providers
+      security: []
+      responses:
+        "200": { description: List of providers, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /auth/google:
+    get:
+      tags: [Auth]
+      summary: Begin Google OAuth sign-in (redirect)
+      security: []
+      responses:
+        "302": { description: Redirects to Google }
+  /auth/google/callback:
+    get:
+      tags: [Auth]
+      summary: Google OAuth callback (redirect)
+      security: []
+      responses:
+        "302": { description: Redirects back into the app with a session established }
+  /auth/verify:
+    post:
+      tags: [Auth]
+      summary: Verify a JWT and return its claims (inter-service use)
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { token: { type: string, description: "May also be supplied via Authorization: Bearer header." } } }
+      responses:
+        "200": { description: Decoded claims, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Signup ─────────────────────────
+  /signup:
+    post:
+      tags: [Signup]
+      summary: Self-serve signup (creates a new tenant + owner user)
+      security: []
+      description: Protected by Cloudflare Turnstile and rate-limited.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, description: "Company + user signup fields (name, email, password, company name, etc.)" }
+      responses:
+        "201": { description: Tenant provisioned, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "409": { description: "EMAIL_TAKEN — email already registered", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /signup/check-identifier:
+    get:
+      tags: [Signup]
+      summary: Check whether a company-name identifier is available
+      security: []
+      parameters:
+        - name: companyName
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Availability result
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties: { data: { type: object, properties: { available: { type: boolean } } } }
+  /signup/resend-verification:
+    post:
+      tags: [Signup]
+      summary: Resend signup verification (rate-limited, anti-enumeration)
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { email: { type: string, format: email } } }
+      responses:
+        "202": { description: "Always returns 202 regardless of whether the email exists", content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── OAuth (MCP) ─────────────────────────
+  /oauth/register:
+    post:
+      tags: [OAuth]
+      summary: Dynamic Client Registration (RFC 7591)
+      security: []
+      description: Rate-limited. Returns raw RFC JSON, not the standard envelope.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [client_name, redirect_uris]
+              properties:
+                client_name: { type: string, minLength: 1, maxLength: 255 }
+                redirect_uris:
+                  type: array
+                  minItems: 1
+                  maxItems: 10
+                  items: { type: string, maxLength: 512 }
+      responses:
+        "201":
+          description: Client registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  client_id: { type: string }
+                  client_name: { type: string }
+                  redirect_uris: { type: array, items: { type: string } }
+                  token_endpoint_auth_method: { type: string, enum: [none] }
+                  grant_types: { type: array, items: { type: string } }
+                  response_types: { type: array, items: { type: string } }
+        "400":
+          description: invalid_client_metadata / invalid_redirect_uri
+          content:
+            application/json:
+              schema: { type: object, properties: { error: { type: string }, error_description: { type: string } } }
+  /oauth/authorize:
+    get:
+      tags: [OAuth]
+      summary: Authorization endpoint (RFC 6749 + PKCE)
+      security: []
+      parameters:
+        - name: client_id
+          in: query
+          required: true
+          schema: { type: string }
+        - name: redirect_uri
+          in: query
+          required: true
+          schema: { type: string }
+        - name: response_type
+          in: query
+          required: true
+          schema: { type: string, enum: [code] }
+        - name: code_challenge
+          in: query
+          required: true
+          schema: { type: string, minLength: 43, maxLength: 128 }
+        - name: code_challenge_method
+          in: query
+          required: true
+          schema: { type: string, enum: [S256] }
+        - name: scope
+          in: query
+          schema: { type: string, default: "mcp:read" }
+        - name: resource
+          in: query
+          schema: { type: string }
+        - name: state
+          in: query
+          schema: { type: string }
+      responses:
+        "302":
+          description: Redirects to the consent screen (success) or to redirect_uri with ?error=... (tier-2 errors)
+        "400":
+          description: Unknown client_id/redirect_uri — never redirected, returned as raw JSON
+          content:
+            application/json:
+              schema: { type: object, properties: { error: { type: string }, error_description: { type: string } } }
+  /oauth/authorize/decision:
+    post:
+      tags: [OAuth]
+      summary: Approve or deny a consent request
+      description: Requires a normal pulse session token (not an OAuth-issued token) — this one endpoint DOES use the standard envelope.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [client_id, redirect_uri, code_challenge, scope, resource, approved]
+              properties:
+                client_id: { type: string }
+                redirect_uri: { type: string }
+                code_challenge: { type: string }
+                scope: { type: string }
+                resource: { type: string }
+                state: { type: string }
+                approved: { type: boolean }
+      responses:
+        "200":
+          description: Redirect URL to send the user's browser to
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties: { data: { type: object, properties: { redirect: { type: string } } } }
+        "403":
+          description: FORBIDDEN_TOKEN_TYPE — an OAuth-issued token was used instead of a session token
+          content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } }
+  /oauth/token:
+    post:
+      tags: [OAuth]
+      summary: Token endpoint (authorization_code or refresh_token grant)
+      security: []
+      description: Rate-limited. `application/x-www-form-urlencoded` body. Raw RFC JSON response, always sets Cache-Control:no-store.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                grant_type: { type: string, enum: [authorization_code, refresh_token] }
+                code: { type: string, description: "authorization_code grant only" }
+                client_id: { type: string }
+                redirect_uri: { type: string, description: "authorization_code grant only" }
+                code_verifier: { type: string, description: "authorization_code grant only" }
+                refresh_token: { type: string, description: "refresh_token grant only" }
+      responses:
+        "200":
+          description: Token result
+          content:
+            application/json:
+              schema: { type: object, properties: { access_token: { type: string }, refresh_token: { type: string }, token_type: { type: string }, expires_in: { type: integer } } }
+        "400":
+          description: invalid_grant / unsupported_grant_type
+          content:
+            application/json:
+              schema: { type: object, properties: { error: { type: string }, error_description: { type: string } } }
+
+  # ───────────────────────── Profile ─────────────────────────
+  /profile:
+    get:
+      tags: [Profile]
+      summary: Get current user's profile
+      responses:
+        "200": { description: Profile, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    put:
+      tags: [Profile]
+      summary: Update current user's profile
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "200": { description: Updated profile, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /profile/avatar:
+    put:
+      tags: [Profile]
+      summary: Upload a profile avatar (multipart, max 5MB)
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: { type: object, properties: { avatar: { type: string, format: binary } } }
+      responses:
+        "200": { description: Avatar updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /profile/preferences:
+    get:
+      tags: [Profile]
+      summary: Get preferences (theme, timezone, language, notifications, ...)
+      responses:
+        "200": { description: Preferences, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    put:
+      tags: [Profile]
+      summary: Update preferences
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /profile/sessions:
+    get:
+      tags: [Profile]
+      summary: List active refresh-token sessions
+      responses:
+        "200": { description: Sessions, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /profile/sessions/{tokenId}:
+    delete:
+      tags: [Profile]
+      summary: Revoke a session
+      parameters:
+        - name: tokenId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Revoked, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /profile/connections:
+    get:
+      tags: [Profile]
+      summary: List linked OAuth provider connections
+      responses:
+        "200": { description: Connections, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /profile/connections/{provider}:
+    delete:
+      tags: [Profile]
+      summary: Disconnect a linked provider
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Disconnected, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Invitations ─────────────────────────
+  /invitations/verify:
+    post:
+      tags: [Invitations]
+      summary: Verify an invitation token (and complete signup for new users)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+                firstName: { type: string, description: "Required only when accepting as a brand-new user" }
+                lastName: { type: string }
+                password: { type: string }
+      responses:
+        "200": { description: Session created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /invitations/check-email:
+    post:
+      tags: [Invitations]
+      summary: Check the email associated with an invitation token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [token], properties: { token: { type: string } } }
+      responses:
+        "200": { description: Email info, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /invitations:
+    get:
+      tags: [Invitations]
+      summary: List invitations for a context (Owner/Admin/Manager)
+      parameters:
+        - name: contextType
+          in: query
+          required: true
+          schema: { type: string, enum: [TENANT, AGENCY, STORE] }
+        - name: contextId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: status
+          in: query
+          schema: { type: string }
+      responses:
+        "200": { description: Invitations, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    post:
+      tags: [Invitations]
+      summary: Create an invitation (Owner/Admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, contextType, contextId, role]
+              properties:
+                email: { type: string, format: email }
+                contextType: { type: string, enum: [TENANT, AGENCY, STORE] }
+                contextId: { type: string, format: uuid }
+                role: { type: string }
+      responses:
+        "201": { description: Invitation created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /invitations/pending:
+    get:
+      tags: [Invitations]
+      summary: List the current user's pending invitations
+      responses:
+        "200": { description: Pending invitations, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /invitations/batch:
+    post:
+      tags: [Invitations]
+      summary: Create multiple invitations at once (Owner/Admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [invitations, contextType, contextId]
+              properties:
+                invitations:
+                  type: array
+                  items:
+                    type: object
+                    properties: { email: { type: string, format: email }, role: { type: string } }
+                contextType: { type: string, enum: [TENANT, AGENCY, STORE] }
+                contextId: { type: string, format: uuid }
+      responses:
+        "201": { description: Invitations created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /invitations/accept:
+    post:
+      tags: [Invitations]
+      summary: Accept an invitation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [token], properties: { token: { type: string } } }
+      responses:
+        "200": { description: Accepted, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /invitations/decline:
+    post:
+      tags: [Invitations]
+      summary: Decline an invitation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [token], properties: { token: { type: string } } }
+      responses:
+        "200": { description: Declined, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /invitations/{invitationId}:
+    delete:
+      tags: [Invitations]
+      summary: Revoke an invitation
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Revoked, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Shopify Connect ─────────────────────────
+  /connect/shopify/install:
+    get:
+      tags: [Shopify Connect]
+      summary: Begin the Shopify OAuth install flow
+      parameters:
+        - name: shop
+          in: query
+          required: true
+          schema: { type: string }
+        - name: storeId
+          in: query
+          required: true
+          schema: { type: string }
+        - name: returnTo
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Authorize URL to redirect the merchant to (also sets a shopify_oauth_nonce cookie)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties: { data: { type: object, properties: { authorizeUrl: { type: string } } } }
+        "400": { description: "NO_TENANT_CONTEXT / INVALID_SHOP", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "404": { description: STORE_NOT_FOUND, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /connect/shopify/callback:
+    get:
+      tags: [Shopify Connect]
+      summary: Shopify OAuth callback (public — cross-site redirect, no session cookie)
+      security: []
+      description: Identity is derived from the signed `state` query param and the nonce cookie, not from a session.
+      responses:
+        "302":
+          description: "Redirects to {CLIENT_URL}{returnTo}?connected=shopify on success, or ?error={reason} on failure"
+
+  # ───────────────────────── Supermetrics Connect ─────────────────────────
+  /connect/supermetrics/login-link:
+    post:
+      tags: [Supermetrics Connect]
+      summary: Create a Supermetrics login-link (popup OAuth) for an ad/analytics provider
+      description: Requires tenant OWNER/ADMIN role.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider, storeId]
+              properties:
+                provider: { type: string, enum: [facebook_ads, google_ads, ga4, tiktok_ads, klaviyo] }
+                storeId: { type: string, format: uuid }
+      responses:
+        "200": { description: Login link created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "404": { description: SUPERMETRICS_STORE_NOT_FOUND, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "409": { description: SUPERMETRICS_CONNECT_DISABLED, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "502": { description: SUPERMETRICS_UPSTREAM_ERROR, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /connect/supermetrics/finalize:
+    post:
+      tags: [Supermetrics Connect]
+      summary: Finalize a Supermetrics connection after the popup returns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [stateToken], properties: { stateToken: { type: string } } }
+      responses:
+        "200": { description: Connection finalized, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /connect/supermetrics/accounts:
+    get:
+      tags: [Supermetrics Connect]
+      summary: List available accounts for a provider
+      parameters:
+        - name: provider
+          in: query
+          required: true
+          schema: { type: string, enum: [facebook_ads, google_ads, ga4, tiktok_ads, klaviyo] }
+        - name: storeId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Accounts, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    post:
+      tags: [Supermetrics Connect]
+      summary: Save the selected accounts for a provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider, storeId, accounts]
+              properties:
+                provider: { type: string, enum: [facebook_ads, google_ads, ga4, tiktok_ads, klaviyo] }
+                storeId: { type: string, format: uuid }
+                accounts:
+                  type: array
+                  maxItems: 200
+                  items:
+                    type: object
+                    properties: { id: { type: string }, name: { type: string, maxLength: 255 } }
+      responses:
+        "200": { description: Saved selection, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Billing ─────────────────────────
+  /billing/plans:
+    get:
+      tags: [Billing]
+      summary: List active billing plans
+      security: []
+      responses:
+        "200": { description: Plans, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /billing/webhook:
+    post:
+      tags: [Billing]
+      summary: Stripe webhook receiver
+      security: []
+      description: Signature-verified internally using the raw request body.
+      responses:
+        "200": { description: Acknowledged }
+  /billing/addons/{slug}:
+    get:
+      tags: [Billing]
+      summary: Get an addon by slug
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string, maxLength: 64 }
+      responses:
+        "200": { description: Addon, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /billing/addons:
+    get:
+      tags: [Billing]
+      summary: List addons
+      responses:
+        "200": { description: Addons, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /billing/subscription:
+    get:
+      tags: [Billing]
+      summary: Get the current tenant's subscription
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      responses:
+        "200": { description: Subscription + plan + line items, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /billing/entitlements:
+    get:
+      tags: [Billing]
+      summary: Get the current tenant's entitlements (Owner/Admin only)
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      responses:
+        "200": { description: Entitlements, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /billing/subscribe:
+    post:
+      tags: [Billing]
+      summary: Subscribe the tenant to a plan (Owner only, rate-limited)
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [planId]
+              properties: { planId: { type: string, format: uuid }, addonSlug: { type: string, maxLength: 64 } }
+      responses:
+        "200": { description: Subscribed, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /billing/upgrade:
+    post:
+      tags: [Billing]
+      summary: Upgrade the tenant's plan (Owner only)
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [planId], properties: { planId: { type: string, format: uuid } } }
+      responses:
+        "200": { description: Upgraded, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /billing/addons/{addonId}/subscribe:
+    post:
+      tags: [Billing]
+      summary: Subscribe to an addon (Owner only)
+      parameters:
+        - name: addonId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - $ref: "#/components/parameters/TenantIdHeader"
+      responses:
+        "200": { description: Addon subscribed, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /billing/addons/{addonId}/cancel:
+    post:
+      tags: [Billing]
+      summary: Cancel an addon (Owner only)
+      parameters:
+        - name: addonId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - $ref: "#/components/parameters/TenantIdHeader"
+      responses:
+        "200": { description: Addon cancelled, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Tenants ─────────────────────────
+  /tenants:
+    get:
+      tags: [Tenants]
+      summary: List all tenants (platform member role required)
+      responses:
+        "200": { description: Tenants, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    post:
+      tags: [Tenants]
+      summary: Create a tenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, identifier]
+              properties:
+                name: { type: string, minLength: 2, maxLength: 255 }
+                identifier: { type: string, minLength: 2, maxLength: 100 }
+                description: { type: string, maxLength: 1000 }
+                website: { type: string, format: uri }
+                logo: { type: string, format: uri }
+      responses:
+        "201": { description: Tenant created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/my:
+    get:
+      tags: [Tenants]
+      summary: Get the caller's current tenant
+      responses:
+        "200": { description: Tenant, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/identifier/{identifier}:
+    get:
+      tags: [Tenants]
+      summary: Resolve a tenant by its identifier
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema: { type: string, maxLength: 100 }
+      responses:
+        "200": { description: Tenant, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}:
+    get:
+      tags: [Tenants]
+      summary: Get a tenant by ID
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Tenant, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    put:
+      tags: [Tenants]
+      summary: Update a tenant (Owner/Admin/Manager)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                description: { type: string }
+                website: { type: string, format: uri }
+                logo: { type: string, format: uri }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/switch:
+    post:
+      tags: [Tenants]
+      summary: Switch the caller's active tenant context
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Switched, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/users:
+    get:
+      tags: [Tenants]
+      summary: List a tenant's members (Owner/Admin/Manager)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Members, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    post:
+      tags: [Tenants]
+      summary: Add a user to a tenant (Owner/Admin/Manager)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, role]
+              properties:
+                userId: { type: string, format: uuid }
+                role: { type: string, enum: [OWNER, ADMIN, MANAGER, EDITOR, VIEWER] }
+      responses:
+        "201": { description: Added, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/users/{userId}:
+    delete:
+      tags: [Tenants]
+      summary: Remove a user from a tenant (Owner/Admin only)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Removed, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/users/{userId}/role:
+    put:
+      tags: [Tenants]
+      summary: Change a member's role (Owner/Admin only — cannot set OWNER via this route)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties: { role: { type: string, enum: [ADMIN, MANAGER, EDITOR, VIEWER] } }
+      responses:
+        "200": { description: Role updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Tenant Settings ─────────────────────────
+  /tenants/{tenantId}/settings:
+    get:
+      tags: [Tenant Settings]
+      summary: Get all settings for a tenant
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Settings, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/settings/profile:
+    put:
+      tags: [Tenant Settings]
+      summary: Update tenant profile settings (Owner/Admin)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                description: { type: string }
+                logo: { type: string, format: uri }
+                website: { type: string, format: uri }
+                domains: { type: array, maxItems: 20, items: { type: string } }
+                establishedAt: { type: string, format: date-time }
+                tagline: { type: string, maxLength: 255 }
+                industry: { type: string, maxLength: 100 }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/settings/branding:
+    put:
+      tags: [Tenant Settings]
+      summary: Update tenant branding (Owner/Admin)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                logos: { type: object, properties: { primary: { type: string }, secondary: { type: string }, icon: { type: string }, favicon: { type: string } } }
+                colors: { type: object, properties: { primary: { type: string }, secondary: { type: string }, accent: { type: string }, background: { type: string }, text: { type: string }, muted: { type: string } } }
+                fonts: { type: object, properties: { primary: { type: string, maxLength: 100 }, secondary: { type: string, maxLength: 100 }, headings: { type: string, maxLength: 100 } } }
+                images: { type: array, maxItems: 50, items: { type: string, format: uri } }
+                videos: { type: array, maxItems: 50, items: { type: string, format: uri } }
+                documents: { type: array, maxItems: 50, items: { type: string, format: uri } }
+                socialMedia: { type: object, properties: { facebook: { type: string }, twitter: { type: string }, instagram: { type: string }, linkedin: { type: string }, youtube: { type: string } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/settings/guidelines:
+    put:
+      tags: [Tenant Settings]
+      summary: Update tenant brand guidelines (Owner/Admin)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: "toneOfVoice, tenantPersonality[], messagingPillars[], logoUsage, colorUsage, typographyGuidelines, contentThemes[], prohibitedContent[], targetAudience{demographics,psychographics,interests[]}, values[], mission, vision"
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/settings/metrics:
+    put:
+      tags: [Tenant Settings]
+      summary: Update default metrics-comparison preference (Owner/Admin)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                defaultCompare: { type: string, enum: [previous_period, previous_year, previous_year_dow], nullable: true }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/settings/acquisition:
+    put:
+      tags: [Tenant Settings]
+      summary: Update Acquisition Dashboard settings — order-side attribution and profitability inputs (Owner/Admin)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [attributionEnabled, blotoutFunnelEnabled]
+              properties:
+                attributionEnabled: { type: boolean, description: "The Acquisition Dashboard's \"Order-side attribution\" toggle." }
+                adSpendPercent: { type: number, minimum: 0, maximum: 100, nullable: true }
+                cmPercent: { type: number, minimum: 0, maximum: 100, nullable: true, description: "Contribution margin %, required alongside adSpendPercent to unlock POAS/MER." }
+                blotoutFunnelEnabled: { type: boolean }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/settings/grading:
+    put:
+      tags: [Tenant Settings]
+      summary: Update Acquisition Dashboard grading configuration (Owner/Admin)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gradeThresholds: { type: object, properties: { a: { type: integer }, b: { type: integer }, c: { type: integer } }, description: "0-100, a > b > c" }
+                segmentCutoffs: { type: object, properties: { winnersTopPct: { type: integer }, underperformersBottomPct: { type: integer } }, description: "0-100, sum <= 100" }
+                pillarWeights: { type: object, properties: { signals: { type: integer }, reach: { type: integer }, click: { type: integer }, convert: { type: integer }, hook: { type: integer }, watch: { type: integer } } }
+                mode: { type: string, enum: [trailing_window, dynamic] }
+                baseline: { type: object }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/settings/badges:
+    put:
+      tags: [Tenant Settings]
+      summary: Update performance badge rules (Owner/Admin)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                badges:
+                  type: array
+                  nullable: true
+                  items:
+                    type: object
+                    properties:
+                      id: { type: string }
+                      name: { type: string }
+                      color: { type: string, pattern: "^#[0-9A-Fa-f]{6}$" }
+                      conditions: { type: array, description: "Alternating metric-condition / AND-OR entries." }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/settings/grading/status:
+    get:
+      tags: [Tenant Settings]
+      summary: Get grading-baseline computation status
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Status, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Tenant Integrations ─────────────────────────
+  /tenants/{tenantId}/integrations:
+    get:
+      tags: [Tenant Integrations]
+      summary: Get the datasource catalog and connection state (Owner/Admin/Manager)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Datasources (no secrets included), content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /tenants/{tenantId}/integrations/{provider}/disconnect:
+    post:
+      tags: [Tenant Integrations]
+      summary: Disconnect a datasource (Owner/Admin)
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: provider
+          in: path
+          required: true
+          description: A datasource type (excludes ad_channels).
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { storeId: { type: string, format: uuid } } }
+      responses:
+        "200": { description: Disconnected, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Stores ─────────────────────────
+  /stores:
+    get:
+      tags: [Stores]
+      summary: List stores
+      parameters:
+        - name: includeInactive
+          in: query
+          schema: { type: boolean }
+      responses:
+        "200":
+          description: Stores
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties: { data: { type: object, properties: { stores: { type: array, items: { type: object } } } } }
+    post:
+      tags: [Stores]
+      summary: Create a store (tenant Owner/Admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [identifier, name, currency, timezone, locale]
+              properties:
+                identifier: { type: string, pattern: "^[a-zA-Z0-9_-]+$", maxLength: 100 }
+                name: { type: string, maxLength: 255 }
+                description: { type: string, maxLength: 1000 }
+                currency: { type: string, description: "3-letter ISO 4217, uppercase" }
+                timezone: { type: string }
+                locale: { type: string, description: "xx-XX format" }
+                country: { type: string, description: "2-letter ISO" }
+                region: { type: string }
+                city: { type: string }
+                address: { type: string }
+                postalCode: { type: string }
+                logo: { type: string, format: uri }
+                favicon: { type: string, format: uri }
+                primaryColor: { type: string }
+                secondaryColor: { type: string }
+                settings:
+                  type: object
+                  properties:
+                    allowGuestCheckout: { type: boolean }
+                    requireEmailVerification: { type: boolean }
+                    allowReviews: { type: boolean }
+                    businessHours: { type: object }
+                    contactInfo: { type: object, properties: { email: { type: string }, phone: { type: string }, supportEmail: { type: string } } }
+                    shippingZones: { type: array, items: { type: object } }
+                    fulfillmentSettings: { type: object }
+                    theme: { type: object }
+                    seo: { type: object }
+                    integrations: { type: object }
+                active: { type: boolean }
+                isDefault: { type: boolean }
+                launchedAt: { type: string, format: date-time }
+      responses:
+        "201": { description: Store created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "400": { description: IDENTIFIER_EXISTS, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /stores/default:
+    get:
+      tags: [Stores]
+      summary: Get the default store
+      responses:
+        "200": { description: Default store, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /stores/identifier/{identifier}:
+    get:
+      tags: [Stores]
+      summary: Get a store by identifier
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Store, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "404": { description: STORE_NOT_FOUND, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /stores/check-identifier/{identifier}:
+    get:
+      tags: [Stores]
+      summary: Check whether a store identifier is available
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema: { type: string }
+        - name: excludeStoreId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Availability
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties: { data: { type: object, properties: { available: { type: boolean } } } }
+  /stores/{storeId}:
+    get:
+      tags: [Stores]
+      summary: Get a store by ID
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Store, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    put:
+      tags: [Stores]
+      summary: Update a store (tenant Owner/Admin)
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, description: "Same fields as create, all optional, plus url." }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    delete:
+      tags: [Stores]
+      summary: Delete a store (tenant Owner/Admin)
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Deleted, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "400": { description: "DEFAULT_STORE_DELETION — can't delete the default store while others exist", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /stores/{storeId}/set-default:
+    post:
+      tags: [Stores]
+      summary: Set a store as the tenant's default (Owner/Admin)
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /stores/{storeId}/switch:
+    post:
+      tags: [Stores]
+      summary: Switch the caller's active store context
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Switched, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Users ─────────────────────────
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get the current user
+      responses:
+        "200": { description: User, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /users:
+    get:
+      tags: [Users]
+      summary: List users (Admin/Owner)
+      responses:
+        "200": { description: Users, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    post:
+      tags: [Users]
+      summary: Create a user (Admin/Owner)
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /users/id/{userId}:
+    get:
+      tags: [Users]
+      summary: Get a user by ID (Admin/Owner)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: User, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /users/email/{email}:
+    get:
+      tags: [Users]
+      summary: Get a user by email (Manager/Admin/Owner)
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema: { type: string, format: email }
+      responses:
+        "200": { description: User, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /users/{username}:
+    get:
+      tags: [Users]
+      summary: Get a user by username (Manager/Admin/Owner)
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: User, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /users/{userId}:
+    delete:
+      tags: [Users]
+      summary: Soft-delete a user (Admin/Owner)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Deleted, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Consents ─────────────────────────
+  /consents:
+    get:
+      tags: [Consents]
+      summary: Get all consent settings for the current user
+      responses:
+        "200": { description: Consents, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /consents/privacy-policy:
+    put:
+      tags: [Consents]
+      summary: Update privacy policy consent
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [accepted], properties: { accepted: { type: boolean } } } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /consents/terms:
+    put:
+      tags: [Consents]
+      summary: Update terms-of-service consent
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [accepted], properties: { accepted: { type: boolean } } } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /consents/marketing:
+    put:
+      tags: [Consents]
+      summary: Update marketing consent
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [accepted], properties: { accepted: { type: boolean } } } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /consents/cookies:
+    put:
+      tags: [Consents]
+      summary: Update cookie preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [preferences]
+              properties: { preferences: { type: string, enum: [essential, functional, analytics, marketing, all] } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /consents/data-processing:
+    put:
+      tags: [Consents]
+      summary: Update data-processing consent
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [accepted], properties: { accepted: { type: boolean } } } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Agencies ─────────────────────────
+  /agencies:
+    get:
+      tags: [Agencies]
+      summary: List agencies
+      responses:
+        "200": { description: Agencies, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    post:
+      tags: [Agencies]
+      summary: Create an agency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [name, identifier], properties: { name: { type: string }, identifier: { type: string } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /agencies/{agencyId}:
+    get:
+      tags: [Agencies]
+      summary: Get an agency (any agency role)
+      parameters:
+        - name: agencyId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Agency, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    put:
+      tags: [Agencies]
+      summary: Update an agency (Owner/Admin)
+      parameters:
+        - name: agencyId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    delete:
+      tags: [Agencies]
+      summary: Soft-delete an agency (Owner only)
+      parameters:
+        - name: agencyId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Deleted, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Admin ─────────────────────────
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: List all users (platform Owner/Admin)
+      responses:
+        "200": { description: Users, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    post:
+      tags: [Admin]
+      summary: Create a user (platform Owner/Admin)
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/users/{userId}:
+    get:
+      tags: [Admin]
+      summary: Get a user (platform Owner/Admin)
+      parameters: [{ name: userId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200": { description: User, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    put:
+      tags: [Admin]
+      summary: Update a user (platform Owner/Admin)
+      parameters: [{ name: userId, in: path, required: true, schema: { type: string, format: uuid } }]
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/users/{userId}/activate:
+    post:
+      tags: [Admin]
+      summary: Activate a user (platform Owner/Admin)
+      parameters: [{ name: userId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200": { description: Activated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/users/{userId}/suspend:
+    post:
+      tags: [Admin]
+      summary: Suspend a user (platform Owner/Admin)
+      parameters: [{ name: userId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200": { description: Suspended, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/tenants:
+    get:
+      tags: [Admin]
+      summary: List all tenants (platform Owner/Admin)
+      responses:
+        "200": { description: Tenants, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    post:
+      tags: [Admin]
+      summary: Create a tenant (platform Owner/Admin)
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/tenants/{tenantId}:
+    get:
+      tags: [Admin]
+      summary: Get a tenant (platform Owner/Admin)
+      parameters: [{ name: tenantId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200": { description: Tenant, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    put:
+      tags: [Admin]
+      summary: Update a tenant (platform Owner/Admin)
+      parameters: [{ name: tenantId, in: path, required: true, schema: { type: string, format: uuid } }]
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/tenants/{tenantId}/users:
+    post:
+      tags: [Admin]
+      summary: Add a user to a tenant (platform Owner/Admin)
+      parameters: [{ name: tenantId, in: path, required: true, schema: { type: string, format: uuid } }]
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "201": { description: Added, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/tenants/{tenantId}/users/{userId}:
+    delete:
+      tags: [Admin]
+      summary: Remove a user from a tenant (platform Owner/Admin)
+      parameters:
+        - { name: tenantId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: userId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200": { description: Removed, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/stores:
+    get:
+      tags: [Admin]
+      summary: List all stores (platform Owner/Admin)
+      responses:
+        "200": { description: Stores, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    post:
+      tags: [Admin]
+      summary: Create a store (platform Owner/Admin)
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/stores/{storeId}:
+    get:
+      tags: [Admin]
+      summary: Get a store (platform Owner/Admin)
+      parameters: [{ name: storeId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200": { description: Store, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    put:
+      tags: [Admin]
+      summary: Update a store (platform Owner/Admin)
+      parameters: [{ name: storeId, in: path, required: true, schema: { type: string, format: uuid } }]
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/system/health:
+    get:
+      tags: [Admin]
+      summary: System health check (platform Owner/Admin)
+      responses:
+        "200": { description: Health, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/system/analytics:
+    get:
+      tags: [Admin]
+      summary: Platform-wide analytics (platform Owner/Admin)
+      responses:
+        "200": { description: Analytics, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/diagnostics/store-coverage:
+    get:
+      tags: [Admin]
+      summary: Store data-coverage diagnostics (platform Owner/Admin)
+      responses:
+        "200": { description: Coverage report, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/transform/run:
+    post:
+      tags: [Admin]
+      summary: Trigger a dbt transform run (platform Owner/Admin; backed by the k8s Batch API)
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "202": { description: Run triggered, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/transform/runs:
+    get:
+      tags: [Admin]
+      summary: List transform runs (platform Owner/Admin)
+      responses:
+        "200": { description: Runs, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /admin/transform/runs/{jobName}:
+    get:
+      tags: [Admin]
+      summary: Get a transform run's status (platform Owner/Admin)
+      parameters: [{ name: jobName, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { description: Run status, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Acquisition ─────────────────────────
+  /acquisition/filter-options:
+    get:
+      tags: [Acquisition]
+      summary: Get filter dropdown options (ad providers, creative formats)
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      responses:
+        "200": { description: Filter options, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /acquisition/{view}:
+    get:
+      tags: [Acquisition]
+      summary: Get Acquisition Dashboard data for one tab
+      description: Backs the Acquisition Dashboard's Channels/Campaigns/Ad sets/Creatives/Pages tabs.
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - name: view
+          in: path
+          required: true
+          schema: { type: string, enum: [channels, campaigns, creatives, ad-sets, pages] }
+        - $ref: "#/components/parameters/PeriodPreset"
+        - $ref: "#/components/parameters/FromDate"
+        - $ref: "#/components/parameters/ToDate"
+        - name: model
+          in: query
+          schema: { type: string, enum: [last_click, first_click, platform], default: last_click }
+        - name: currency
+          in: query
+          schema: { type: string }
+        - name: timezone
+          in: query
+          schema: { type: string }
+        - name: stores
+          in: query
+          schema: { type: string, description: "Comma-separated store IDs." }
+        - name: ad_providers
+          in: query
+          schema: { type: string, description: "Comma-separated." }
+        - name: campaign_status
+          in: query
+          schema: { type: string, description: "Comma-separated. Applies to campaigns/ad-sets/creatives." }
+        - name: ad_types
+          in: query
+          schema: { type: string, description: "Comma-separated." }
+        - name: creative_formats
+          in: query
+          schema: { type: string, description: "Comma-separated. Ignored on the channels view." }
+        - name: customer_types
+          in: query
+          schema: { type: string, description: "Comma-separated." }
+        - name: campaign_id
+          in: query
+          schema: { type: string, description: "Parent-scoped filter, view-dependent." }
+        - name: ad_set_id
+          in: query
+          schema: { type: string }
+        - name: ad_id
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: string }
+        - name: include_previous_period
+          in: query
+          schema: { type: boolean }
+        - name: offset
+          in: query
+          schema: { type: integer }
+        - name: limit
+          in: query
+          schema: { type: integer }
+        - name: sort
+          in: query
+          schema: { type: string, example: "health_overall:desc" }
+      responses:
+        "200":
+          description: View data
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          shapes:
+                            type: object
+                            description: "One key matching the requested view (campaigns/creatives/ad-sets/pages/channels), containing the row array."
+                          summary: { type: object, additionalProperties: { type: number } }
+                          summary_previous: { type: object }
+                          performance_distribution: { type: object }
+                          grade_distribution: { type: object }
+                          campaign_type_distribution: { type: object }
+                          campaign_structure_distribution: { type: object }
+                          actions: { type: array, items: { type: object } }
+                          match_rates:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                ad_provider: { type: string }
+                                match_rate: { type: number }
+                                matched_orders: { type: integer }
+                                total_attributed_orders: { type: integer }
+                                matched_via_id: { type: integer }
+                                matched_via_name: { type: integer }
+                                unmatched_orders: { type: integer }
+                      meta:
+                        type: object
+                        properties:
+                          view: { type: string }
+                          current_period: { type: object, properties: { start: { type: string }, end: { type: string } } }
+                          previous_period: { type: object, nullable: true }
+                          model: { type: string }
+                          source: { type: string, enum: [periodized, dynamic] }
+                          freshness: { type: string }
+                          freshness_source: { type: string, enum: [dbt_run] }
+                          dbt_status: { type: string, enum: [success, failed, missing] }
+                          dbt_error: { type: string, nullable: true }
+                          attribution_available: { type: boolean }
+                          profitability_enabled: { type: boolean }
+                          cm_percent: { type: number, nullable: true }
+                          ad_spend_percent: { type: number, nullable: true }
+                          is_empty: { type: boolean }
+                          empty_reason: { type: string, enum: [no_shopify_datasource, no_ad_datasource, no_data_in_period, dbt_pending], nullable: true }
+                          sampling: { type: object, nullable: true, properties: { originalCells: { type: integer }, returnedCells: { type: integer }, method: { type: string, enum: [cell-cap] } } }
+                          grading_meta: { type: object }
+                          envelope_version: { type: integer, enum: [1] }
+        "400": { description: "TENANT_CONTEXT_REQUIRED / INVALID_VIEW / INVALID_FORMAT / INVALID_PERIOD / INVALID_MODEL / MODEL_MISMATCH", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "502": { description: CUBE_UNAVAILABLE, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "503": { description: "PREAGG_WARMING — pre-aggregations are still building", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /acquisition/{view}/{entityId}/timeseries:
+    get:
+      tags: [Acquisition]
+      summary: Get daily grade/metric history for one entity
+      description: Only campaigns, ad-sets, and creatives have a grade timeseries (pages and channels don't).
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - name: view
+          in: path
+          required: true
+          schema: { type: string, enum: [campaigns, ad-sets, creatives] }
+        - name: entityId
+          in: path
+          required: true
+          description: "campaign_id / ad_set_id / ad_id depending on view."
+          schema: { type: string }
+        - $ref: "#/components/parameters/PeriodPreset"
+        - $ref: "#/components/parameters/FromDate"
+        - $ref: "#/components/parameters/ToDate"
+        - name: model
+          in: query
+          schema: { type: string, enum: [last_click, first_click, platform] }
+        - name: currency
+          in: query
+          schema: { type: string }
+        - name: timezone
+          in: query
+          schema: { type: string }
+        - name: stores
+          in: query
+          schema: { type: string }
+        - name: ad_providers
+          in: query
+          schema: { type: string }
+      responses:
+        "200": { description: Daily timeseries, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "400": { description: "INVALID_VIEW / INVALID_ENTITY_ID", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+
+  # ───────────────────────── Attribution ─────────────────────────
+  /attribution/funnel:
+    get:
+      tags: [Attribution]
+      summary: Attribution funnel card
+      description: Backed by the Blotout funnel cube. Only available when the tenant's blotoutFunnelEnabled capability is on.
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - $ref: "#/components/parameters/PeriodPreset"
+        - $ref: "#/components/parameters/FromDate"
+        - $ref: "#/components/parameters/ToDate"
+        - name: model
+          in: query
+          schema: { type: string, enum: [last_click, first_click, platform] }
+        - name: source_types
+          in: query
+          schema: { type: string }
+        - name: stores
+          in: query
+          schema: { type: string }
+      responses:
+        "200": { description: Funnel data, content: { application/json: { schema: { $ref: "#/components/schemas/AnalyticsEnvelope" } } } }
+        "400": { description: INVALID_PERIOD, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /attribution/spend:
+    get:
+      tags: [Attribution]
+      summary: Spend-by-source card
+      description: Adds POAS/MER columns when the tenant has profitability configured.
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - $ref: "#/components/parameters/PeriodPreset"
+        - $ref: "#/components/parameters/FromDate"
+        - $ref: "#/components/parameters/ToDate"
+        - name: model
+          in: query
+          schema: { type: string, enum: [last_click, first_click, platform] }
+        - name: source_types
+          in: query
+          schema: { type: string }
+        - name: customer_types
+          in: query
+          schema: { type: string }
+        - name: ad_providers
+          in: query
+          schema: { type: string }
+        - name: stores
+          in: query
+          schema: { type: string }
+      responses:
+        "200": { description: Spend by source, content: { application/json: { schema: { $ref: "#/components/schemas/AnalyticsEnvelope" } } } }
+  /attribution/touchpoints:
+    get:
+      tags: [Attribution]
+      summary: Touchpoints card (grouped by source type + source name)
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - $ref: "#/components/parameters/PeriodPreset"
+        - $ref: "#/components/parameters/FromDate"
+        - $ref: "#/components/parameters/ToDate"
+        - name: model
+          in: query
+          schema: { type: string, enum: [last_click, first_click, platform] }
+        - name: source_types
+          in: query
+          schema: { type: string }
+        - name: ad_providers
+          in: query
+          schema: { type: string }
+        - name: stores
+          in: query
+          schema: { type: string }
+      responses:
+        "200": { description: Touchpoints, content: { application/json: { schema: { $ref: "#/components/schemas/AnalyticsEnvelope" } } } }
+  /attribution/sales-impact:
+    get:
+      tags: [Attribution]
+      summary: Sales-impact card (grouped by attribution model)
+      description: Ignores the model query param — always compares across models.
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - $ref: "#/components/parameters/PeriodPreset"
+        - $ref: "#/components/parameters/FromDate"
+        - $ref: "#/components/parameters/ToDate"
+        - name: source_types
+          in: query
+          schema: { type: string }
+        - name: stores
+          in: query
+          schema: { type: string }
+      responses:
+        "200": { description: Sales impact by model, content: { application/json: { schema: { $ref: "#/components/schemas/AnalyticsEnvelope" } } } }
+
+  # ───────────────────────── Conversion ─────────────────────────
+  /conversion/funnel:
+    get:
+      tags: [Conversion]
+      summary: Conversion funnel (impressions → clicks → orders, with spend/revenue/CTR/CVR/ROAS/CPA)
+      description: Capability-gated on the tenant's ordersAvailable flag — tenants without order-grain data (e.g. Adobe Analytics-only) get available:false.
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - $ref: "#/components/parameters/PeriodPreset"
+        - $ref: "#/components/parameters/FromDate"
+        - $ref: "#/components/parameters/ToDate"
+        - name: model
+          in: query
+          schema: { type: string, enum: [last_click, first_click] }
+        - name: source_types
+          in: query
+          schema: { type: string }
+        - name: customer_types
+          in: query
+          schema: { type: string }
+        - name: ad_providers
+          in: query
+          schema: { type: string }
+        - name: stores
+          in: query
+          schema: { type: string }
+        - name: groupBy
+          in: query
+          description: Adds a per-dimension breakdown alongside the top-level funnel.
+          schema: { type: string }
+      responses:
+        "200": { description: Funnel, content: { application/json: { schema: { $ref: "#/components/schemas/AnalyticsEnvelope" } } } }
+  /conversion/breakdown:
+    get:
+      tags: [Conversion]
+      summary: Sortable, paginated conversion breakdown by dimension
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - $ref: "#/components/parameters/PeriodPreset"
+        - $ref: "#/components/parameters/FromDate"
+        - $ref: "#/components/parameters/ToDate"
+        - name: model
+          in: query
+          schema: { type: string, enum: [last_click, first_click] }
+        - name: source_types
+          in: query
+          schema: { type: string }
+        - name: customer_types
+          in: query
+          schema: { type: string }
+        - name: ad_providers
+          in: query
+          schema: { type: string }
+        - name: stores
+          in: query
+          schema: { type: string }
+        - name: dim
+          in: query
+          required: true
+          schema: { type: string }
+        - name: sort
+          in: query
+          schema: { type: string }
+        - name: order
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+        - name: page
+          in: query
+          schema: { type: integer }
+        - name: pageSize
+          in: query
+          schema: { type: integer }
+      responses:
+        "200": { description: Breakdown rows, content: { application/json: { schema: { $ref: "#/components/schemas/AnalyticsEnvelope" } } } }
+
+  # ───────────────────────── Lens ─────────────────────────
+  /lens/ads/performance:
+    get:
+      tags: [Lens]
+      summary: Ad performance metrics
+      parameters:
+        - name: tenant_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: start_date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: end_date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: granularity
+          in: query
+          schema: { type: string, enum: [hour, day, week, month], default: day }
+        - name: ad_providers
+          in: query
+          schema: { type: string, description: "Comma-separated." }
+        - name: campaign_ids
+          in: query
+          schema: { type: string, description: "Comma-separated." }
+        - name: stores
+          in: query
+          schema: { type: string, description: "Comma-separated." }
+        - name: compare_start_date
+          in: query
+          schema: { type: string, format: date }
+        - name: compare_end_date
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        "200": { description: Ad performance data, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /lens/campaigns:
+    get:
+      tags: [Lens]
+      summary: Campaign performance
+      parameters:
+        - name: tenant_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: start_date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: end_date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: ad_providers
+          in: query
+          schema: { type: string }
+        - name: status
+          in: query
+          schema: { type: string }
+      responses:
+        "200": { description: Campaigns, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /lens/attribution:
+    get:
+      tags: [Lens]
+      summary: Attribution analysis
+      description: "Uses a different attribution-model vocabulary than Acquisition/Attribution/Conversion (first_touch/last_touch/linear/time_decay/position_based vs. last_click/first_click)."
+      parameters:
+        - name: tenant_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: start_date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: end_date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: model
+          in: query
+          required: true
+          schema: { type: string, enum: [first_touch, last_touch, linear, time_decay, position_based] }
+        - name: ad_providers
+          in: query
+          schema: { type: string }
+      responses:
+        "200": { description: Attribution data, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /lens/filters:
+    get:
+      tags: [Lens]
+      summary: Available filter values
+      parameters:
+        - name: tenant_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Filter options, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Metrics ─────────────────────────
+  /metrics/definitions:
+    get:
+      tags: [Metrics]
+      summary: Get the full metric catalog
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - $ref: "#/components/parameters/StoreIdHeaderOptional"
+      responses:
+        "200":
+          description: Catalog
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                slug: { type: string }
+                                name: { type: string }
+                                description: { type: string }
+                                category: { type: string }
+                                pillar: { type: string }
+                                pillarLabel: { type: string }
+                                format: { type: string }
+                                datasource: { type: string }
+                                defaultGrain: { type: string }
+                                supportedGrains: { type: array, items: { type: string } }
+                                dimensions: { type: array, items: { type: string } }
+                                displayOrder: { type: integer }
+                                isActive: { type: boolean }
+                                isDefaultKpi: { type: boolean }
+                                hasTenantOverride: { type: boolean }
+                                accent: { type: string }
+                                aggregation: { type: string }
+                          datasources: { type: array, items: { type: object, properties: { type: { type: string }, label: { type: string }, icon: { type: string }, subsources: { type: array } } } }
+                          activeDatasources: { type: array, items: { type: string } }
+                          metricCategories: { type: array }
+                          metricPillars: { type: array }
+                          dimensionCategories: { type: array }
+                          funnels: { type: array }
+                          dimensions: { type: array }
+        "400": { description: TENANT_CONTEXT_REQUIRED, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /metrics/definitions/{slug}:
+    get:
+      tags: [Metrics]
+      summary: Get one metric's catalog entry
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Catalog entry, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "404": { description: METRIC_NOT_FOUND, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /metrics/query:
+    post:
+      tags: [Metrics]
+      summary: Query a metric's values
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - $ref: "#/components/parameters/StoreIdHeaderOptional"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, period]
+              properties:
+                slug: { type: string }
+                period:
+                  oneOf:
+                    - type: object
+                      properties: { preset: { type: string, enum: ["7d", "30d", "90d", mtd, ytd] } }
+                    - type: object
+                      properties: { from: { type: string, format: date }, to: { type: string, format: date } }
+                grain: { type: string, enum: [hour, day, week, month, quarter] }
+                dimensions: { type: array, items: { type: string } }
+                compare: { type: string, enum: [previous_period, previous_year, previous_year_dow] }
+                topN: { type: integer }
+                filters:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      dimension: { type: string }
+                      operator: { type: string, enum: [equals, notEquals, in, notIn, contains, notContains, gt, gte, lt, lte, set, notSet] }
+                      values: { type: array, items: {} }
+      responses:
+        "200": { description: Query result, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "400": { description: "INVALID_QUERY / INVALID_FILTER_OPERATOR / INVALID_FILTER_VALUES", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "502": { description: CUBE_UNAVAILABLE, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "503": { description: PREAGG_WARMING, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /metrics/kpis:
+    get:
+      tags: [Metrics]
+      summary: Get the KPI summary row
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - $ref: "#/components/parameters/StoreIdHeaderOptional"
+        - name: period
+          in: query
+          schema: { type: string, enum: ["7d", "30d", "90d", mtd, ytd], default: "30d" }
+      responses:
+        "200": { description: KPIs, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "400": { description: INVALID_PERIOD, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /metrics/layout/tenant:
+    get:
+      tags: [Metrics]
+      summary: Get the tenant's saved metrics-page layout (Owner/Admin)
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      responses:
+        "200": { description: Layout, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    put:
+      tags: [Metrics]
+      summary: Save the tenant's metrics-page layout (Owner/Admin)
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        "200": { description: Saved, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Metric Alerts ─────────────────────────
+  /metric-alerts:
+    get:
+      tags: [Metric Alerts]
+      summary: List metric alerts
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      responses:
+        "200": { description: Alerts, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "503": { description: SEMANTICS_UNAVAILABLE, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+    post:
+      tags: [Metric Alerts]
+      summary: Create a metric alert
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [metricSlug, name, type, timeframe, config]
+              properties:
+                metricSlug: { type: string }
+                name: { type: string }
+                description: { type: string }
+                type: { type: string, description: "AlertType enum — see semantics service." }
+                timeframe: { type: string, description: "AlertTimeframe enum — see semantics service." }
+                config: {}
+                isActive: { type: boolean }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /metric-alerts/summary:
+    get:
+      tags: [Metric Alerts]
+      summary: Get alert summary counts
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      responses:
+        "200": { description: Summary, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /metric-alerts/{id}:
+    get:
+      tags: [Metric Alerts]
+      summary: Get an alert
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Alert, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    patch:
+      tags: [Metric Alerts]
+      summary: Update an alert
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                description: { type: string, nullable: true }
+                type: { type: string }
+                timeframe: { type: string }
+                config: {}
+                isActive: { type: boolean }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    delete:
+      tags: [Metric Alerts]
+      summary: Delete an alert
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Deleted, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /metric-alerts/{id}/events:
+    get:
+      tags: [Metric Alerts]
+      summary: Get an alert's fired-event history
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Events, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Chat ─────────────────────────
+  /chat/messages:
+    post:
+      tags: [Chat]
+      summary: Send a chat message (SSE-streamed response)
+      description: "Response is Server-Sent Events, not JSON. Event types: text-delta, tool-call, tool-result, render-block, done, error."
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                conversationId: { type: string, format: uuid }
+                message: { type: string, minLength: 1, maxLength: 4000 }
+      responses:
+        "200":
+          description: SSE stream
+          content:
+            text/event-stream:
+              schema: { type: string, description: "Stream of named SSE events; error event shape: {type: 'error', message: string}." }
+        "401": { description: UNAUTHENTICATED, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /chat/conversations:
+    get:
+      tags: [Chat]
+      summary: List conversations
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+      responses:
+        "200": { description: Conversations, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /chat/conversations/{id}:
+    get:
+      tags: [Chat]
+      summary: Get a conversation and its messages
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: "{conversation, messages}", content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "404": { description: NOT_FOUND, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+    patch:
+      tags: [Chat]
+      summary: Rename a conversation
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [title], properties: { title: { type: string, minLength: 1, maxLength: 120 } } }
+      responses:
+        "200": { description: "{ok: true}", content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+    delete:
+      tags: [Chat]
+      summary: Archive (soft-delete) a conversation
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: "{ok: true}", content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Creative Feedback ─────────────────────────
+  /tenants/{tenantId}/creatives/{adId}/feedback:
+    get:
+      tags: [Creative Feedback]
+      summary: Get the caller's feedback on a creative
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: adId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Sentiment (null if the user hasn't voted)"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties: { data: { type: object, properties: { sentiment: { type: string, enum: [up, down], nullable: true } } } }
+        "401": { description: AUTHENTICATION_REQUIRED, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+    put:
+      tags: [Creative Feedback]
+      summary: Set the caller's feedback on a creative
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: adId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [sentiment], properties: { sentiment: { type: string, enum: [up, down] } } }
+      responses:
+        "200": { description: Saved, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+        "401": { description: AUTHENTICATION_REQUIRED, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+
+  # ───────────────────────── Onboarding ─────────────────────────
+  /onboarding:
+    get:
+      tags: [Onboarding]
+      summary: Get the current user's onboarding status/progress
+      responses:
+        "200": { description: Status, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /onboarding/progress:
+    get:
+      tags: [Onboarding]
+      summary: Get onboarding progress summary
+      responses:
+        "200": { description: Progress, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /onboarding/complete-task:
+    post:
+      tags: [Onboarding]
+      summary: Mark an onboarding task complete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [taskKey], properties: { taskKey: { type: string }, metadata: {} } }
+      responses:
+        "200": { description: Marked complete, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /onboarding/skip-task:
+    post:
+      tags: [Onboarding]
+      summary: Skip an onboarding task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [taskKey], properties: { taskKey: { type: string } } }
+      responses:
+        "200": { description: Skipped, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /onboarding/sync-progress:
+    post:
+      tags: [Onboarding]
+      summary: Re-detect and auto-complete tasks from current account state
+      responses:
+        "200": { description: Synced, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /onboarding/current-step:
+    patch:
+      tags: [Onboarding]
+      summary: Set the current onboarding step
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [step], properties: { step: { type: string } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /onboarding/reset:
+    post:
+      tags: [Onboarding]
+      summary: Reset onboarding progress
+      responses:
+        "200": { description: Reset, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /onboarding/detect-platform:
+    post:
+      tags: [Onboarding]
+      summary: Scan a storefront URL to detect connected platforms
+      description: This is the real backing endpoint for the "Connect your data" onboarding scan.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties: { url: { type: string, format: uri }, storeId: { type: string, format: uuid } }
+      responses:
+        "200": { description: Detected platforms, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /onboarding/connectors:
+    get:
+      tags: [Onboarding]
+      summary: Get tiered connector recommendations
+      description: Backs the Necessary/Recommended/Good to have connector list.
+      parameters:
+        - name: storeId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Connector recommendations + gate verdict, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+  /onboarding/status:
+    get:
+      tags: [Onboarding]
+      summary: Get tenant provisioning/lifecycle status
+      description: Tenant-scoped (not user-scoped, despite sharing the /onboarding mount) — used by Pulse's self-serve provisioning screen. Returns lifecycle state, current in-flight phase, and phase history.
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      responses:
+        "200": { description: Provisioning status, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
+
+  # ───────────────────────── Reports (Daily Reports) ─────────────────────────
+  /tenants/{tenantId}/reports:
+    get:
+      tags: [Reports]
+      summary: List recent daily reports
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: "Up to 30 most recent reports"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          reports:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id: { type: string, format: uuid }
+                                reportDate: { type: string, format: date }
+                                status: { type: string, enum: [pending, snapshotting, generating, ready, failed, no_baseline] }
+                                generatedAt: { type: string, format: date-time, nullable: true }
+                                model: { type: string, nullable: true }
+                                costUsd: { type: number, nullable: true }
+                                error: { type: string, nullable: true }
+  /tenants/{tenantId}/reports/{date}:
+    get:
+      tags: [Reports]
+      summary: Get one day's report
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: date
+          in: path
+          required: true
+          schema: { type: string, format: date }
+      responses:
+        "200":
+          description: Report
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          report:
+                            type: object
+                            properties:
+                              id: { type: string, format: uuid }
+                              reportDate: { type: string, format: date }
+                              status: { type: string, enum: [pending, snapshotting, generating, ready, failed, no_baseline] }
+                              html: { type: string, nullable: true }
+                              generatedAt: { type: string, format: date-time, nullable: true }
+                              model: { type: string, nullable: true }
+                              error: { type: string, nullable: true }
+        "404": { description: DAILY_REPORT_NOT_FOUND, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /tenants/{tenantId}/reports/{date}/regenerate:
+    post:
+      tags: [Reports]
+      summary: Regenerate a report
+      description: |
+        **Not currently functional.** This endpoint is presently a hardcoded stub
+        that always returns `503 DAILY_REPORT_REGENERATION_UNAVAILABLE` regardless
+        of role or input — manual regeneration isn't wired up yet; reports are
+        produced on a Cloud Tasks schedule. Documented here for completeness /
+        forward-compatibility, not as a currently-working capability.
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: date
+          in: path
+          required: true
+          schema: { type: string, format: date, description: "YYYY-MM-DD, must be within the last 30 days." }
+      responses:
+        "400": { description: "DAILY_REPORT_BAD_DATE / DAILY_REPORT_DATE_OUT_OF_RANGE", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "503": { description: "DAILY_REPORT_REGENERATION_UNAVAILABLE — always returned currently", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }

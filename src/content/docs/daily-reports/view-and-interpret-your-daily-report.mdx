@@ -88,6 +88,10 @@ A collapsible grid of every metric in the report, not only the notable movers. C
 
 ## Regenerate a report
 
+<Aside type="caution">
+Manual regeneration isn't available yet — clicking **Regenerate** currently returns "Manual regeneration not yet available." Reports are produced on a fixed daily schedule instead. The rest of this section describes the intended behavior once regeneration ships.
+</Aside>
+
 Regenerate a report when generation failed, or when you want a fresh run after you've corrected or updated your underlying data. Regenerating is available to the **Owner** and **Admin** roles.
 
 <Steps>
@@ -106,7 +110,7 @@ A confirmation message tells you that regeneration has started. If a report is a
 | --- | --- |
 | The **Regenerate** button is missing | Regenerating requires the **Owner** or **Admin** role. Ask a store owner or admin to run it. |
 | The report shows **No baseline** | Your store doesn't yet have enough comparable history for this date. Reports become available as more data accumulates. |
-| Generation **Failed** | Click **Regenerate** to try again. If it keeps failing, contact [support@consequential.io](mailto:support@consequential.io). |
+| Generation **Failed** | Manual regeneration isn't available yet (see note above). Contact [support@consequential.io](mailto:support@consequential.io) — reports also retry automatically on the next scheduled run. |
 | "Report is already generating" | A run is already in progress. Wait for it to finish — the page updates on its own. |
 
 ## Related

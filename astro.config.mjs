@@ -126,6 +126,10 @@ export default defineConfig({
 					label: 'Out of the Blue vs Other Tools (Comparisons)',
 					items: [{ autogenerate: { directory: 'comparisons' } }],
 				},
+				{
+					label: 'Reference',
+					items: [{ autogenerate: { directory: 'reference' } }],
+				},
 				// API reference pages auto-generated from `src/schemas/api.yaml`.
 				...openAPISidebarGroups,
 				{
