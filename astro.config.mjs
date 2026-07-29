@@ -9,7 +9,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://consequential.io',
+	site: 'https://docs.consequential.io',
 	integrations: [
 		sitemap(),
 		starlight({
@@ -48,7 +48,7 @@ export default defineConfig({
 			],
 			sidebar: [
 				{
-					label: 'Get started with Out of the Blue',
+					label: 'Get started',
 					items: [
 						{ label: 'Overview', slug: 'get-started/overview' },
 						{ label: 'Connect your data', slug: 'get-started/connect-your-data' },
@@ -62,6 +62,10 @@ export default defineConfig({
 				{
 					label: 'Daily reports',
 					items: [{ autogenerate: { directory: 'daily-reports' } }],
+				},
+				{
+					label: 'Acquisition Dashboard',
+					items: [{ autogenerate: { directory: 'acquisition-dashboard' } }],
 				},
 				{
 					label: "How To's",
@@ -111,7 +115,7 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'Out of the Blue Academy',
+					label: 'Consequential Academy',
 					items: [
 						{ label: 'Metrics', items: [{ autogenerate: { directory: 'academy/metrics' } }] },
 						{ label: 'Attribution', items: [{ autogenerate: { directory: 'academy/attribution' } }] },

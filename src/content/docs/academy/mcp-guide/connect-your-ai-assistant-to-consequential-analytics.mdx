@@ -104,7 +104,21 @@ Example prompts:
 | **`TENANT_NOT_ALLOWED`** | You asked about a workspace your account isn't a member of. Ask your workspace admin to invite you at [app.consequential.io](https://app.consequential.io). |
 | **`CORE_UNAVAILABLE`** | The data service is briefly unreachable. Ask your assistant to check the service status, then retry in a minute. |
 | **Acquisition numbers look stale** | Acquisition views can lag up to 24 hours after a data refresh. Metric queries are unaffected. |
+| **Browser doesn't open for login** | Start a new conversation — the sign-in prompt appears on first tool use. In Claude Code, run `claude mcp list` to confirm the server is registered. Check that your firewall or browser isn't blocking `https://mcp.consequential.io`. |
+| **Stuck on the sign-in page, or redirected to the Consequential app instead of back to your assistant** | Close the browser tab and try connecting again from your assistant — this is usually a one-off timed-out redirect. |
+| **"No data returned" or unexpected results** | Check that your date range actually has data, and that you're asking about a metric your store tracks. Ask your assistant to show the query it ran to see what was requested. |
 | **Anything else** | Contact us at [consequential.io/support](https://consequential.io/support). |
+
+### Collecting diagnostic logs
+
+If you're using Claude Desktop and the steps above don't resolve the issue, these logs are useful to include when contacting support:
+
+| File | Location (macOS) | Location (Windows) |
+| --- | --- | --- |
+| `mcp.log` | `~/Library/Logs/Claude/` | `%APPDATA%\Claude\logs\` |
+| `mcp-server-consequential-analytics.log`* | `~/Library/Logs/Claude/` | `%APPDATA%\Claude\logs\` |
+
+\* Named after whatever you called the connector when you added it — this assumes you used `Consequential Analytics` as suggested above.
 
 ## Security and data handling
 
