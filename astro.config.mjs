@@ -21,6 +21,7 @@ export default defineConfig({
 				Header: './src/components/CustomHeader.astro',
 				Hero: './src/components/CustomHero.astro',
 				Footer: './src/components/CustomFooter.astro',
+				Search: './src/components/Search.astro',
 			},
 			plugins: [
 				// Adds a "Copy / View / Open in Claude / Open in ChatGPT" dropdown to
