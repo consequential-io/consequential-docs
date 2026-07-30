@@ -28,14 +28,25 @@ import { Steps, Aside } from '@astrojs/starlight/components';
 <Steps>
 
 1. Click **Settings** in the **bottom left** of the sidebar, below Support.
-2. Open the **Preferences** tab.
-3. Under **Display**, set Theme, Timezone, Language, and Date format. These
-   apply across the product regardless of which store you're viewing.
+2. Open the **Preferences** tab (the default tab).
+3. At the top, an **Active context** panel confirms which tenant and store
+   you're currently editing preferences for.
+4. Under **Display**, set: Theme, Timezone (defaults to the current store's
+   timezone if left blank), Language, Date format, Number locale, Currency
+   display (for example, symbol vs. code), Default landing page, and
+   Default chart comparison (the comparison period used for the dotted
+   line on metric charts, unless a shop-level default is set).
+5. Click **Save changes** (or **Discard** to undo).
 
 </Steps>
 
 <Aside type="tip">
-	The Preferences tab also shows an **Active context** panel confirming
-	which tenant and store you're currently in — but switching either one
-	always happens from the sidebar switcher, not from Settings.
+	Switching tenant or store always happens from the sidebar switchers, not
+	from Settings — the Active context panel is read-only.
+</Aside>
+
+<Aside type="note">
+	The same Preferences tab also has **Email notifications** and **In-app
+	notifications** sections — see
+	[Manage notification preferences](/account-management/manage-notification-preferences/).
 </Aside>

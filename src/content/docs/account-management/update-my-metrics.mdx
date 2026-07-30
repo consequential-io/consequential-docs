@@ -1,23 +1,44 @@
 ---
-title: How to update "My Metrics"
-description: Customize the metrics displayed on your Home page under Metrics Overview.
+title: How to customize your metrics
+description: Pin metrics to Home, and customize the order, visibility, and grouping of the Metrics page.
 sidebar:
   order: 3
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+import { Steps, Aside } from '@astrojs/starlight/components';
 
-Customize the metrics that appear on your Home page.
+<Aside type="caution">
+	This page previously described a single "My Metrics" screen under
+	Settings → Preferences. That screen doesn't exist — pinning metrics to
+	Home and customizing the Metrics page layout are two separate, real
+	flows, documented below.
+</Aside>
 
-{/* TODO: migrate image artifact(s) artifact-13984, artifact-13985 from ART-1231 — cannot be downloaded via DevRev MCP */}
+## Pin a metric to Home
 
 <Steps>
 
-1. After login, navigate to **Account Settings** and select **Preferences**.
-2. Click **My Metrics**.
-3. Update the mandatory fields you want to display on the **Home** page.
-4. Click **Save changes**.
+1. Open **Metrics** in the sidebar, then **Category**.
+2. Find the metric you want on Home, and click its **Pin** button (top
+   right of the metric card).
+3. Open **Home** — the metric now appears under Pinned metrics.
 
 </Steps>
 
-Your customized "My Metrics" page is visible under **Metrics Overview** on the **Home** page.
+## Customize the Metrics page layout
+
+This controls the order, visibility, and grouping of metrics on the Metrics
+page itself — it doesn't affect Home.
+
+<Steps>
+
+1. From the Metrics page, click the gear icon (**Metrics settings**), or go
+   to **Settings** in the sidebar and open the **Metrics** tab directly.
+2. Switch between **My layout** (personal to you) and **Tenant default**.
+3. Reorder, hide, or regroup metrics within each priority group (P1 Revenue
+   & Profitability, P2 Profitable Acquisition, P3 Improve Conversion, P4
+   Grow Active Users, P5 LTV Growth).
+4. Click **Save changes**. Use **Reset to tenant default** to discard your
+   personal layout and fall back to the tenant's.
+
+</Steps>
