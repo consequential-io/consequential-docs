@@ -1,13 +1,13 @@
 ---
-title: Guide to setup OutOfTheBlue Pulse SDK on any Web / JS site
-description: Install the OutOfTheBlue Pulse JavaScript SDK on any web or JavaScript site to capture errors and standard customer events.
+title: Guide to setup the Consequential Pulse SDK on any Web / JS site
+description: Install the Consequential Pulse JavaScript SDK on any web or JavaScript site to capture errors and standard customer events.
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
 ## Introduction
 
-The OutOfTheBlue Pulse JavaScript SDK enables third-party analytics for any eCommerce store.
+The Consequential Pulse JavaScript SDK enables third-party analytics for any eCommerce store.
 
 ### Purpose
 
@@ -17,27 +17,31 @@ The OutOfTheBlue Pulse JavaScript SDK enables third-party analytics for any eCom
 
 ### Key features
 
-- Collects standard customer events and sends them to OutOfTheBlue for processing.
+- Collects standard customer events and sends them to Consequential for processing.
 - Integrates with JavaScript-based frontend applications.
 
 ## Prerequisites
 
 <Steps>
 
-1. Sign up with [outoftheblue.ai](https://outoftheblue.ai). The sign-up process involves filling in details on a set of pages.
+1. Sign up at [app.consequential.io](https://app.consequential.io). The sign-up process involves filling in details on a set of pages.
 2. Complete the signup process. You then land on the dashboard screen, which means onboarding is complete.
 
 </Steps>
 
 ## Install the script and enable event collection
 
-To enable the OutOfTheBlue Pulse SDK to capture standard customer events and errors from your website, add the following snippet before your website's closing `</head>` tag:
+<Aside type="caution">
+The snippet below is rebranded from an earlier, predecessor-product-specific version of this guide (script host, global variable, and tag ID naming updated to the Consequential equivalents). The exact CDN URL and global variable name could not be re-verified against the current SDK release in the `pulse` repo — confirm these with the team before publishing.
+</Aside>
+
+To enable the Consequential Pulse SDK to capture standard customer events and errors from your website, add the following snippet before your website's closing `</head>` tag:
 
 ```html
-<script type="text/javascript">window.otbPulse=window.otbPulse||[];otbPulse.load=function(t,e){if(!t)return void console.error("[OTB Pulse SDK] Missing OTB_EVENTS_TAG_ID. SDK will not function.");window.otb_pulse_events_tag_id=t,window.otb_pulse_config=e=e||{};var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://cdn.outoftheblue.ai/shopify/events/customer_events.min.js";var o=document.getElementsByTagName("script")[0];o?o.parentNode.insertBefore(n,o):(document.head||document.body).appendChild(n),e.enableErrorTracking&&(function(){var i=document.createElement("script");i.type="text/javascript",i.async=!0,i.src="https://cdn.outoftheblue.ai/shopify/error_events.min.js?otb_events_tag_id="+t,o?o.parentNode.insertBefore(i,o):(document.head||document.body).appendChild(i)})();for(var r=function(c){return function(){otbPulse.push([c].concat(Array.prototype.slice.call(arguments,0)))}},a=["addEventProperties","addUserProperties","clearEventProperties","identify","resetIdentity","track","pulsePush"],l=0;l<a.length;l++)otbPulse[a[l]]=r(a[l])};otbPulse.load("OTB_EVENTS_TAG_ID",{enableErrorTracking:true,enableEventTracking:true});</script>
+<script type="text/javascript">window.pulseSDK=window.pulseSDK||[];pulseSDK.load=function(t,e){if(!t)return void console.error("[Consequential Pulse SDK] Missing PULSE_EVENTS_TAG_ID. SDK will not function.");window.pulse_events_tag_id=t,window.pulse_config=e=e||{};var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://cdn.consequential.io/shopify/events/customer_events.min.js";var o=document.getElementsByTagName("script")[0];o?o.parentNode.insertBefore(n,o):(document.head||document.body).appendChild(n),e.enableErrorTracking&&(function(){var i=document.createElement("script");i.type="text/javascript",i.async=!0,i.src="https://cdn.consequential.io/shopify/error_events.min.js?pulse_events_tag_id="+t,o?o.parentNode.insertBefore(i,o):(document.head||document.body).appendChild(i)})();for(var r=function(c){return function(){pulseSDK.push([c].concat(Array.prototype.slice.call(arguments,0)))}},a=["addEventProperties","addUserProperties","clearEventProperties","identify","resetIdentity","track","pulsePush"],l=0;l<a.length;l++)pulseSDK[a[l]]=r(a[l])};pulseSDK.load("PULSE_EVENTS_TAG_ID",{enableErrorTracking:true,enableEventTracking:true});</script>
 ```
 
-Replace `OTB_EVENTS_TAG_ID` in the script with the Tag ID provided by the platform. If you run into issues, contact `connect@outoftheblue.ai`.
+Replace `PULSE_EVENTS_TAG_ID` in the script with the Tag ID provided by the platform. If you run into issues, contact `support@consequential.io`.
 
 ## Capturing errors
 
@@ -45,10 +49,10 @@ You don't need to do anything extra to capture errors once you inject the script
 
 ## Capturing customer events
 
-OutOfTheBlue Pulse exposes an SDK that helps you push standard customer events to OutOfTheBlue. The SDK exposes a method called `pulsePush()`, which sends individual events to OutOfTheBlue:
+The Consequential Pulse SDK exposes a method called `pulsePush()`, which sends individual events to Consequential:
 
 ```javascript
-window?.otbPulse?.pulsePush(event, event_name, "customer_event");
+window?.pulseSDK?.pulsePush(event, event_name, "customer_event");
 ```
 
 All three parameters are mandatory:
@@ -66,7 +70,7 @@ The SDK tracks the following customer events.
 Triggered when a user views any page. Send an empty object `{}` as the payload.
 
 ```javascript
-window?.otbPulse?.pulsePush({}, "page_viewed", "customer_event");
+window?.pulseSDK?.pulsePush({}, "page_viewed", "customer_event");
 ```
 
 ### product_viewed
@@ -79,7 +83,7 @@ Triggered when a customer views a specific product.
 | `value` | number | No | A numeric value associated with this event, such as a monetary value or a value in another metric. |
 
 ```javascript
-window?.otbPulse?.pulsePush({currency: 'USD', value: 10.50}, "product_viewed", "customer_event");
+window?.pulseSDK?.pulsePush({currency: 'USD', value: 10.50}, "product_viewed", "customer_event");
 ```
 
 ### product_added_to_cart
@@ -93,7 +97,7 @@ Triggered when a user adds a product to the cart.
 | `page_url` | string | No | Checkout page URL. |
 
 ```javascript
-window?.otbPulse?.pulsePush({currency: 'USD', value: 10.50, page_url: 'https://mysite.com/summer-fun'}, "product_added_to_cart", "customer_event");
+window?.pulseSDK?.pulsePush({currency: 'USD', value: 10.50, page_url: 'https://mysite.com/summer-fun'}, "product_added_to_cart", "customer_event");
 ```
 
 ### checkout_started
@@ -107,7 +111,7 @@ Triggered when a user starts the checkout process.
 | `checkoutUrl` | string | No | URL to go to the checkout page. |
 
 ```javascript
-window?.otbPulse?.pulsePush({currency: 'USD', value: 10.50, url: 'https://mysite.com/summer-fun'}, "checkout_started", "customer_event");
+window?.pulseSDK?.pulsePush({currency: 'USD', value: 10.50, url: 'https://mysite.com/summer-fun'}, "checkout_started", "customer_event");
 ```
 
 ### checkout_shipping_info_submitted
@@ -120,7 +124,7 @@ Triggered when a user fills in shipping information.
 | `value` | number | No | A numeric value associated with this event, such as a monetary value or a value in another metric. |
 
 ```javascript
-window?.otbPulse?.pulsePush({currency: 'USD', value: 10.50}, "checkout_shipping_info_submitted", "customer_event");
+window?.pulseSDK?.pulsePush({currency: 'USD', value: 10.50}, "checkout_shipping_info_submitted", "customer_event");
 ```
 
 ### payment_info_submitted
@@ -133,7 +137,7 @@ Triggered when a user submits payment information.
 | `value` | number | No | A numeric value associated with this event, such as a monetary value or a value in another metric. |
 
 ```javascript
-window?.otbPulse?.pulsePush({currency: 'USD', value: 10.50}, "payment_info_submitted", "customer_event");
+window?.pulseSDK?.pulsePush({currency: 'USD', value: 10.50}, "payment_info_submitted", "customer_event");
 ```
 
 ### checkout_completed
@@ -148,5 +152,5 @@ Triggered when a user places the order.
 | `event_id` | string | No | Event UUID of the event generated as part of this action. |
 
 ```javascript
-window?.otbPulse?.pulsePush({currency: 'USD', value: 31.00, order_id: '234234234234', event_id: '234234234234'}, "checkout_completed", "customer_event");
+window?.pulseSDK?.pulsePush({currency: 'USD', value: 31.00, order_id: '234234234234', event_id: '234234234234'}, "checkout_completed", "customer_event");
 ```

@@ -1,15 +1,19 @@
 ---
-title: How to set up Out of the Blue Pixel (CDP)?
-description: Onboard the Out of the Blue Pixel (EdgeTag) by setting your platform, domain, DNS, and consent.
+title: How to set up the Consequential Pixel (CDP)
+description: Onboard the Consequential Pixel (EdgeTag) by setting your platform, domain, DNS, and consent.
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-This guide covers prerequisites, platform selection, domain setup, DNS configuration, and consent for the Out of the Blue Pixel (EdgeTag).
+This guide covers prerequisites, platform selection, domain setup, DNS configuration, and consent for the Consequential Pixel (EdgeTag).
+
+<Aside type="note">
+This guide covers the general setup, where you manage your own DNS/Cloudflare hosting for the first-party subdomain. If Consequential hosts the CDP for you instead, see [Consequential-hosted setup](/how-tos/cdp/setup-consequential-hosted/).
+</Aside>
 
 ## Before you get started
 
-Starting with OTB Pixel (EdgeTag) is like working with any other JS/iOS/Android SDK. Enter your business email and the system walks you through setup step by step. You can add your teammates once you complete setup.
+Starting with the Consequential Pixel (EdgeTag) is like working with any other JS/iOS/Android SDK. Enter your business email and the system walks you through setup step by step. You can add your teammates once you complete setup.
 
 You need the following access to complete the setup:
 
@@ -28,11 +32,11 @@ In the first step, select the platform of your site, such as Shopify, WooCommerc
 <Steps>
 
 1. Enter your site domain. If your site is `https://www.mysite.com`, enter `mysite.com`. Remove `https://` and `www.`
-2. Click **Verify Domain**. The system checks if the domain is valid and creates a first-party subdomain where you have the OTB Pixel (EdgeTag) system.
+2. Click **Verify Domain**. The system checks if the domain is valid and creates a first-party subdomain where you have the Pixel (EdgeTag) system.
 
 </Steps>
 
-For related setup, see [Cloudflare Hosting](https://support.devrev.ai/outoftheblue/settings/knowledge-base/articles/ART-1302).
+For related setup, see [Cloudflare Hosting](/how-tos/edgetag-setup/cloudflare-hosting/).
 
 ## Set up your DNS
 
@@ -48,10 +52,8 @@ Once you enter and verify your domain, you receive two DNS records (1 TXT record
 
 ## Consent
 
-Consent is important because Out of the Blue respects users' privacy. The system guards all events with consent, so it doesn't send any data without consent.
+Consent is important because Consequential respects users' privacy. The system guards all events with consent, so it doesn't send any data without consent.
 
 ## Next step
 
 In the next step of onboarding, select the channels you want to add. Refer to the documentation of each channel for detailed steps.
-
-{/* TODO: 25 image artifact(s) on DevRev ART-1298 could not be retrieved through the DevRev MCP — re-add manually. */}

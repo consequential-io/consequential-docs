@@ -1,18 +1,40 @@
 ---
-title: How to create the API keys
-description: Generate an API key in Out of the Blue to connect external applications.
+title: How to authenticate with the Consequential API
+description: How Consequential's public API authenticates requests, and what to know before connecting external apps, scripts, or integrations.
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+import { Steps, Aside } from '@astrojs/starlight/components';
 
-API keys in Out of the Blue let you securely connect and integrate external applications with the platform. These keys enable automated data transfers, ensuring communication between systems while maintaining security and control over access.
+The Consequential API (`https://api.consequential.io`) secures every endpoint with a **Bearer JWT** tied to your signed-in session — there is no separate, long-lived "API key" to generate. This guide covers how to get a token for testing and what to know before wiring up an external integration.
+
+<Aside type="caution">
+This page previously described a self-serve **Settings → API Keys** page for generating static, revocable API keys (the kind of long-lived credential you'd hand to Zapier or a CRM sync). That flow could not be confirmed against the current product — the backend's auth routes only support session-based Bearer JWTs (login, magic link, Google OAuth, refresh tokens) with no key-issuance endpoint. If Consequential ships a dedicated API key management UI, update this page to match. Until then, treat the steps below as the accurate, verified flow.
+</Aside>
+
+## How authentication works today
 
 <Steps>
 
-1. Go to [outoftheblue.ai](https://outoftheblue.ai).
-2. Click the **Login** button.
-3. Navigate to **Account Settings** and select **Preferences**.
-4. Click **API Keys**.
-5. Select **Generate API Key**. A pop-up window appears.
+1. Sign in to your Consequential account, either in the app at [app.consequential.io](https://app.consequential.io) or by calling the `/auth/login` (email + password) or `/auth/magic-link` endpoints directly.
+2. The login response includes a short-lived **access token** (JWT) and a **refresh token**. Send the access token on every API request as `Authorization: Bearer <token>`.
+3. Tenant-scoped endpoints additionally require an `X-Tenant-ID` header or a `:tenantId` path parameter — see the [Reference overview](/reference/overview/) and [API reference](/api/) for which endpoints need it.
+4. When the access token expires, use the refresh token against `/auth/refresh` to get a new one without re-authenticating.
 
 </Steps>
+
+## Connecting external apps, scripts, or automation tools
+
+Because tokens are session-based and short-lived, most third-party automation tools (Zapier, CRM syncs, cron jobs) can't use them the way they'd use a static API key. For these cases:
+
+- **AI assistants (Claude, ChatGPT):** use the [MCP connector](/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/) instead — it handles OAuth sign-in and token refresh for you and is the supported way to query your analytics from an assistant.
+- **Custom scripts or server-to-server integrations:** contact [support@consequential.io](mailto:support@consequential.io) to discuss your use case. The team can advise on the best supported approach for your integration.
+
+## Keep in mind
+
+- Treat any access or refresh token like a password — anyone with it can access your data until it expires or is revoked.
+- You can revoke active sessions from your account's session list; a revoked session's refresh token can no longer be used to mint new access tokens.
+- If you suspect a token was compromised, sign out of all sessions and sign back in to invalidate it.
+
+## Need help?
+
+Still stuck? Contact [support@consequential.io](mailto:support@consequential.io).

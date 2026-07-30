@@ -5,7 +5,11 @@ sidebar:
   order: 6
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+<Aside type="caution">
+Consequential integrates with **Shopify**, not Magento — a search of the `core`, `pulse`, and `infra` codebases turned up no Magento integration. This page appears to be leftover content from a predecessor product's docs. It's rebranded below only to remove stray old-product references, but it should be reviewed for removal rather than published as-is, since it describes a platform Consequential may not support at all.
+</Aside>
 
 ## Magento: Create Admin User in the Admin
 
@@ -46,7 +50,7 @@ If you're confident working with code, you can also create an admin user in Mage
    For example:
 
    ```bash
-   php bin/magento admin:user:create --admin-user="jondoe" --admin-password="asdAdnkjois97dtasdas" --admin-email="jon.doe@outoftheblue.ai" --admin-firstname="Jon" --admin-lastname="Doe"
+   php bin/magento admin:user:create --admin-user="jondoe" --admin-password="asdAdnkjois97dtasdas" --admin-email="jon.doe@example.com" --admin-firstname="Jon" --admin-lastname="Doe"
    ```
 
 </Steps>

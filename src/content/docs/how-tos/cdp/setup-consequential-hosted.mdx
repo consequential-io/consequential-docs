@@ -1,11 +1,15 @@
 ---
-title: How to set up Out of the Blue Pixel (CDP) — OTB hosted
-description: Set up the Out of the Blue Pixel (EdgeTag) CDP with Out of the Blue hosting, from DNS records through event capture.
+title: How to set up the Consequential Pixel (CDP) — Consequential-hosted
+description: Set up the Consequential Pixel (EdgeTag) CDP with Consequential hosting, from DNS records through event capture.
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-Setting up Out of the Blue Pixel (EdgeTag) is like working with any other JS / iOS / Android SDK. Enter your business email and the system walks you through setup step by step. You can add teammates once setup is complete.
+Setting up the Consequential Pixel (EdgeTag) is like working with any other JS / iOS / Android SDK. Enter your business email and the system walks you through setup step by step. You can add teammates once setup is complete.
+
+<Aside type="note">
+This guide covers the Consequential-hosted variant, where Consequential manages the Cloudflare/DNS side for you. If you'd rather manage your own DNS and hosting, see the [general Pixel (CDP) setup guide](/how-tos/cdp/how-to-setup-consequential-pixel-cdp/) instead.
+</Aside>
 
 ## Before you get started
 
@@ -23,7 +27,7 @@ With everything ready, you can complete the entire onboarding in less than an ho
 
 1. Log in to the DNS provider that hosts your site. See the provider guides for [Cloudflare](https://www.cloudflare.com/en-gb/learning/dns/dns-records/dns-cname-record/) and [GoDaddy](https://www.godaddy.com/help/add-a-cname-record-19236).
 
-2. Add the CNAME and TXT records provided by the Out of the Blue team to your domain provider. Out of the Blue uses these to redirect CDP events.
+2. Add the CNAME and TXT records provided by the Consequential team to your domain provider. Consequential uses these to redirect CDP events.
 
 3. Once you enter and verify your domain, you receive two DNS records (one TXT record and one CNAME record). Enter both into your DNS to certify your setup as first party.
 
@@ -33,40 +37,40 @@ With everything ready, you can complete the entire onboarding in less than an ho
 </Steps>
 
 <Aside type="note">
-Depending on your DNS provider, the TXT record may require your domain as a suffix — for example, `_cf-custom-hostname.OTBTAG.mywebsite.com`.
+Depending on your DNS provider, the TXT record may require your domain as a suffix — for example, `_cf-custom-hostname.<your-subdomain>.mywebsite.com`.
 </Aside>
 
 ## Install the EdgeTag app on Shopify
 
-Install the [EdgeTag app](https://apps.shopify.com/edgetag) and log in using the email address shared by the Out of the Blue team (default: [connect@outoftheblue.ai](mailto:connect@outoftheblue.ai)).
+Install the [EdgeTag app](https://apps.shopify.com/edgetag) and log in using the email address shared by the Consequential team (default: [support@consequential.io](mailto:support@consequential.io)).
 
 ## Select your platform
 
-In the first step, select the platform of your site. Select **Others**, because Out of the Blue hosts the CDP.
+In the first step, select the platform of your site. Select **Others**, because Consequential hosts the CDP.
 
 ## Set up your site/app domain
 
 <Steps>
 
-1. If Out of the Blue hosts your site, select **I want to use my Cloudflare account**.
+1. If Consequential hosts your site, select **I want to use my Cloudflare account**.
 
 2. If you are not using custom hosting, enter your site domain. For example, for `https://www.mysite.com`, enter `mysite.com` (remove `https://` and `www.`).
 
-3. Enter the email address provided by Out of the Blue.
+3. Enter the email address provided by Consequential.
 
 </Steps>
 
 ## Set up your DNS
 
-With Out of the Blue hosting, you don't need to complete this step. Select **Skip for now** for both DNS records (CNAME and TXT). The DNS entries you set earlier validate, and you see a confirmation that mapping completes correctly. Then move to the next step.
+With Consequential hosting, you don't need to complete this step. Select **Skip for now** for both DNS records (CNAME and TXT). The DNS entries you set earlier validate, and you see a confirmation that mapping completes correctly. Then move to the next step.
 
 ## Consent
 
-Consent is important to Out of the Blue, which respects user privacy. The system guards all events by consent, so it never sends data without consent.
+Consent is important to Consequential, which respects user privacy. The system guards all events by consent, so it never sends data without consent.
 
 ## Events
 
-The final step enables App Embed in your theme so Out of the Blue can capture events in the store.
+The final step enables App Embed in your theme so Consequential can capture events in the store.
 
 <Steps>
 
@@ -87,7 +91,5 @@ You then see the dashboard, including a prompt to add your first channel.
 Installation is now complete. In the next step of onboarding, select the channels you want to add. Refer to the documentation for each channel for detailed steps.
 
 <Aside type="note">
-If you have any questions or run into issues during installation, contact the Out of the Blue Support Team at [connect@outoftheblue.ai](mailto:connect@outoftheblue.ai). You can also join our [Slack Support Channel](https://outoftheblueai.slack.com/archives/C09NTEG2XCK) to get real-time help, updates, and tips from our team.
+If you have any questions or run into issues during installation, contact the Consequential Support Team at [support@consequential.io](mailto:support@consequential.io).
 </Aside>
-
-{/* TODO: 17 image artifacts on DevRev ART-1339 could not be retrieved through the DevRev MCP — re-add manually. */}

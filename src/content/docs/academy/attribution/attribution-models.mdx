@@ -1,8 +1,12 @@
 ---
 title: Attribution Models
-description: Understand the simple and multi-touch attribution models available in Out of the Blue.
+description: Understand the simple and multi-touch attribution models available in Consequential.
 ---
 import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="caution">
+This page documents a full roster of attribution models (First Touch, Last Touch, Last Non-Direct Touch, Linear, Clicks-Only, Time-Decay, and Position-Based/U-W-Z-shaped). Checking the current Consequential (Pulse) codebase, the in-app attribution model selector currently only supports **First Click** and **Last Click**. The rest of this content may describe a roadmap/aspirational feature set or a predecessor product's capabilities rather than what's shipped today — please verify against the live app before publishing.
+</Aside>
 
 Attribution modeling is one of the most important concepts for understanding performance across your marketing channels. It helps you identify which touchpoints actually influence conversions, so you can invest your budget where it matters most.
 
@@ -147,7 +151,7 @@ Not ideal for:
 - Short or single-touch journeys
 - Campaigns with few interactions
 
-### 7. Clicks-Only (Out of the Blue proprietary model)
+### 7. Clicks-Only (Consequential proprietary model)
 
 **What it does:** Distributes credit across all click-based touchpoints, but prioritizes upper-funnel channels. Lower-funnel channels (email, direct, branded search) only receive credit if no upper-funnel channel exists in the journey.
 
@@ -192,15 +196,15 @@ Why Clicks-Only is useful:
 | Linear | Clicks | Equal credit to every touchpoint | Mid-funnel support and awareness tracking |
 | Position-Based | Clicks | Weighted across first, middle, and last touchpoints (such as U-shaped) | Balanced view across entire journey |
 | Time-Based | Clicks | More credit to recent interactions, less to early ones | Retargeting and behavior closer to conversion |
-| Clicks-Only (OTB) | Clicks | Credit distributed across upper-funnel clicks only; lower-funnel channels only credited if no upper-funnel exists | Prospecting performance and cleaner signal benchmarking |
+| Clicks-Only (Consequential) | Clicks | Credit distributed across upper-funnel clicks only; lower-funnel channels only credited if no upper-funnel exists | Prospecting performance and cleaner signal benchmarking |
 
-## How to use these models in Out of the Blue
+## How to use these models in Consequential
 
 ### For daily optimization
 
 Use models that help you act and course-correct fast.
 
-- **Clicks-Only (OTB):** Ideal for budget allocation and prospecting visibility. Helps you scale top-of-funnel channels and avoid bottom-funnel over-crediting. Use it to spot underperforming ads, creative fatigue, and conversion friction in real time.
+- **Clicks-Only (Consequential):** Ideal for budget allocation and prospecting visibility. Helps you scale top-of-funnel channels and avoid bottom-funnel over-crediting. Use it to spot underperforming ads, creative fatigue, and conversion friction in real time.
 - **Time-Based attribution:** Prioritizes recent touchpoints. Great for evaluating which recent campaigns or channels are influencing conversions today.
 
 ### For monthly reporting

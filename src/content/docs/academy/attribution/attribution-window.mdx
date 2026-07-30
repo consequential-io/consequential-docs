@@ -4,7 +4,11 @@ description: Learn how attribution windows determine how marketing touchpoints e
 ---
 import { Aside } from '@astrojs/starlight/components';
 
-Out of the Blue offers flexible attribution windows that help you understand how your marketing touchpoints influence conversions over time.
+<Aside type="caution">
+This page describes a broad set of attribution windows (1d through 90d, plus LTV) and an "Accrual Accounting Mode" gate. The current Consequential (Pulse) attribution model selector only supports First Click and Last Click (see the Attribution Models page), so it's unclear whether the full window/Accrual Mode system described below is implemented as-is. Please verify against the live app before publishing.
+</Aside>
+
+Consequential offers flexible attribution windows that help you understand how your marketing touchpoints influence conversions over time.
 
 Attribution windows are especially valuable for teams making data-driven decisions around ad spend, ROAS, CAC, LTV, and any conversion-based KPI.
 
@@ -15,7 +19,7 @@ An attribution window represents the length of time in which a marketing touchpo
 For example, with a 7-day window, the system may attribute any conversion that happens within 7 days after the touchpoint to that touchpoint.
 
 <Aside type="note">
-Attribution windows are available only when you use Accrual Accounting Mode inside Out of the Blue.
+Attribution windows are available only when you use Accrual Accounting Mode inside Consequential.
 </Aside>
 
 ## Available attribution windows

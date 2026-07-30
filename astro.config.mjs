@@ -60,6 +60,14 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Concepts',
+					items: [{ autogenerate: { directory: 'concepts' } }],
+				},
+				{
+					label: 'Guides',
+					items: [{ autogenerate: { directory: 'guides' } }],
+				},
+				{
 					label: 'Daily reports',
 					items: [{ autogenerate: { directory: 'daily-reports' } }],
 				},
@@ -71,7 +79,7 @@ export default defineConfig({
 					label: "How To's",
 					items: [
 						{ label: 'Onboarding Hub', items: [{ autogenerate: { directory: 'how-tos/onboarding' } }] },
-						{ label: 'OutOfTheBlue Pulse SDK Setup', items: [{ autogenerate: { directory: 'how-tos/pulse-sdk' } }] },
+						{ label: 'Pulse SDK Setup', items: [{ autogenerate: { directory: 'how-tos/pulse-sdk' } }] },
 						{
 							label: 'EdgeTag Setup & Implementation',
 							items: [
@@ -123,7 +131,7 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'Out of the Blue vs Other Tools (Comparisons)',
+					label: 'Consequential vs Other Tools (Comparisons)',
 					items: [{ autogenerate: { directory: 'comparisons' } }],
 				},
 				{

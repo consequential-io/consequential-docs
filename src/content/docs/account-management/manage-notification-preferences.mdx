@@ -5,19 +5,23 @@ sidebar:
   order: 4
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+import { Steps, Aside } from '@astrojs/starlight/components';
 
 Manage which notifications you receive and how they reach you.
 
 {/* TODO: migrate image artifact(s) artifact-13994 from ART-1232 — cannot be downloaded via DevRev MCP */}
 
+<Aside type="caution">
+This page previously described impact-level thresholds (High/Medium/Low), a choice of Email/SMS/Slack alert channels, and a "minimum dollar impact to capture" field. Those weren't found in the current Consequential app's Settings &gt; Preferences page — it currently exposes simple on/off toggles for specific notification types (see steps below), with no severity threshold, SMS/Slack channel, or dollar-impact filter. Please verify against the live app before publishing, in case this is a planned feature or lives elsewhere.
+</Aside>
+
 <Steps>
 
-1. Go to [outoftheblue.ai](https://outoftheblue.ai) and click **Login**.
-2. Navigate to **Account Settings** and select **Preferences**.
-3. Click **Notifications**.
-4. Select the impact level: **High**, **Medium**, or **Low**.
-5. Click **Alert Channels** to choose your notification methods: **Email**, **SMS**, or **Slack**.
-6. Update the **Minimum dollar impact to capture** (optional).
+1. Log in to the Consequential app at [app.consequential.io](https://app.consequential.io).
+2. Click your avatar in the sidebar, then click **Settings**.
+3. Click **Preferences**.
+4. Under **Email notifications**, toggle **Weekly digest**, **Alerts**, **Invitations**, and **Product updates** on or off.
+5. Under **In-app notifications**, toggle **Alerts**, **Mentions**, and **System messages** on or off.
+6. Click **Save** in the save bar to apply your changes.
 
 </Steps>

@@ -1,13 +1,13 @@
 ---
-title: Step by Step Guide to setup OutOfTheBlue Pulse JavaScript SDK on BigCommerce
-description: Install the OutOfTheBlue Pulse JavaScript SDK on a BigCommerce store to track errors and standard customer events.
+title: Step by Step Guide to setup the Consequential Pulse JavaScript SDK on BigCommerce
+description: Install the Consequential Pulse JavaScript SDK on a BigCommerce store to track errors and standard customer events.
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
 ## Introduction
 
-When installed on your storefront, the Out of the Blue Pulse JavaScript SDK monitors the following:
+When installed on your storefront, the Consequential Pulse JavaScript SDK monitors the following:
 
 - Any website errors occurring on the BigCommerce store.
 - Standard customer events that help you track drops or spikes, including:
@@ -19,19 +19,23 @@ When installed on your storefront, the Out of the Blue Pulse JavaScript SDK moni
   - Payment info submitted
   - Checkout completed
 
-To track these events, OutOfTheBlue provides two HTML script URLs that you configure in your BigCommerce storefront.
+To track these events, Consequential provides two HTML script URLs that you configure in your BigCommerce storefront.
 
-## OutOfTheBlue Events Tag ID
+## Consequential Events Tag ID
 
-When you sign up with OutOfTheBlue, the platform creates a default store view where you can see the events occurring on your default store. You can also configure multiple stores with OutOfTheBlue.
+When you sign up with Consequential, the platform creates a default store view where you can see the events occurring on your default store. You can also configure multiple stores with Consequential.
 
 <Aside type="note">
-For BigCommerce, OutOfTheBlue currently supports self-serve onboarding of only one store. To onboard multiple BigCommerce stores, contact `connect@outoftheblue.ai`.
+For BigCommerce, Consequential currently supports self-serve onboarding of only one store. To onboard multiple BigCommerce stores, contact `support@consequential.io`.
 </Aside>
 
-With each store created on the platform, OutOfTheBlue creates a tag identifier called `otb_events_tag_id`. This Tag ID is unique to each store. You receive your Tag ID when you sign up with Out of the Blue.
+With each store created on the platform, Consequential creates a tag identifier called `pulse_events_tag_id`. This Tag ID is unique to each store. You receive your Tag ID when you sign up with Consequential.
 
-## Configure OutOfTheBlue Pulse error script URL
+<Aside type="caution">
+The script URLs below are rebranded from an earlier, predecessor-product-specific version of this guide (host and tag-ID naming updated to the Consequential equivalents). The exact CDN URL could not be re-verified against the current SDK release in the `pulse` repo — confirm it with the team before publishing.
+</Aside>
+
+## Configure the Consequential Pulse error script URL
 
 Follow these steps to enable the Pulse error script on your BigCommerce store:
 
@@ -47,19 +51,19 @@ Follow these steps to enable the Pulse error script on your BigCommerce store:
 8. Set **Script Category** to **Essential**.
 9. Set **Script Type** to **URL**.
 10. Set **Load Method** to **Async**. This is important.
-11. Paste the error script URL provided to you by the OutOfTheBlue Customer Success team.
+11. Paste the error script URL provided to you by the Consequential Customer Success team.
 
 </Steps>
 
 The script URL uses the following format:
 
 ```text
-https://cdn.outoftheblue.ai/big_commerce/events/customer_events.min.js?otb_events_tag_id=OTB-250102-AE534
+https://cdn.consequential.io/big_commerce/events/customer_events.min.js?pulse_events_tag_id=CQ-250102-AE534
 ```
 
 The platform provides these URLs to you.
 
-## Configure OutOfTheBlue Pulse customer events script URL
+## Configure the Consequential Pulse customer events script URL
 
 Follow the steps for configuring the error script earlier in this topic to configure the customer events script on your BigCommerce store. On the Create Script page, set the following details:
 
@@ -102,6 +106,4 @@ To read more about the TagRocket APIs, visit the [TagRocket website](https://tag
 
 </Steps>
 
-This enables BigCommerce data layers, which let third-party analytics providers such as Google Analytics and OutOfTheBlue track standard customer events.
-
-{/* TODO: 14 image artifact(s) on DevRev ART-1245 could not be retrieved through the DevRev MCP — re-add manually. */}
+This enables BigCommerce data layers, which let third-party analytics providers such as Google Analytics and Consequential track standard customer events.

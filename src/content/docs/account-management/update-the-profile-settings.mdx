@@ -5,22 +5,22 @@ sidebar:
   order: 2
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+import { Steps, Aside } from '@astrojs/starlight/components';
 
-Update your profile information in the Out of the Blue app.
+Update your profile information in the Consequential app.
 
 {/* TODO: migrate image artifact(s) artifact-13981 from ART-1230 — cannot be downloaded via DevRev MCP */}
 
+<Aside type="caution">
+This page previously described a "Preferences" screen with just Name, Phone number, and Email fields under an "Account Settings" menu. In the current Consequential app, the closest match is the standalone **Profile** page (opened from the avatar menu), which exposes more fields than that — First name, Last name, Username, Phone, Date of birth, Gender, Department, and Designation — and doesn't include an editable Email field. Please verify this flow against the live app before publishing.
+</Aside>
+
 <Steps>
 
-1. Go to [outoftheblue.ai](https://outoftheblue.ai).
-2. Click the **Login** button to get started.
-3. Click **Account Settings**.
-4. Under account settings, click **Preferences**.
-5. Update the available fields:
-   - **Name** — auto-populated from your login profile.
-   - **Phone number** — used for SMS alerts.
-   - **Email** — can't be edited.
-6. Click **Save changes**.
+1. Log in to the Consequential app at [app.consequential.io](https://app.consequential.io).
+2. Click your avatar in the sidebar to open the account menu.
+3. Click **Profile**.
+4. Update the available fields, such as **First name**, **Last name**, **Phone**, **Username**, **Department**, and **Designation**.
+5. Click **Save changes**.
 
 </Steps>

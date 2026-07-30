@@ -1,11 +1,15 @@
 ---
 title: How to set up the Google Analytics API
-description: Create a project, enable the Google Analytics Reporting API, and generate API keys so Out of the Blue can access your Google Analytics data.
+description: Create a project, enable the Google Analytics Reporting API, and generate API keys so Consequential can access your Google Analytics data.
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+import { Steps, Aside } from '@astrojs/starlight/components';
 
-Google gives you access to some functionality of Google Analytics via its API so you can use it from another platform like Out of the Blue. These APIs allow Out of the Blue to programmatically access Google Analytics and extract data about cohorts, lifetime value, advanced segmentation, and more for further reporting and analytics.
+<Aside type="caution">
+In Consequential's product, GA4 connects through a self-serve, in-app OAuth popup flow (you click "Connect" in the app, authorize in a popup, and the connection finalizes automatically) rather than by manually creating a Google Cloud project, API key, OAuth client, or service account as described below. This page has not been verified against that flow — treat it as reference material for the underlying Google Analytics API concepts and confirm the actual in-app steps before publishing.
+</Aside>
+
+Google gives you access to some functionality of Google Analytics via its API so you can use it from another platform like Consequential. These APIs allow Consequential to programmatically access Google Analytics and extract data about cohorts, lifetime value, advanced segmentation, and more for further reporting and analytics.
 
 ## Step 1: Create a project
 
@@ -13,7 +17,7 @@ Google gives you access to some functionality of Google Analytics via its API so
 
 1. Sign in to Google's developer console.
 2. Create a new project: click **Select a project → New Project**.
-3. Assign a name to the project (for example, OutOfTheBlue AI Project), confirm your company and location, and click **Create**.
+3. Assign a name to the project (for example, Consequential Project), confirm your company and location, and click **Create**.
 
 </Steps>
 
@@ -33,7 +37,7 @@ Now that you enabled your Google Analytics API, download an API key and create d
 
 Depending on the API and the application you use to call the API, you have three different types of keys:
 
-- A simple text key, like `outofblue_ai_analytics`
+- A simple text key, like `consequential_analytics`
 - User OAuth credentials (see Step 3A)
 - A service account key (see Step 3B)
 
@@ -45,9 +49,9 @@ Now that you enabled the Analytics API, get your API key by creating your creden
 
 1. Create credentials: go to the **Credentials** tab on the left and click **Credentials** in **APIs & Services**.
 2. Select OAuth client ID: click **Create credentials** and select **OAuth Client ID**.
-3. Set the product name on the consent screen: click **Configure consent screen** and provide a product name (for example, OutoftheBlue AI). The rest are optional. Click **Save**.
+3. Set the product name on the consent screen: click **Configure consent screen** and provide a product name (for example, Consequential). The rest are optional. Click **Save**.
 4. Select your application type: choose **Other** as your application type and click **Create**.
-5. Save your client ID and client secret. You need them to make API calls from Out of the Blue.
+5. Save your client ID and client secret. You need them to make API calls from Consequential.
 
 </Steps>
 
@@ -59,11 +63,11 @@ This method works best when you use a third-party application to read Google Ana
 
 1. Create your credentials: click **Credentials** in **APIs & Services**.
 2. Select service account key: click **Create credentials** and select **Service Account Key**.
-3. Create a new service account: select **New service account**, give it a name, assign a role, and set a key type (choose **JSON**, recommended by Out of the Blue). Store your service account ID somewhere safe — you need it later to connect to the Google Analytics API.
+3. Create a new service account: select **New service account**, give it a name, assign a role, and set a key type (choose **JSON**, recommended by Consequential). Store your service account ID somewhere safe — you need it later to connect to the Google Analytics API.
 
    If you already have a project, go to the **Credentials** tab, click **Manage service accounts**, then click **Create service account**.
 
-4. Give your service account access to Google Analytics. In the previous step, a JSON file was downloaded. Open this file and copy the `client_email`, which looks like `otb@XXXX.iam.gserviceaccount.com`. Then go to **Google Analytics → Admin → View → User Management**. In GA4, this is now **Property Access Management**. Click the **+** button → **Add user**, add the copied service account email as a user, and click **Add**.
+4. Give your service account access to Google Analytics. In the previous step, a JSON file was downloaded. Open this file and copy the `client_email`, which looks like `consequential@XXXX.iam.gserviceaccount.com`. Then go to **Google Analytics → Admin → View → User Management**. In GA4, this is now **Property Access Management**. Click the **+** button → **Add user**, add the copied service account email as a user, and click **Add**.
 
 </Steps>
 

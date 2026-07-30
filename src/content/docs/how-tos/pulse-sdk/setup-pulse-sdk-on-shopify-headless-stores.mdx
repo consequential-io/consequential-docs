@@ -1,13 +1,13 @@
 ---
-title: Guide to setup OutOfTheBlue Pulse JavaScript SDK on Shopify Headless stores
-description: Install and configure the OutOfTheBlue Pulse JavaScript SDK on a headless Shopify store.
+title: Guide to setup the Consequential Pulse JavaScript SDK on Shopify Headless stores
+description: Install and configure the Consequential Pulse JavaScript SDK on a headless Shopify store.
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+import { Steps, Aside } from '@astrojs/starlight/components';
 
 ## Introduction
 
-The OutOfTheBlue Pulse JavaScript SDK enables third-party analytics for Shopify stores with a headless setup.
+The Consequential Pulse JavaScript SDK enables third-party analytics for Shopify stores with a headless setup.
 
 ### Purpose
 
@@ -21,17 +21,21 @@ For headless Shopify stores, the standard Shopify App Pixel cannot gather custom
 
 ## Installation
 
+<Aside type="caution">
+The snippet below is rebranded from an earlier, predecessor-product-specific version of this guide (script host, global variable, and tag ID naming updated to the Consequential equivalents). The exact CDN URL and global variable name could not be re-verified against the current SDK release in the `pulse` repo — confirm these with the team before publishing.
+</Aside>
+
 Add the following snippet before your website's closing `</head>` tag:
 
 ```html
-<script type="text/javascript">window.otbPulse=window.otbPulse||[];otbPulse.load=function(t,e){if(!t)return void console.error("[OTB Pulse SDK] Missing OTB_EVENTS_TAG_ID. SDK will not function.");window.otb_pulse_events_tag_id=t,window.otb_pulse_config=e=e||{};var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://cdn.outoftheblue.ai/shopify/events/customer_events.min.js";var o=document.getElementsByTagName("script")[0];o?o.parentNode.insertBefore(n,o):(document.head||document.body).appendChild(n),e.enableErrorTracking&&(function(){var i=document.createElement("script");i.type="text/javascript",i.async=!0,i.src="https://cdn.outoftheblue.ai/shopify/error_events.min.js?otb_events_tag_id="+t,o?o.parentNode.insertBefore(i,o):(document.head||document.body).appendChild(i)})();for(var r=function(c){return function(){otbPulse.push([c].concat(Array.prototype.slice.call(arguments,0)))}},a=["addEventProperties","addUserProperties","clearEventProperties","identify","resetIdentity","track","pulsePush"],l=0;l<a.length;l++)otbPulse[a[l]]=r(a[l])};otbPulse.load("OTB_EVENTS_TAG_ID",{enableErrorTracking:false,enableEventTracking:true});</script>
+<script type="text/javascript">window.pulseSDK=window.pulseSDK||[];pulseSDK.load=function(t,e){if(!t)return void console.error("[Consequential Pulse SDK] Missing PULSE_EVENTS_TAG_ID. SDK will not function.");window.pulse_events_tag_id=t,window.pulse_config=e=e||{};var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://cdn.consequential.io/shopify/events/customer_events.min.js";var o=document.getElementsByTagName("script")[0];o?o.parentNode.insertBefore(n,o):(document.head||document.body).appendChild(n),e.enableErrorTracking&&(function(){var i=document.createElement("script");i.type="text/javascript",i.async=!0,i.src="https://cdn.consequential.io/shopify/error_events.min.js?pulse_events_tag_id="+t,o?o.parentNode.insertBefore(i,o):(document.head||document.body).appendChild(i)})();for(var r=function(c){return function(){pulseSDK.push([c].concat(Array.prototype.slice.call(arguments,0)))}},a=["addEventProperties","addUserProperties","clearEventProperties","identify","resetIdentity","track","pulsePush"],l=0;l<a.length;l++)pulseSDK[a[l]]=r(a[l])};pulseSDK.load("PULSE_EVENTS_TAG_ID",{enableErrorTracking:false,enableEventTracking:true});</script>
 ```
 
-Replace `OTB_EVENTS_TAG_ID` with the Tag ID provided to you by the platform.
+Replace `PULSE_EVENTS_TAG_ID` with the Tag ID provided to you by the platform.
 
 ## Usage
 
-There are two ways to push standard customer events to OutOfTheBlue Pulse:
+There are two ways to push standard customer events to the Consequential Pulse SDK:
 
 - Using the Hydrogen Analytics UI SDK.
 - Placing the Pulse SDK in `onClick()` handlers (coming soon).
@@ -58,7 +62,7 @@ If the Hydrogen Analytics SDK is already installed in your frontend repository, 
 ```jsx
 import { useAnalytics } from '@shopify/hydrogen';
 import { useEffect } from 'react';
-import { pulsePush } from "@out-of-the-blue-ai/pulse";
+import { pulsePush } from "@consequential/pulse";
 
 export function ThirdPartyAnalyticsIntegration() {
   const { subscribe } = useAnalytics();
@@ -78,9 +82,9 @@ export function ThirdPartyAnalyticsIntegration() {
 
     events.forEach(event => {
       subscribe(event, (data) => {
-        // Push the event data to the OTB Pulse platform.
+        // Push the event data to the Consequential Pulse platform.
         // Failure conditions are handled.
-        window?.otbPulse?.pulsePush(event, data, "customer_event");
+        window?.pulseSDK?.pulsePush(event, data, "customer_event");
       });
     });
 
@@ -92,4 +96,4 @@ export function ThirdPartyAnalyticsIntegration() {
 }
 ```
 
-This component uses the `window?.otbPulse?.pulsePush()` function to send data to OutOfTheBlue Pulse whenever a subscribed event occurs.
+This component uses the `window?.pulseSDK?.pulsePush()` function to send data to the Consequential Pulse platform whenever a subscribed event occurs.
