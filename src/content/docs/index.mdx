@@ -16,7 +16,7 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 ## Explore the docs
 
@@ -46,23 +46,4 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 		href="/changelog/"
 		description="Notable changes, newest first."
 	/>
-</CardGrid>
-
-## Make it your own
-
-<CardGrid>
-	<Card title="Edit content" icon="pencil">
-		Pages live in `src/content/docs/`. Edit them in Markdown or MDX.
-	</Card>
-	<Card title="Wire up the sidebar" icon="setting">
-		Configure groups and order in `astro.config.mjs`.
-	</Card>
-	<Card title="Bring your own API spec" icon="document">
-		Replace `src/schemas/api.yaml` with your OpenAPI document to regenerate
-		the `/api/` reference.
-	</Card>
-	<Card title="Read the Starlight docs" icon="open-book">
-		The source of truth for everything this template uses:
-		[starlight.astro.build](https://starlight.astro.build/).
-	</Card>
 </CardGrid>
