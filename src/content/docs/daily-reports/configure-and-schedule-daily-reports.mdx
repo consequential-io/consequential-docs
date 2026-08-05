@@ -1,0 +1,154 @@
+---
+title: Configure and schedule daily reports
+description: Turn on the daily report, set its schedule and comparison, pin metrics, choose recipients, and deliver it by email or Slack from Settings.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The **Reports** settings page controls how your daily report is built and
+delivered: when it sends, which comparison and level of detail it uses, which
+metrics sit at the top, who receives it, and whether it arrives by email, Slack,
+or both.
+
+This guide shows you how to open the Reports settings, turn the daily report on,
+set its schedule, and configure recipients and delivery channels.
+
+## Prerequisites
+
+- The **Owner** or **Admin** role on the workspace. Other roles see the settings
+  in read-only mode and can't save changes.
+- At least one team member to add as a recipient. Members are managed on the
+  **Team** settings page.
+- To deliver by Slack, an incoming webhook URL from your Slack workspace.
+
+## Open the reports settings
+
+<Steps>
+
+1. In Consequential, open **Settings**.
+2. Select **Reports**.
+
+</Steps>
+
+The page is organized into four sections: **Schedule**, **Pinned metrics**,
+**Recipients**, and **Delivery channels**. Changes take effect after you save.
+
+<Aside type="note">
+	The **Reports** settings page controls report delivery. To change the wording
+	and structure of the report itself, use the **Report prompts** page instead.
+</Aside>
+
+## Turn on and schedule the report
+
+The **Daily report enabled** switch is the primary switch. Nothing sends while
+it's off, regardless of your other settings. Turn it on to start delivery.
+
+Set the following options under **Schedule**:
+
+| Option | What it does |
+| --- | --- |
+| **Daily report enabled** | Primary switch for delivery. Nothing sends while this is off. Off by default. |
+| **Send time** | The time of day the report sends, in 24-hour `HH:MM` format. |
+| **Timezone** | The timezone the send time is measured in. Defaults to UTC. |
+| **Comparison** | The baseline for comparing each day's metrics. |
+| **Report type** | How much detail the report includes. |
+| **AI summaries** | Include AI-written summary text in the report. On by default. |
+
+### Comparison options
+
+The comparison sets what "yesterday" is measured against, which shapes every
+change shown in the report.
+
+| Comparison | Baseline |
+| --- | --- |
+| **Same weekday, last year** | The same day of the week one year ago. This is the default and controls for both weekly and seasonal patterns. |
+| **Previous period** | The equivalent stretch of days immediately before the report period. |
+| **Same date, last year** | The same calendar date one year ago. |
+
+### Report type options
+
+| Report type | What you get |
+| --- | --- |
+| **Simple** | A headline summary and pillar health only. |
+| **Detailed** | The full root-cause report, with supporting tables and recommended actions. |
+
+## Pin metrics to the top
+
+Under **Pinned metrics**, choose the metrics you want to appear first in every
+report, in the order you add them. Pin up to 20 metrics.
+
+<Steps>
+
+1. Select **Add metric**.
+2. Choose a metric from the list. It appears as a chip in the order you added it.
+3. To remove a pinned metric, select the **✕** on its chip.
+
+</Steps>
+
+## Choose recipients
+
+Under **Recipients**, choose which team members receive the report. Add up to 50
+recipients.
+
+<Steps>
+
+1. Select **Add recipient**.
+2. Choose a team member from the list. Only active members of your workspace
+   appear.
+3. To remove a recipient, select the **✕** on their chip.
+
+</Steps>
+
+<Aside type="note">
+	Recipients must be active members of your workspace. Members who are removed
+	from the workspace or who have opted out of report emails are dropped
+	automatically at send time, so you don't need to prune the list yourself.
+</Aside>
+
+## Set delivery channels
+
+Under **Delivery channels**, choose how the report is delivered. You can enable
+email, Slack, or both.
+
+| Channel | Setup |
+| --- | --- |
+| **Email** | Turn on the **Email** toggle. Recipients receive the report at the email address on their account. On by default. |
+| **Slack** | Turn on the **Slack** toggle, then enter a **Slack webhook URL**. Off by default. |
+
+### Deliver by Slack
+
+<Steps>
+
+1. Create an incoming webhook in your Slack workspace and copy its URL. It looks
+   like `https://hooks.slack.com/...`.
+2. On the Reports settings page, turn on the **Slack** toggle.
+3. Paste the URL into the **Slack webhook URL** field.
+
+</Steps>
+
+<Aside type="caution">
+	When Slack delivery is on, the webhook URL is required and must be a full
+	`https://` URL. You can't save the page until you provide a valid URL.
+</Aside>
+
+## Save your changes
+
+Select **Save** in the save bar to apply your changes. A confirmation message
+tells you the report settings were saved. If a save doesn't go through, check
+that any required fields — such as the Slack webhook URL — are filled in, then
+try again.
+
+## Troubleshooting
+
+| Problem | Cause and resolution |
+| --- | --- |
+| The form is read-only and **Save** is unavailable | Editing report settings requires the **Owner** or **Admin** role. Ask a workspace owner or admin to make the change. |
+| No reports arrive after you turn on delivery | Confirm **Daily report enabled** is on, that you've added at least one recipient, and that you've enabled at least one delivery channel. |
+| The page won't save with Slack on | You must enter a valid `https://` **Slack webhook URL** when the Slack channel is enabled. Add the URL, then save. |
+| A recipient isn't receiving the report | The member may have been removed from the workspace or opted out of report emails. Confirm they're an active member on the **Team** settings page. |
+
+## Related
+
+- [View and interpret your daily report](/daily-reports/view-and-interpret-your-daily-report/) — open and read the report once it's delivered.
+- [How it works](/concepts/how-it-works/) — the mental model behind Consequential's data and metrics.
+- [Glossary](/concepts/glossary/) — definitions for the terms used across these docs.
