@@ -51,6 +51,7 @@ export default defineConfig({
 					label: 'Get started with Out of the Blue',
 					items: [
 						{ label: 'Overview', slug: 'get-started/overview' },
+						{ label: 'Create your account and connect your store', slug: 'get-started/create-your-account' },
 						{ label: 'Connect your store', slug: 'get-started/connect-your-store' },
 						{ label: 'Connect your data', slug: 'get-started/connect-your-data' },
 						{ label: 'Connect Meta Ads Manager', slug: 'get-started/connect-meta-ads-manager' },
