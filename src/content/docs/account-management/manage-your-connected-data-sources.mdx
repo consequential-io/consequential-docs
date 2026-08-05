@@ -1,0 +1,104 @@
+---
+title: Manage your connected data sources
+description: Connect, reconnect, and disconnect the data sources that feed your Consequential workspace from Settings → Integrations.
+sidebar:
+  order: 8
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Consequential turns the data from your store, ad platforms, and analytics tools into spend alerts and performance grades. The **Integrations** page in Settings is where you review every data source connected to your workspace and connect new ones yourself.
+
+This guide shows you how to open the Integrations page, connect a data source, manage the accounts a source syncs, and disconnect a source.
+
+## Prerequisites
+
+- Access to your Consequential account with a store selected in the sidebar store switcher. New connections attach to the active store.
+- The **Manager**, **Admin**, or **Owner** role to view the page. Only **Admin** and **Owner** can connect or disconnect sources. Other roles see a read-only view.
+
+<Aside type="note">
+The Consequential team labels some sources as **Coming soon** and sets these up for you, so you don't need to take any action.
+</Aside>
+
+## Open the Integrations page
+
+<Steps>
+
+1. In Consequential, open **Settings** from the sidebar.
+2. Select the **Integrations** tab. The **Data sources** section lists every source that feeds this workspace's metrics.
+
+</Steps>
+
+Each source shows its name, a status badge, and — once connected — the account it's linked to and the date it was connected.
+
+### Connection statuses
+
+| Status | What it means |
+| --- | --- |
+| **Connected** | The source is linked and syncing data into your workspace. |
+| **Disconnected** | The source was connected before but is no longer syncing. Reconnect it to resume. |
+| **Available** | The source is ready for you to connect. |
+| **Coming soon** | The Consequential team sets this source up for you. |
+
+## Connect a Shopify store
+
+Shopify connects through a hosted approval flow on Shopify's side.
+
+<Steps>
+
+1. Find your Shopify store in the **Data sources** list and click **Connect**.
+2. In the **Connect Shopify** dialog, enter your store domain, for example `acme.myshopify.com`.
+3. Click **Continue to Shopify**. Consequential sends you to Shopify to approve access.
+4. Approve the connection on Shopify. You return to the Integrations page and the store's status changes to **Connected**.
+
+</Steps>
+
+<Aside type="note">
+Connecting attaches the store to the store selected in your sidebar switcher. If you manage more than one store, confirm the correct store is active before you connect.
+</Aside>
+
+## Connect an ads, analytics, or email source
+
+Ad platforms, analytics tools, and email sources connect through Supermetrics in a popup window.
+
+<Steps>
+
+1. Find the source in the **Data sources** list and click **Connect**. A Supermetrics sign-in window opens.
+2. Sign in to the source and approve access. When the window closes, the source's status changes to **Connected**.
+3. In the **accounts** dialog that opens, select the accounts you want Consequential to sync, then confirm your selection.
+
+</Steps>
+
+If the connection window expires before you finish, the source stays unconnected. Click **Connect** to start again.
+
+## Manage the accounts a source syncs
+
+For a connected ads, analytics, or email source, you can change which accounts Consequential syncs at any time.
+
+<Steps>
+
+1. Find the connected source in the **Data sources** list.
+2. Click **Accounts**.
+3. Update your selection in the dialog, then confirm.
+
+</Steps>
+
+## Reconnect a source
+
+A source with a **Disconnected** status is no longer syncing. To resume it, click **Reconnect** and follow the same steps as the first connection.
+
+## Disconnect a source
+
+<Steps>
+
+1. Find the connected source in the **Data sources** list.
+2. Click **Disconnect**.
+3. Confirm in the dialog.
+
+</Steps>
+
+Disconnecting revokes Consequential's stored credentials for the source and pauses its data sync. Metrics that depend on the source stop updating until you reconnect it.
+
+<Aside type="caution">
+Disconnecting stops new data from flowing in. Reconnect the source to resume syncing.
+</Aside>
