@@ -1,6 +1,6 @@
 ---
 title: Manage your team
-description: Invite teammates, assign roles, and manage pending invitations from the Team settings page.
+description: Invite teammates, assign roles, and manage pending invitations and access requests from the Team settings page.
 sidebar:
   order: 1
 ---
@@ -85,6 +85,25 @@ Removing a member revokes their access to the workspace.
 </Steps>
 
 You can't remove yourself or the Owner.
+
+## Manage pending access requests
+
+When someone who isn't a member asks to join your workspace, their request appears in the **Pending access requests** section. Only **Owner** and **Admin** roles see this section, and it appears only while at least one request is pending. Each request shows the person's name, email, and when they requested access.
+
+To approve or deny a request:
+
+<Steps>
+
+1. On the **Team** page, find the request in the **Pending access requests** section.
+2. Do one of the following:
+   - Select **Approve** to admit the person as a **Viewer**. They join the **Members** list, where you can [change their role](#change-a-members-role).
+   - Select **Deny** to reject the request.
+
+</Steps>
+
+<Aside type="note">
+**Approve** and **Deny** take effect immediately, with no confirmation dialog.
+</Aside>
 
 ## Manage pending invitations
 
