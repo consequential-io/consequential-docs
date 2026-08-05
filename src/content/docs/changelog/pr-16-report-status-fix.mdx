@@ -1,0 +1,60 @@
+---
+title: "PR #16: Fix report status terminology"
+description: Source pull request for the Ready -> Sent report status fix in the daily reports guide.
+---
+
+Source: [consequential-docs PR #16](https://github.com/consequential-io/consequential-docs/pull/16)
+
+## docs: fix report status terminology (Ready -> Sent)
+
+## What changed
+
+The daily reports guide's status table and regenerate steps documented **Ready** as the terminal/completed status for a report. That's not what the product actually shows.
+
+## Why
+
+Verified directly against the live dev app (`dev.app.consequential.io`, tenant: thirdlove):
+
+- The Reports list UI shows a `sent` badge on completed reports, not `Ready`.
+- Confirmed via the raw API (`GET /api/v1/tenants/:tenantId/reports` and `.../reports/:date`) — the `status` field for a fully-generated report (e.g. `2026-07-24`, with populated `finalUri`) is literally `"sent"`. Across all 12 reports on this tenant, the only status values observed are `"failed"` and `"sent"` — `"ready"` never appears.
+
+## Changes
+
+- `## Report status` table: `**Ready**` -> `**Sent**`
+- `## Regenerate a report` step 3: "Wait for the status to return to **Ready**" -> "**Sent**"
+
+## Not changed (unverified, flagging for awareness)
+
+Could not confirm `Generating` or `No baseline` against real data — those states weren't present in the sample pulled. Left as-is since there's no evidence they're wrong, but someone with backend access may want to double check the full status enum.
+
+## How to verify
+
+- `npm run build` in `consequential-docs/` — passes.
+- Compare against a live tenant's Reports list / API response for the `status` field.
+
+## Diff
+
+```diff
+diff --git a/src/content/docs/guides/daily-reports.mdx b/src/content/docs/guides/daily-reports.mdx
+index 98a4c0f..d60c199 100644
+--- a/src/content/docs/guides/daily-reports.mdx
++++ b/src/content/docs/guides/daily-reports.mdx
+@@ -56,7 +56,7 @@ current status for each date:
+ | Status | Meaning |
+ |--------|---------|
+ | **Generating** | The report is being built. Check back shortly. |
+-| **Ready** | The report is complete and ready to read. |
++| **Sent** | The report is complete and ready to read. |
+ | **No baseline** | There isn't enough comparable history yet to build a report for this date. |
+ | **Failed** | Generation ran into an error. Regenerate the report to try again. |
+
+@@ -77,7 +77,7 @@ generate it again.
+
+ 2. Select **Regenerate**.
+
+-3. Wait for the status to return to **Ready**. Regenerating replaces the existing
++3. Wait for the status to return to **Sent**. Regenerating replaces the existing
+    report for that date with a fresh one.
+
+ </Steps>
+```
