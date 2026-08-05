@@ -3,41 +3,51 @@ title: Errors
 description: HTTP status codes and error shapes returned by the API.
 ---
 
-Every error response has the same JSON shape:
+import { Aside } from '@astrojs/starlight/components';
+
+Every error response from the standard envelope has this shape:
 
 ```json
 {
-  "code": "invalid_request",
-  "message": "The `name` field is required.",
-  "request_id": "req_01H8Z9XJ7M3K4P5Q6R7S8T9V0W"
+  "success": false,
+  "message": "Human-readable summary",
+  "code": "SOME_ERROR_CODE",
+  "statusCode": 400,
+  "errors": {},
+  "meta": { "timestamp": "2026-07-29T12:00:00.000Z", "location": "..." }
 }
 ```
 
-Include `request_id` whenever you contact support — it lets us trace the
-specific call in our logs.
+`code` is a specific, upper-snake-case identifier (for example `TENANT_CONTEXT_REQUIRED`, `STORE_NOT_FOUND`) — check the [API reference](/api/) for the specific codes each endpoint can return.
+
+<Aside type="note">
+The one exception is the OAuth surface (`/oauth/*`), which returns raw RFC 6749-shape errors (`{"error": "...", "error_description": "..."}`), not this envelope — see the [API reference](/api/) OAuth section for details.
+</Aside>
 
 ## Status codes
 
-| Status | Meaning                                                         |
-| ------ | --------------------------------------------------------------- |
-| `200`  | OK. The request succeeded.                                      |
-| `201`  | Created. A new resource was created.                            |
-| `204`  | No Content. The request succeeded and there is no response body.|
-| `400`  | Bad Request. The request was malformed. See `code`.             |
-| `401`  | Unauthorized. The API key is missing or invalid.                |
-| `403`  | Forbidden. The API key lacks the required scope.                |
-| `404`  | Not Found. The requested resource does not exist.               |
-| `409`  | Conflict. The request collides with current state.              |
-| `429`  | Too Many Requests. You hit a rate limit — back off and retry.   |
-| `500`  | Internal Server Error. Something went wrong on our side.        |
+| Status | Meaning |
+| --- | --- |
+| `200` | OK. The request succeeded. |
+| `201` | Created. A new resource was created. |
+| `400` | Bad Request — validation failure, missing required field, or invalid state transition. |
+| `401` | Unauthorized — missing, invalid, or expired credentials. |
+| `403` | Forbidden — authenticated, but lacking the required role/permission. |
+| `404` | Not Found. |
+| `409` | Conflict — e.g. an email or identifier that's already taken. |
+| `502` | Upstream service unavailable (for example the Cube.js analytics sidecar, or a third-party integration). |
+| `503` | The requested data or feature isn't ready yet (for example pre-aggregations still warming up), or the endpoint is temporarily unavailable. |
+| `500` | Internal Server Error. |
 
-## Common error codes
+## Common error codes seen across the API
 
-| `code`               | When you'll see it                                                |
-| -------------------- | ------------------------------------------------------------------ |
-| `invalid_request`    | A field is missing, wrong type, or out of range.                  |
-| `authentication`     | The API key is invalid, revoked, or not provided.                 |
-| `permission_denied`  | The key is valid but lacks the required scope.                    |
-| `not_found`          | The resource ID does not exist on this account.                   |
-| `rate_limited`       | Too many requests in a short window.                              |
-| `internal`           | An unexpected server-side failure.                                |
+| `code` | When you'll see it |
+| --- | --- |
+| `TENANT_CONTEXT_REQUIRED` | An `X-Tenant-ID` header (or equivalent) was required but missing. |
+| `*_NOT_FOUND` | The requested resource ID doesn't exist, or you don't have access to it. |
+| `INVALID_*` | A query or body field failed validation. |
+| `CUBE_UNAVAILABLE` | The analytics data service is briefly unreachable — retry shortly. |
+| `PREAGG_WARMING` | The requested data's pre-aggregations are still building. |
+| `FORBIDDEN_TOKEN_TYPE` | The wrong kind of token was used for this endpoint (for example an OAuth-issued token on an endpoint expecting a normal session token). |
+
+This isn't an exhaustive list — many endpoints have domain-specific codes (for example `EMAIL_TAKEN`, `DEFAULT_STORE_DELETION`, `SUPERMETRICS_CONNECT_DISABLED`). Check the individual endpoint's page in the [API reference](/api/) for the specific codes it can return.

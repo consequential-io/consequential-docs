@@ -1,11 +1,11 @@
 ---
 title: Snowflake connection guide
-description: Permissions and steps to connect Snowflake data to Out of the Blue using OAuth2 or key-pair authentication.
+description: Permissions and steps to connect Snowflake data to Consequential using OAuth2 or key-pair authentication.
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-This guide contains all permissions and requirements for connecting Snowflake data to Out of the Blue.
+This guide contains all permissions and requirements for connecting Snowflake data to Consequential. Consequential connects to Snowflake through its Supermetrics-powered data pipeline.
 
 ## Required permissions
 
@@ -53,7 +53,7 @@ For the first step, choose to authenticate the connection using either OAuth2 or
 
    ```sql
    CREATE SECURITY INTEGRATION
-   "XXXX App"
+   "Supermetrics App"
    TYPE = OAUTH
    ENABLED = TRUE
    OAUTH_CLIENT = CUSTOM
@@ -61,7 +61,7 @@ For the first step, choose to authenticate the connection using either OAuth2 or
    OAUTH_REDIRECT_URI = 'https://xxxxxxx.com/login-complete';
    ```
 
-   Second command:
+   Use the same integration name in both commands. Second command:
 
    ```sql
    SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS('Supermetrics App');

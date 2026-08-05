@@ -1,58 +1,83 @@
 ---
 title: How it works
-description: The high-level mental model of the product — objects, lifecycle, and where things live.
+description: The mental model behind Consequential — core objects, how data flows, and a tour of the Home dashboard.
 ---
 
-import { Aside, FileTree } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
-This page explains the **mental model** behind [your product]. Reading it once
+This page explains the **mental model** behind Consequential. Reading it once
 should make the rest of the docs easier to navigate.
 
 <Aside type="note">
 	An **explanation** page is the place for "why" and "how it fits together."
-	Save step-by-step instructions for **[Guides](/guides/example/)** and exhaustive
-	field lists for **[Reference](/reference/overview/)**.
+	Save step-by-step instructions for **[Guides](/guides/send-your-first-request/)**
+	and exhaustive field lists for **[Reference](/reference/overview/)**.
 </Aside>
 
 ## Core objects
 
-The product is organized around a small set of objects:
+Consequential is organized around a small set of objects:
 
-- **Account** — the top-level container. Every other object belongs to one account.
-- **User** — a person who can sign in and act on behalf of an account.
-- **Widget** — the primary resource your customers create and manage. *(Rename to match your domain.)*
-- **Event** — an immutable record of something that happened. Powers webhooks and audit logs.
+- **Tenant** — the top-level container, one per brand (for example, "Acme Co.").
+  Every user, store, integration, and metric belongs to exactly one tenant.
+- **Store** — a specific storefront under a tenant (for example a brand's US, UK,
+  DE, and CA storefronts). Most dashboards and metrics are viewed for one store
+  at a time, using the store switcher at the top of the app.
+- **User** — a person who signs in with Google OAuth and is attached to one or
+  more tenants with a role such as Admin.
+- **Metric** — a defined KPI (CAC, ROAS, MER, AOV, and similar) computed from
+  your connected data. See the [Metrics](/academy/metrics/) section for
+  definitions of each one.
+- **Attribution model** — the rule used to decide which channel gets credit for
+  a conversion (last-click, first-click, or platform-reported). See
+  [Attribution](/academy/attribution/attribution-models/).
+- **Daily report** — an automated, AI-generated summary of a store's previous
+  day emailed to a tenant's team. See the
+  [Daily reports](/daily-reports/view-and-interpret-your-daily-report/) guide.
 
-Rename, remove, or add objects so they match your own domain. The point of
-this page is to give a new reader a one-screen overview.
-
-## Lifecycle
-
-A typical widget flows through these states:
+## How data flows
 
 ```
-draft → active → archived
+Connect a source (Shopify, Meta, Google Ads, GA4, ...)
+        ↓
+Consequential ingests and aggregates the data
+        ↓
+Surfaces on Home, Metrics, and the Acquisition Dashboard
+        ↓
+Optionally summarized each morning in your Daily Report
 ```
 
-Transitions happen either through the **API**, the **dashboard**, or
-**scheduled jobs** the platform runs on your behalf.
+Shopify is connected by installing the Consequential app from your store's
+admin. Ad and analytics platforms (Meta, Google Ads, GA4) are currently
+connected by Consequential's team on your behalf — see
+[Get started](/get-started/overview/).
 
-## How a typical project is structured
+## Your Home dashboard
 
-<FileTree>
+Signing in lands you on **Home**, which is what a new workspace looks like
+before you've connected everything:
 
-- your-app/
-  - .env
-  - src/
-    - **client.ts** initializes the SDK with your API key
-    - widgets/
-      - create.ts
-      - list.ts
-  - package.json
+- **Sidebar** — under Dashboard: **Home**, **Analyze**, and **Metrics**. Below
+  that: Notifications, Upgrade, Support, and Settings.
+- **Workspace switcher** (top left) — pick which tenant and store you're
+  viewing, for example "Acme Co. US."
+- **Date range picker** (top right) — the window every metric and chart on the
+  page is computed over.
+- **Finish setting up your workspace** — a short checklist that tracks your
+  onboarding progress: connect a source, tell us about your business, invite
+  your team, connect ad & analytics sources, and pin your first metric. A
+  "Watch the walkthrough" video sits above the checklist but isn't counted in
+  its progress.
+- **Pinned metrics** — empty until you star a metric from the
+  [Metrics](/academy/metrics/) page; starred metrics then show up here as an
+  at-a-glance summary every time you open Home.
 
-</FileTree>
+<Aside type="tip">
+	If Home looks mostly empty, that usually means no metrics are pinned yet
+	rather than something being broken — head to Metrics and star a few.
+</Aside>
 
 ## What's next
 
 - **[Glossary](/concepts/glossary/)** — definitions for the terms used across the docs.
-- **[Quickstart](/get-started/quickstart/)** — try it end-to-end.
+- **[Send your first API request](/guides/send-your-first-request/)** — try the API end-to-end.

@@ -1,26 +1,52 @@
 ---
-title: How to manage the store preferences
-description: Set up and update your store preference from account settings.
+title: How to switch stores and manage display preferences
+description: Switch between a tenant's stores, and set display preferences like timezone and date format.
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+import { Steps, Aside } from '@astrojs/starlight/components';
 
-## Set up store preference
+<Aside type="note">
+	"Store preferences" here covers two separate things: **switching which
+	store you're viewing** (done from the sidebar, not Settings) and **display
+	preferences** like timezone and date format (done from Settings).
+</Aside>
 
-<Steps>
-
-1. Log in to your account.
-2. In the top right corner menu, click **Account Settings**.
-3. Click **Store Preference**.
-
-</Steps>
-
-## Update or change the store preference
+## Switch stores
 
 <Steps>
 
-1. Open your web browser and go to [outoftheblue.ai](https://outoftheblue.ai).
-2. In the top right corner, find the **Store** option.
-3. Select the dropdown option and update it according to the location.
+1. Log in at [app.consequential.io](https://app.consequential.io).
+2. Click the workspace switcher in the **top left** of the sidebar (shows
+   your current tenant and store, for example "Acme Co. IN").
+3. Pick a different store from the **Stores** list, or click **Add Store**
+   to connect a new one.
 
 </Steps>
+
+## Update display preferences
+
+<Steps>
+
+1. Click **Settings** in the **bottom left** of the sidebar, below Support.
+2. Open the **Preferences** tab (the default tab).
+3. At the top, an **Active context** panel confirms which tenant and store
+   you're currently editing preferences for.
+4. Under **Display**, set: Theme, Timezone (defaults to the current store's
+   timezone if left blank), Language, Date format, Number locale, Currency
+   display (for example, symbol vs. code), Default landing page, and
+   Default chart comparison (the comparison period used for the dotted
+   line on metric charts, unless a shop-level default is set).
+5. Click **Save changes** (or **Discard** to undo).
+
+</Steps>
+
+<Aside type="tip">
+	Switching tenant or store always happens from the sidebar switchers, not
+	from Settings — the Active context panel is read-only.
+</Aside>
+
+<Aside type="note">
+	The same Preferences tab also has **Email notifications** and **In-app
+	notifications** sections — see
+	[Manage notification preferences](/account-management/manage-notification-preferences/).
+</Aside>

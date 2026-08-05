@@ -3,38 +3,46 @@ title: Glossary
 description: Definitions for the terms used throughout these docs.
 ---
 
-A short glossary helps new readers parse the rest of the docs. Replace these
-entries with terms specific to your product.
+A short glossary to help you parse the rest of the docs.
 
-## Account
+## Tenant
 
-The top-level container. Every other object — users, widgets, events — belongs
-to exactly one account.
+The top-level container for a brand's Consequential workspace (for example,
+"Acme Co."). Every user, store, integration, metric, and daily report
+belongs to exactly one tenant.
+
+## Store
+
+A specific storefront under a tenant — for example a brand's separate US,
+UK, DE, and CA storefronts. Most dashboards and metrics are scoped to one
+store at a time via the store switcher.
+
+## Metric
+
+A defined KPI (CAC, ROAS, MER, AOV, and similar) computed from your
+connected data. See [Metrics](/academy/metrics/) for definitions.
+
+## Attribution model
+
+The rule used to decide which marketing channel gets credit for a
+conversion — last-click, first-click, or platform-reported. See
+[Attribution](/academy/attribution/attribution-models/).
+
+## Daily report
+
+An automated, AI-generated summary of a store's previous day's performance,
+emailed to a tenant's team each morning. See the
+[Daily reports guide](/daily-reports/view-and-interpret-your-daily-report/).
+
+## Bearer JWT
+
+The token used to authenticate REST API requests, obtained by signing in.
+Tenant-scoped endpoints additionally require an `X-Tenant-ID` header or a
+`:tenantId` path parameter. See **[Authentication conventions](/reference/overview/)**.
 
 ## API key
 
-A bearer token used to authenticate requests. See **[Authentication](/get-started/authentication/)**.
-
-## Event
-
-An immutable record describing something that happened on an account. Events
-power webhooks and the audit log.
-
-## Idempotency key
-
-A client-generated string that makes it safe to retry a request without
-creating duplicates.
-
-## Sandbox
-
-An isolated environment for testing. Data created in the sandbox never affects
-production.
-
-## Webhook
-
-An HTTP callback the platform sends to a URL you control whenever an event
-occurs.
-
-## Widget
-
-The primary resource in the example API. Rename to match your own domain.
+A separate credential (distinct from the Bearer JWT above) used to connect
+an AI assistant such as Claude to Consequential over MCP. See
+[Create API keys](/how-tos/onboarding/create-api-keys/) and the
+[MCP Guide](/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/).

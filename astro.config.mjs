@@ -9,7 +9,12 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://consequential.io',
+	site: 'https://docs.consequential.io',
+	redirects: {
+		// Old page was a stale duplicate of `daily-reports/view-and-interpret-your-daily-report`
+		// (had gone out of date on the Regenerate behavior); consolidated into that page.
+		'/guides/daily-reports/': '/daily-reports/view-and-interpret-your-daily-report/',
+	},
 	integrations: [
 		sitemap(),
 		starlight({
@@ -21,6 +26,7 @@ export default defineConfig({
 				Header: './src/components/CustomHeader.astro',
 				Hero: './src/components/CustomHero.astro',
 				Footer: './src/components/CustomFooter.astro',
+				Search: './src/components/Search.astro',
 			},
 			plugins: [
 				// Adds a "Copy / View / Open in Claude / Open in ChatGPT" dropdown to
@@ -48,7 +54,7 @@ export default defineConfig({
 			],
 			sidebar: [
 				{
-					label: 'Get started with Out of the Blue',
+					label: 'Get started',
 					items: [
 						{ label: 'Overview', slug: 'get-started/overview' },
 						{ label: 'Create your account and connect your store', slug: 'get-started/create-your-account' },
@@ -62,14 +68,23 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'Daily reports',
-					items: [{ autogenerate: { directory: 'daily-reports' } }],
+					label: 'Concepts',
+					items: [{ autogenerate: { directory: 'concepts' } }],
+				},
+				{
+					// Product-feature usage guides. Kept as its own group, separate from
+					// "How To's" (technical setup/implementation) and "Developers" (API/SDK).
+					label: 'Guides',
+					items: [
+						{ label: 'Daily Reports', items: [{ autogenerate: { directory: 'daily-reports' } }] },
+						{ label: 'Acquisition Dashboard', items: [{ autogenerate: { directory: 'acquisition-dashboard' } }] },
+					],
 				},
 				{
 					label: "How To's",
 					items: [
 						{ label: 'Onboarding Hub', items: [{ autogenerate: { directory: 'how-tos/onboarding' } }] },
-						{ label: 'OutOfTheBlue Pulse SDK Setup', items: [{ autogenerate: { directory: 'how-tos/pulse-sdk' } }] },
+						{ label: 'Pulse SDK Setup', items: [{ autogenerate: { directory: 'how-tos/pulse-sdk' } }] },
 						{
 							label: 'EdgeTag Setup & Implementation',
 							items: [
@@ -77,7 +92,28 @@ export default defineConfig({
 								{ label: 'EdgeTag Basics', items: [{ autogenerate: { directory: 'how-tos/edgetag-setup/edgetag-basics' } }] },
 							],
 						},
-						{ label: 'How CDP works & How to begin', items: [{ autogenerate: { directory: 'how-tos/cdp' } }] },
+						// Setting up Consequential's own Pixel/CDP for your store (business/marketer task) —
+						// not to be confused with "CDP SDK Reference" under Developers, which is the
+						// engineering-facing event/protocol spec for integrating against it.
+						{ label: 'Consequential Pixel (CDP) Setup', items: [{ autogenerate: { directory: 'how-tos/cdp' } }] },
+					],
+				},
+				{
+					// Business-user integrations: connecting external platforms Consequential reads from.
+					// Developer-facing SDK/protocol docs live under "Developers" instead.
+					label: 'Integrations & Platform Setup',
+					items: [
+						{ label: 'Analytics Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/analytics-integrations' } }] },
+						{ label: 'Ads & Marketing Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/ads-marketing-integrations' } }] },
+						{ label: 'E-Commerce Platform Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/ecommerce-integrations' } }] },
+					],
+				},
+				{
+					label: 'Consequential Academy',
+					items: [
+						{ label: 'Metrics', items: [{ autogenerate: { directory: 'academy/metrics' } }] },
+						{ label: 'Attribution', items: [{ autogenerate: { directory: 'academy/attribution' } }] },
+						{ label: 'MCP Guide', items: [{ autogenerate: { directory: 'academy/mcp-guide' } }] },
 					],
 				},
 				{
@@ -94,13 +130,19 @@ export default defineConfig({
 					items: [{ autogenerate: { directory: 'account-management' } }],
 				},
 				{
-					label: 'Integrations & Platform Setup',
+					label: 'Consequential vs Other Tools (Comparisons)',
+					items: [{ autogenerate: { directory: 'comparisons' } }],
+				},
+				{
+					// Everything an engineer needs to build against Consequential, in one place:
+					// API quickstart, the CDP's engineering-facing SDK/protocol reference (moved here
+					// from "Integrations & Platform Setup", which is now business-integrations-only),
+					// error/response-shape reference, and the generated OpenAPI reference.
+					label: 'Developers',
 					items: [
-						{ label: 'Analytics Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/analytics-integrations' } }] },
-						{ label: 'Ads & Marketing Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/ads-marketing-integrations' } }] },
-						{ label: 'E-Commerce Platform Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/ecommerce-integrations' } }] },
+						{ slug: 'guides/send-your-first-request' },
 						{
-							label: 'CDP Integrations',
+							label: 'CDP SDK Reference',
 							items: [
 								{ slug: 'integrations-platform-setup/cdp-integrations/overview-to-integrate-our-system-into-your-site-or-app' },
 								{ slug: 'integrations-platform-setup/cdp-integrations/server-side-cookie' },
@@ -110,22 +152,11 @@ export default defineConfig({
 								{ label: 'HTTP', items: [{ autogenerate: { directory: 'integrations-platform-setup/cdp-integrations/http' } }] },
 							],
 						},
+						{ label: 'Reference', items: [{ autogenerate: { directory: 'reference' } }] },
+						// API reference pages auto-generated from `src/schemas/api.yaml`.
+						...openAPISidebarGroups,
 					],
 				},
-				{
-					label: 'Out of the Blue Academy',
-					items: [
-						{ label: 'Metrics', items: [{ autogenerate: { directory: 'academy/metrics' } }] },
-						{ label: 'Attribution', items: [{ autogenerate: { directory: 'academy/attribution' } }] },
-						{ label: 'MCP Guide', items: [{ autogenerate: { directory: 'academy/mcp-guide' } }] },
-					],
-				},
-				{
-					label: 'Out of the Blue vs Other Tools (Comparisons)',
-					items: [{ autogenerate: { directory: 'comparisons' } }],
-				},
-				// API reference pages auto-generated from `src/schemas/api.yaml`.
-				...openAPISidebarGroups,
 				{
 					label: 'Changelog',
 					slug: 'changelog',

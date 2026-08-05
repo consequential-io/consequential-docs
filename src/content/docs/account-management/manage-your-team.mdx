@@ -11,13 +11,17 @@ Invite colleagues to your Consequential workspace, control what each person can 
 
 ## Prerequisites
 
-- A Consequential workspace at [app.consequential.ai](https://app.consequential.ai).
+- A Consequential workspace at [app.consequential.io](https://app.consequential.io).
 - An **Owner**, **Admin**, or **Manager** role in the workspace to view the team.
 - An **Owner** or **Admin** role to invite people, change roles, or remove members. Managers can view the team but can't make changes.
 
 ## Roles
 
 Every member has one role per workspace. The role controls what the member can do.
+
+<Aside type="caution">
+Directly confirmed on the live Team settings page: the Role dropdown defaults to **VIEWER**, and an existing pending invitation used **Admin** — so Admin and Viewer are real. The app went unreachable (local dev environment outage) before the dropdown could be opened to confirm the full list, so **Owner, Manager, and Editor below are not yet independently verified** — they may be accurate, outdated, or incomplete. Re-check against the live Role dropdown before treating this table as final.
+</Aside>
 
 | Role | Access |
 |------|--------|
@@ -35,15 +39,23 @@ You can't assign the **Owner** role from the Team page. Ownership stays with the
 
 <Steps>
 
-1. Log in to [app.consequential.ai](https://app.consequential.ai).
+1. Log in to [app.consequential.io](https://app.consequential.io).
 2. Open **Settings**, then select the **Team** tab.
 3. Review the **Members** list. Each row shows the member's name, email, role, and when they were last active. Your own row is marked with a **You** badge.
 
 </Steps>
 
+<Aside type="caution">
+On the live Team page for a real tenant, the Members list rendered as "No members yet" rather than a populated table, so the exact row columns above (name/email/role/last-active, **You** badge) couldn't be confirmed against real data before the app became unreachable. Re-check against a tenant with members once available.
+</Aside>
+
 ## Invite people
 
 Send invitations to up to 5 people at a time. Each invitee receives an email with a link to join your workspace.
+
+<Aside type="caution">
+The "5 people at a time" limit is not yet independently confirmed — the live page showed an **+ Add another** control without a visible cap before the app became unreachable. Verify the actual limit before relying on this number.
+</Aside>
 
 <Steps>
 

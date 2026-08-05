@@ -1,0 +1,78 @@
+---
+title: Understand the Acquisition Dashboard
+description: Find which channels, campaigns, ad sets, creatives, and landing pages drive revenue and new customers, and at what cost.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The Acquisition Dashboard answers one question: which channels, campaigns, ad sets, creatives, and landing pages are driving revenue and new customers — and at what spend efficiency. It covers paid and organic acquisition together, not just ad platforms.
+
+## Prerequisites
+
+- A connected Shopify store and at least one connected ad datasource.
+- Consequential's daily data pipeline needs to have run at least once. Until then, some rows may show as pending or stale.
+
+## Where to find it
+
+In Consequential, open **Analyze → Acquisition**. The dashboard opens on the **Channels** tab by default.
+
+## The five tabs
+
+<Steps>
+
+1. **Channels** — every dollar of revenue classified into a taxonomy: Paid Ads, Email Marketing, Organic, Direct, Referrals, Marketplaces, Unattributed, and Others. Rows expand from category to sub-category to daily detail.
+2. **Campaigns**, **Ad sets**, and **Creatives** — entity-level performance for your connected ad platforms, with letter grades, performance segments, and recommended actions (see below). **Creatives** rows link to a detail page with a daily performance trend for that creative.
+3. **Pages** — landing-page performance, one row per ad-and-page pair.
+
+</Steps>
+
+<Aside type="note">
+Platform-reported metrics (spend, clicks, impressions, CTR, and the platform's own revenue/ROAS numbers) are only available on Campaigns, Ad sets, and Creatives — the Channels and Pages tabs don't have a platform-data equivalent.
+</Aside>
+
+## Filters
+
+- **Period** — 7 days, 30 days, 90 days, month-to-date, or year-to-date.
+- **Attribution model** — Last click, First click, or the platform's own reported ("data-driven") numbers.
+- **Compare to previous period** — toggles a comparison column against the prior equivalent period.
+- **Ad provider** and **campaign status** filters — campaign status only applies to the Campaigns, Ad sets, and Creatives tabs.
+
+## Reading the metrics
+
+- **Spend, clicks, impressions, CTR** — platform-reported, unaffected by attribution model.
+- **Revenue, orders, ROAS, CPA, CVR** — each comes in two forms: what the ad platform itself reports, and what Consequential attributes based on your selected attribution model. These can differ, especially under Last click vs. First click.
+- **New vs. returning customer split** — revenue, CAC, ROAS, and AOV are all available broken out by new customers (`NC`) and returning customers (`RC`).
+- **CAC** — ad spend divided by orders. See the [CAC](/academy/metrics/cac/), [NC-CAC](/academy/metrics/nc-cac/), and [RC-CAC](/academy/metrics/rc-cac/) metric pages for exact formulas.
+- **POAS and MER** — profitability-based metrics, only shown once your tenant has profitability configured (see Settings below). See [POAS](/academy/metrics/poas/) and [MER](/academy/metrics/mer/).
+- **iROAS** — incremental ROAS, comparing this period's ROAS to the prior period's.
+- **Match rate** — the share of orders each ad provider was able to match back to its own click or view data.
+
+## Grades and recommended actions
+
+On the Campaigns, Ad sets, and Creatives tabs, each row gets a letter grade (A–D) built from CTR, ROAS, CVR, and other signals, plus:
+
+- A **performance segment** — Winners, High potential, or Iteration needed.
+- A **recommended action** based on that segment.
+- A **percentile rank** against comparable entities.
+- A daily grade history you can drill into (Creatives link to a full detail page for this).
+
+## Settings
+
+Under **Settings → Acquisition**:
+
+- **Order-side attribution** — when this is off, the whole dashboard falls back to platform-only numbers (spend, clicks, impressions, CTR, CPM); attributed revenue, CAC, and the new/returning split all require this to be on.
+- **Profitability inputs** — set your ad spend percentage and contribution margin percentage here to unlock the POAS and MER columns. Leaving either blank hides those columns entirely, rather than showing an estimate.
+
+## Troubleshooting
+
+| Problem | Cause and resolution |
+| --- | --- |
+| The dashboard is empty | You need a connected Shopify store and at least one connected ad datasource. See [Connect your data](/get-started/connect-your-data/) to check what's connected. |
+| Data looks out of date | The daily pipeline may not have run yet, or is still processing. Data refreshes once a day. |
+| POAS and MER columns are missing | Set both your ad spend percentage and contribution margin percentage under **Settings → Acquisition**. |
+| Attributed numbers look very different from platform numbers | Expected — they're computed under your selected attribution model, not the platform's own methodology. Try switching between Last click, First click, and platform-reported to compare. |
+
+## Related
+
+- [CAC](/academy/metrics/cac/), [NC-CAC](/academy/metrics/nc-cac/), [RC-CAC](/academy/metrics/rc-cac/) — cost-per-acquisition metric definitions.
+- [POAS](/academy/metrics/poas/), [MER](/academy/metrics/mer/) — profitability metric definitions.
