@@ -1,21 +1,17 @@
 ---
 import Default from '@astrojs/starlight/components/Footer.astro';
-import eklineMark from '../assets/ekline-mark.svg';
+import consequentialMark from '../assets/consequential-mark.svg';
 ---
 
 <Default><slot /></Default>
 
-<p class="ekline-credit">
-	<span
-		class="ekline-mark"
-		style={`--ekline-mark-url: url(${eklineMark.src})`}
-		aria-hidden="true"
-	></span>
+<p class="consequential-credit">
+	<img class="consequential-mark" src={consequentialMark.src} alt="" />
 	Maintained by <a href="https://consequential.io" target="_blank" rel="noopener noreferrer">Consequential</a>
 </p>
 
 <style>
-	.ekline-credit {
+	.consequential-credit {
 		margin-top: 2.5rem;
 		padding-top: 1.25rem;
 		border-top: 1px solid var(--sl-color-gray-5);
@@ -29,24 +25,18 @@ import eklineMark from '../assets/ekline-mark.svg';
 		gap: 0.5rem;
 	}
 
-	/* Render the mark as a CSS mask so it inherits the credit's text color in
-	 * both light and dark modes. The SVG file itself only contributes shape;
-	 * its baked-in fill is ignored. */
-	.ekline-mark {
+	.consequential-mark {
 		flex-shrink: 0;
 		width: 16px;
 		height: 16px;
-		background-color: currentColor;
-		mask: var(--ekline-mark-url) center / contain no-repeat;
-		-webkit-mask: var(--ekline-mark-url) center / contain no-repeat;
 	}
 
-	.ekline-credit a {
+	.consequential-credit a {
 		color: inherit;
 		text-decoration: none;
 	}
 
-	.ekline-credit a:hover {
+	.consequential-credit a:hover {
 		color: var(--sl-color-white);
 		text-decoration: underline;
 		text-underline-offset: 0.2em;
