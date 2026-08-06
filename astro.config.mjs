@@ -21,6 +21,15 @@ export default defineConfig({
 			title: 'Consequential Docs',
 			social: [],
 			customCss: ['./src/styles/global.css'],
+			head: [
+				{
+					tag: 'script',
+					attrs: {
+						src: 'https://ekline.io/v1/credit.js',
+						async: true,
+					},
+				},
+			],
 			components: {
 				Head: './src/components/CustomHead.astro',
 				Header: './src/components/CustomHeader.astro',
