@@ -91,7 +91,6 @@ export default defineConfig({
 					label: "How To's",
 					items: [
 						{ label: 'Onboarding Hub', items: [{ autogenerate: { directory: 'how-tos/onboarding' } }] },
-						{ label: 'Pulse SDK Setup', items: [{ autogenerate: { directory: 'how-tos/pulse-sdk' } }] },
 						{
 							label: 'EdgeTag Setup & Implementation',
 							items: [
