@@ -1,68 +1,49 @@
-# EkLine docs template
+# Consequential Docs
 
-A documentation site template built on [Astro](https://astro.build/) + [Starlight](https://starlight.astro.build/). Click **"Use this template"**, replace the placeholder content, and ship.
+Source for [docs.consequential.io](https://docs.consequential.io) — Consequential's public documentation site: product guides, integration how-tos, an Academy of attribution/metrics explainers, FAQs, comparisons, and an auto-generated API reference.
+
+Built on [Astro](https://astro.build/) + [Starlight](https://starlight.astro.build/), scaffolded from [EkLine's docs template](https://github.com/ekline-io/ekline-docs-template-astro) and since customized with Consequential's own branding and ~300 pages of real content.
 
 [![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
 
-**Live preview:** <https://ekline-docs-template-astro.vercel.app/>
+## What's in this site
+
+- `get-started/` — connecting ad/analytics platforms, installing the Shopify app
+- `concepts/` — the mental model behind the product
+- `guides/`, `daily-reports/`, `acquisition-dashboard/` — task-oriented product walkthroughs
+- `how-tos/` — Onboarding Hub and EdgeTag (CDP) setup/implementation
+- `academy/` — attribution and metrics explainers
+- `account-management/`, `integrations-platform-setup/` — settings and platform-integration reference
+- `faq/`, `comparisons/` — support and competitive content
+- `api/` — auto-generated from `src/schemas/api.yaml` (core's real OpenAPI spec, via `starlight-openapi`)
+- `changelog.mdx`, `reference/`
+
+> **Known gap:** a handful of pages (migrated from a predecessor product's docs) still carry an explicit `<Aside type="caution">` flagging content that couldn't be verified against the current product — see the "Known content caveats" note in `CLAUDE.md` before trusting anything under `academy/attribution/`, `account-management/`, or `integrations-platform-setup/analytics-integrations/` and `cdp-integrations/` at face value.
 
 ## What's pre-wired
 
-So you don't have to set these up yourself:
+Inherited from the EkLine template, still in use:
 
-- **Tailwind v4** styling, with a single-file global theme — change colors, fonts, and tokens in `src/styles/global.css`. See [`wiki/theming.md`](./wiki/theming.md).
+- **Tailwind v4** styling with Consequential's brand theme (purple `#5636d1` / zinc grays) in `src/styles/global.css` — see [`wiki/theming.md`](./wiki/theming.md) for the mechanics of changing it.
 - **Sitemap** auto-generated on build (`sitemap-index.xml` + `sitemap-0.xml`).
 - **`llms.txt`** for AI assistants — `/llms.txt`, `/llms-full.txt`, and `/llms-small.txt`.
-- **Full-text search** out of the box (Starlight ships [Pagefind](https://pagefind.app/)).
+- **Full-text search** via Pagefind, with a custom fix (`src/components/CustomSearch.astro`) for search staying bound across Astro view-transition navigation.
 - **Dark / light mode** with system preference detection.
-- **Footer credit** rendered on every page via a Starlight `Footer` component override.
+- **Footer credit** — EkLine's officially hosted widget (`src/components/CustomFooter.astro`).
+- A **Markdown-twin contract test** (`tests/markdown-twins.test.mjs`) verifying every real doc page has a working `<page>.md` route for AI-assistant consumption.
 
-## Quick start
+## Local development
 
-1. Click **"Use this template"** at the top of this GitHub page to create your own copy.
-2. Clone your new repo and install dependencies:
-   ```bash
-   git clone <your-repo-url>
-   cd <your-repo>
-   npm install
-   ```
-3. Start the dev server:
-   ```bash
-   npm run dev
-   ```
+```bash
+git clone <this-repo-url>
+cd consequential-docs
+npm install
+npm run dev
+```
 
-The site is live at <http://localhost:4321/> with hot reload.
-
-## Customize it
-
-| What you want to change | Where to do it |
-| --- | --- |
-| Site title, sidebar, social links | `astro.config.mjs` |
-| **Site URL** (required for sitemap + llms.txt) | `site` field in `astro.config.mjs` |
-| Theme colors, fonts | `src/styles/global.css` — see [`wiki/theming.md`](./wiki/theming.md) |
-| Homepage content | `src/content/docs/index.mdx` |
-| Add a new page | Create a `.md` or `.mdx` file under `src/content/docs/` |
-| Logo, favicon | `public/favicon.svg`, plus the `logo` field in `astro.config.mjs` |
-| Footer credit | `src/components/CustomFooter.astro` |
-
-For anything else, check the [Starlight docs](https://starlight.astro.build/) — they're the source of truth and cover sidebar groups, component overrides, content collection schema, i18n, and more.
-
-## Deploy
-
-Astro builds to a static `dist/` folder, so you can host it almost anywhere. Common options:
-
-- **Vercel** — what the live preview uses, one-click import.
-- **Netlify**.
-- **Cloudflare Pages**.
-- **GitHub Pages**.
-
-See Astro's [deploy guides](https://docs.astro.build/en/guides/deploy/) for step-by-step instructions per platform.
-
-> **Before deploying, set the `site` URL** in `astro.config.mjs` to your real domain. The sitemap and `llms.txt` files use it to emit absolute URLs.
+Site is live at <http://localhost:4321/> with hot reload.
 
 ## Commands
-
-Run all commands from the project root in a terminal.
 
 | Command | Action |
 | --- | --- |
@@ -70,18 +51,43 @@ Run all commands from the project root in a terminal.
 | `npm run dev` | Local dev server at `localhost:4321` |
 | `npm run build` | Production build to `./dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm run astro ...` | Run Astro CLI commands (for example, `astro check`) |
+| `npm run test` | Build, then run the markdown-twin contract tests |
+| `npm run astro ...` | Run Astro CLI commands (e.g. `astro check`) |
+
+## Deploy
+
+Production deploys are **manual**, via Cloudflare Workers static assets — there is currently no CI/CD pipeline wired to this repo:
+
+```bash
+npm run build
+CLOUDFLARE_ACCOUNT_ID=705a25199f79333ff0e4db56e2078036 npx wrangler deploy
+```
+
+This pushes `dist/` straight to the `consequential-docs` Worker on Cloudflare, independent of GitHub — merging a PR alone does **not** update the live site. (A `vercel.json` also exists in this repo but isn't the actual deploy path; its Vercel preview checks on PRs are known to fail for unrelated account reasons.)
+
+## Editing content
+
+| What you want to change | Where to do it |
+| --- | --- |
+| Site title, sidebar, social links | `astro.config.mjs` |
+| Theme colors, fonts | `src/styles/global.css` — see [`wiki/theming.md`](./wiki/theming.md) |
+| Homepage content | `src/content/docs/index.mdx` |
+| Add a new page | Create a `.mdx` file under `src/content/docs/`, then add it to the sidebar in `astro.config.mjs` |
+| API reference | `src/schemas/api.yaml` |
+| Footer credit | `src/components/CustomFooter.astro` |
+
+For anything Starlight-level (sidebar groups, component overrides, content schema, i18n), the [Starlight docs](https://starlight.astro.build/) are the source of truth.
 
 ## Learn more
 
 - [Starlight docs](https://starlight.astro.build/) — sidebar, components, content schema, theming.
 - [Astro docs](https://docs.astro.build/) — routing, integrations, deployment.
-- [Starlight plugin showcase](https://starlight.astro.build/resources/plugins/) — search, i18n, OG images, redirects, and more.
+- [EkLine docs template](https://github.com/ekline-io/ekline-docs-template-astro) — the upstream template this site tracks for framework-level fixes (not content).
 
 ## License
 
-[MIT](./LICENSE) — fork it, ship it, change it.
+[MIT](./LICENSE).
 
 ---
 
-Maintained by [EkLine](https://ekline.io).
+Scaffolded from a template maintained by [EkLine](https://ekline.io).
