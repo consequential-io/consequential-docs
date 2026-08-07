@@ -21,12 +21,24 @@ export default defineConfig({
 			title: 'Consequential Docs',
 			social: [],
 			customCss: ['./src/styles/global.css'],
+			head: [
+				{
+					tag: 'script',
+					attrs: {
+						src: 'https://ekline.io/v1/credit.js',
+						async: true,
+					},
+				},
+			],
 			components: {
 				Head: './src/components/CustomHead.astro',
 				Header: './src/components/CustomHeader.astro',
 				Hero: './src/components/CustomHero.astro',
 				Footer: './src/components/CustomFooter.astro',
-				Search: './src/components/Search.astro',
+				// Re-init Pagefind after every Astro view-transition swap — the
+				// upstream component only initializes on `DOMContentLoaded`,
+				// which doesn't fire on subsequent <ClientRouter /> navigations.
+				Search: './src/components/CustomSearch.astro',
 			},
 			plugins: [
 				// Adds a "Copy / View / Open in Claude / Open in ChatGPT" dropdown to
@@ -40,7 +52,7 @@ export default defineConfig({
 				starlightLlmsTxt({
 					projectName: 'Consequential',
 					description:
-						'Documentation for Consequential — a data-driven growth platform for eCommerce and DTC brands. Products include Northstar, Pulse, and Pixel for analytics, site monitoring, and UX insights.',
+						'Documentation for Consequential — a data-driven growth platform for eCommerce and DTC brands. Products include Northstar and Pixel for analytics and site monitoring.',
 				}),
 				// Generates reference pages under `/api/` from the OpenAPI spec.
 				// Replace `src/schemas/api.yaml` with your own spec (YAML or JSON).
@@ -84,7 +96,6 @@ export default defineConfig({
 					label: "How To's",
 					items: [
 						{ label: 'Onboarding Hub', items: [{ autogenerate: { directory: 'how-tos/onboarding' } }] },
-						{ label: 'Pulse SDK Setup', items: [{ autogenerate: { directory: 'how-tos/pulse-sdk' } }] },
 						{
 							label: 'EdgeTag Setup & Implementation',
 							items: [

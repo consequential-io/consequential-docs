@@ -2,22 +2,23 @@
 /**
  * Starlight Search override.
  *
- * Re-implements the upstream Search component (see
- * node_modules/@astrojs/starlight/components/Search.astro) with one fix:
- * the upstream `<site-search>` custom element never removes its
- * `window.addEventListener('keydown', ...)` handler. On every client-side
- * page transition Astro creates a brand-new `<site-search>` element (and
- * thus a brand-new keydown listener capturing that page's `dialog`
- * reference) without ever disconnecting the previous one. Pressing
- * Ctrl+K/Cmd+K then re-invokes every leaked listener, including ones bound
- * to a `dialog` element that's no longer in the document — which throws
- * `InvalidStateError: Failed to execute 'showModal' ... The element is not
- * in a Document.` and leaves the search shortcut permanently broken until a
- * full reload. Fixed here via `disconnectedCallback()`, which Astro's
- * ClientRouter does invoke on outgoing elements during a transition.
+ * Identical to the upstream `<Search />` component, with one behavioural
+ * change: the Pagefind UI is mounted from the `<site-search>` custom element's
+ * `connectedCallback` (which fires on the initial load *and* after every Astro
+ * view-transition swap), instead of from a `window.DOMContentLoaded` listener
+ * (which only fires on the first full document load).
  *
- * If you upgrade Starlight and the upstream Search changes shape, re-sync
- * this file from the path above and re-apply the disconnectedCallback fix.
+ * Without this, navigating between pages via `<ClientRouter />` leaves the
+ * search dialog empty on every page after the first — the new
+ * `#starlight__search` element is never bound to Pagefind. See
+ * `CustomHead.astro` for where `<ClientRouter />` is enabled.
+ *
+ * The Cmd/Ctrl-K keyboard shortcut is registered once at module scope, not
+ * per-constructor, so it doesn't accumulate one listener per navigation.
+ *
+ * If you upgrade Starlight and the upstream `Search.astro` changes shape,
+ * re-sync from:
+ *   node_modules/@astrojs/starlight/components/Search.astro
  */
 import { Icon } from '@astrojs/starlight/components';
 import project from 'virtual:starlight/project-context';
@@ -69,14 +70,14 @@ if (project.trailingSlash === 'never') dataAttributes['data-strip-trailing-slash
 	</dialog>
 </site-search>
 
-{
-	/**
-	 * This is intentionally inlined to avoid briefly showing an invalid shortcut.
-	 * Purposely using the deprecated `navigator.platform` property to detect Apple devices, as the
-	 * user agent is spoofed by some browsers when opening the devtools.
-	 */
-}
-<script is:inline>
+<!--
+	Platform-detection script: swaps the Ctrl glyph to ⌘ and updates
+	`aria-keyshortcuts` on Apple devices. Marked `data-astro-rerun` so it
+	executes on every Astro view-transition swap, not just the first page
+	load — `<ClientRouter />` deduplicates inline scripts by textContent
+	otherwise (`node_modules/astro/dist/transitions/swap-functions.js`).
+-->
+<script is:inline data-astro-rerun>
 	(() => {
 		const openBtn = document.querySelector('button[data-open-modal]');
 		const shortcut = openBtn?.querySelector('kbd');
@@ -93,62 +94,95 @@ if (project.trailingSlash === 'never') dataAttributes['data-strip-trailing-slash
 <script>
 	import { pagefindUserConfig } from 'virtual:starlight/pagefind-config';
 
-	class SiteSearch extends HTMLElement {
-		private onKeydown: (e: KeyboardEvent) => void;
-		private onWindowClick: (e: MouseEvent) => void;
+	type PagefindUIInstance = { destroy?: () => void };
 
-		constructor() {
-			super();
+	type Toggles = {
+		open: () => void;
+		close: () => void;
+		isOpen: () => boolean;
+		owner: SiteSearch;
+	};
+
+	class SiteSearch extends HTMLElement {
+		// Guards listener registration. `connectedCallback` may fire more than
+		// once on the same instance if an ancestor uses `transition:persist`
+		// (Astro moves the element rather than replacing it). Re-registering
+		// click handlers on each fire would stack duplicates.
+		private listenersAttached = false;
+
+		// Held so `disconnectedCallback` can tear down the Svelte tree + the
+		// in-memory Pagefind index reference instead of leaking one per swap.
+		private pagefindUI: PagefindUIInstance | null = null;
+
+		// Set to true in `disconnectedCallback` so an in-flight idle/import
+		// chain aborts before binding PagefindUI to a now-detached element.
+		private disposed = false;
+
+		// Reference to the in-flight `onClick` listener so `disconnectedCallback`
+		// can remove it from `window` if the dialog was open at the time of a
+		// view-transition navigation (the dialog's `close` event doesn't fire
+		// when the element is just removed from the DOM).
+		private onClickRef: ((event: MouseEvent) => void) | null = null;
+
+		connectedCallback() {
+			this.disposed = false;
+
 			const openBtn = this.querySelector<HTMLButtonElement>('button[data-open-modal]')!;
 			const closeBtn = this.querySelector<HTMLButtonElement>('button[data-close-modal]')!;
 			const dialog = this.querySelector('dialog')!;
 			const dialogFrame = this.querySelector('.dialog-frame')!;
 
-			/** Close the modal if a user clicks on a link or outside of the modal. */
+			/** Close the modal if a user clicks a link or outside of the modal. */
 			const onClick = (event: MouseEvent) => {
-				const isLink = 'href' in (event.target || {});
+				// Pagefind result links wrap children (mark / excerpt), so the
+				// click target is often an inner element, not the <a>. Resolve
+				// via `closest('a[href]')` so those clicks still count as link
+				// clicks and close the dialog before navigation happens.
+				const target = event.target;
+				const isLink = target instanceof Element && !!target.closest('a[href]');
 				if (
 					isLink ||
-					(document.body.contains(event.target as Node) &&
-						!dialogFrame.contains(event.target as Node))
+					(target instanceof Node &&
+						document.body.contains(target) &&
+						!dialogFrame.contains(target))
 				) {
 					closeModal();
 				}
 			};
-			this.onWindowClick = onClick;
 
 			const openModal = (event?: MouseEvent) => {
-				// Guard against a leaked listener from a previous page whose
-				// dialog is no longer attached to this document.
-				if (!dialog.isConnected) return;
 				dialog.showModal();
 				document.body.toggleAttribute('data-search-modal-open', true);
 				this.querySelector('input')?.focus();
 				event?.stopPropagation();
 				window.addEventListener('click', onClick);
+				this.onClickRef = onClick;
 			};
 
 			const closeModal = () => dialog.close();
 
-			openBtn.addEventListener('click', openModal);
-			openBtn.disabled = false;
-			closeBtn.addEventListener('click', closeModal);
+			if (!this.listenersAttached) {
+				this.listenersAttached = true;
+				openBtn.addEventListener('click', openModal);
+				openBtn.disabled = false;
+				closeBtn.addEventListener('click', closeModal);
 
-			dialog.addEventListener('close', () => {
-				document.body.toggleAttribute('data-search-modal-open', false);
-				window.removeEventListener('click', onClick);
-			});
+				dialog.addEventListener('close', () => {
+					document.body.toggleAttribute('data-search-modal-open', false);
+					if (this.onClickRef) {
+						window.removeEventListener('click', this.onClickRef);
+						this.onClickRef = null;
+					}
+				});
+			}
 
-			// Listen for `ctrl + k` and `cmd + k` keyboard shortcuts.
-			const onKeydown = (e: KeyboardEvent) => {
-				if (!dialog.isConnected) return;
-				if ((e.metaKey === true || e.ctrlKey === true) && e.key === 'k') {
-					dialog.open ? closeModal() : openModal();
-					e.preventDefault();
-				}
-			};
-			this.onKeydown = onKeydown;
-			window.addEventListener('keydown', onKeydown);
+			// Module-scope ref so the page-level keyboard listener can drive
+			// whichever instance is currently connected. `owner` lets the
+			// `disconnectedCallback` null this only when it still points at us.
+			currentToggles = { open: openModal, close: closeModal, isOpen: () => dialog.open, owner: this };
+
+			if (this.pagefindUI) return;
+			if (import.meta.env.DEV) return;
 
 			let translations = {};
 			try {
@@ -159,58 +193,105 @@ if (project.trailingSlash === 'never') dataAttributes['data-strip-trailing-slash
 			const stripTrailingSlash = (path: string) => path.replace(/(.)\/(#.*)?$/, '$1$2');
 			const formatURL = shouldStrip ? stripTrailingSlash : (path: string) => path;
 
-			// NOTE ON THE FIX BELOW: upstream Starlight gates this on
-			// `window.addEventListener('DOMContentLoaded', ...)`. That event
-			// fires exactly once per document lifetime — but this constructor
-			// re-runs on every Astro client-side page transition (a fresh
-			// <site-search> is created each time), since only the initial
-			// hard page load ever sees a 'loading' document. The result:
-			// PagefindUI only ever mounts on the very first page a visitor
-			// loads: navigate anywhere else via a normal link click and the
-			// search dialog opens with an empty, non-functional body forever
-			// after. Fixed by running immediately once the document is
-			// actually ready, falling back to the event only if it isn't yet.
-			const initSearchUI = () => {
-				if (import.meta.env.DEV) return;
-				const onIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
-				onIdle(async () => {
-					// @ts-expect-error — Missing types for @pagefind/default-ui package.
-					const { PagefindUI } = await import('@pagefind/default-ui');
-					new PagefindUI({
-						...pagefindUserConfig,
-						element: '#starlight__search',
-						baseUrl: import.meta.env.BASE_URL,
-						bundlePath: import.meta.env.BASE_URL.replace(/\/$/, '') + '/pagefind/',
-						showImages: false,
-						translations,
-						showSubResults: true,
-						processResult: (result: { url: string; sub_results: Array<{ url: string }> }) => {
-							result.url = formatURL(result.url);
-							result.sub_results = result.sub_results.map((sub_result) => {
-								sub_result.url = formatURL(sub_result.url);
-								return sub_result;
-							});
-						},
-					});
-				});
-			};
-			if (document.readyState === 'loading') {
-				window.addEventListener('DOMContentLoaded', initSearchUI, { once: true });
-			} else {
-				initSearchUI();
-			}
+			// Capture the target element at scheduling time and pass it to
+			// PagefindUI as an HTMLElement (not a selector string). PagefindUI
+			// resolves string selectors via `document.querySelector`, which is
+			// document-global — if a view-transition swap happens between
+			// `onIdle` scheduling and the callback running, the global lookup
+			// would bind Pagefind to the *next* page's `#starlight__search`.
+			const targetEl = this.querySelector<HTMLElement>('#starlight__search');
+			if (!targetEl) return;
+
+			const onIdle =
+				window.requestIdleCallback || ((cb: IdleRequestCallback) => setTimeout(cb, 1));
+			onIdle(async () => {
+				if (this.disposed || !targetEl.isConnected) return;
+				// @ts-expect-error — Missing types for @pagefind/default-ui package.
+				const { PagefindUI } = await import('@pagefind/default-ui');
+				if (this.disposed || !targetEl.isConnected) return;
+				this.pagefindUI = new PagefindUI({
+					...pagefindUserConfig,
+					element: targetEl,
+					baseUrl: import.meta.env.BASE_URL,
+					bundlePath: import.meta.env.BASE_URL.replace(/\/$/, '') + '/pagefind/',
+					showImages: false,
+					translations,
+					showSubResults: true,
+					processResult: (result: { url: string; sub_results: Array<{ url: string }> }) => {
+						result.url = formatURL(result.url);
+						result.sub_results = result.sub_results.map((sub_result) => {
+							sub_result.url = formatURL(sub_result.url);
+							return sub_result;
+						});
+					},
+				}) as PagefindUIInstance;
+			});
 		}
 
 		disconnectedCallback() {
-			// Prevent this instance's listeners from leaking onto whatever page
-			// Astro's client-side router navigates to next — the root cause of
-			// the stale-dialog `showModal()` InvalidStateError this override
-			// fixes.
-			window.removeEventListener('keydown', this.onKeydown);
-			window.removeEventListener('click', this.onWindowClick);
+			this.disposed = true;
+
+			// Drop the module-scope reference if it still points at us, so the
+			// page-level Cmd/Ctrl-K listener can't drive a detached dialog.
+			if (currentToggles?.owner === this) {
+				currentToggles = null;
+			}
+
+			// Remove the window-level click listener and clear the body scroll
+			// lock if the dialog was open at navigation time — the dialog's
+			// `close` event doesn't fire on DOM removal, so its cleanup path is
+			// bypassed. Leaving `data-search-modal-open` set keeps the global
+			// `[data-search-modal-open] { overflow: hidden }` rule applied to
+			// the next page, permanently locking scroll.
+			if (this.onClickRef) {
+				window.removeEventListener('click', this.onClickRef);
+				this.onClickRef = null;
+				document.body.toggleAttribute('data-search-modal-open', false);
+			}
+
+			// Tear down the Svelte tree + Pagefind index reference. Without
+			// this, every view-transition leaks one PagefindUI instance.
+			try {
+				this.pagefindUI?.destroy?.();
+			} catch {}
+			this.pagefindUI = null;
 		}
 	}
-	customElements.define('site-search', SiteSearch);
+
+	// The currently-connected `<site-search>`'s modal controls. Set in
+	// `connectedCallback`, nulled in `disconnectedCallback` when the disconnect
+	// is the same instance currently driving the shortcut.
+	let currentToggles: Toggles | null = null;
+
+	// Registered once at module scope — survives view transitions because
+	// `window` does. `preventDefault` runs unconditionally when the Cmd/Ctrl-K
+	// combo matches, to match upstream behaviour even before any <site-search>
+	// has connected (or on pages that don't render Search). Guarded against
+	// double-registration via a window-level flag (not a module-level one) for
+	// the same reason `customElements.get('site-search')` is checked below: a
+	// second module evaluation has its own module scope, so a per-module flag
+	// wouldn't catch the duplicate. A second `keydown` listener would toggle
+	// the modal open-then-closed on the same keypress.
+	type WindowWithKeydownGuard = Window & { __siteSearchKeydownAttached?: true };
+	const guardedWindow = window as WindowWithKeydownGuard;
+	if (!guardedWindow.__siteSearchKeydownAttached) {
+		guardedWindow.__siteSearchKeydownAttached = true;
+		window.addEventListener('keydown', (e) => {
+			if ((e.metaKey === true || e.ctrlKey === true) && e.key === 'k') {
+				e.preventDefault();
+				if (!currentToggles) return;
+				currentToggles.isOpen() ? currentToggles.close() : currentToggles.open();
+			}
+		});
+	}
+
+	// Guard against double-registration if the bundle is ever evaluated twice
+	// (HMR, a downstream import that resolves to the same module under a
+	// different specifier, etc.). `define` throws `NotSupportedError` on a
+	// duplicate name.
+	if (!customElements.get('site-search')) {
+		customElements.define('site-search', SiteSearch);
+	}
 </script>
 
 <style>
