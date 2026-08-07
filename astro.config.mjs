@@ -49,7 +49,7 @@ export default defineConfig({
 				starlightLlmsTxt({
 					projectName: 'Consequential',
 					description:
-						'Documentation for Consequential — a data-driven growth platform for eCommerce and DTC brands. Products include Northstar, Pulse, and Pixel for analytics, site monitoring, and UX insights.',
+						'Documentation for Consequential — a data-driven growth platform for eCommerce and DTC brands. Products include Northstar and Pixel for analytics and site monitoring.',
 				}),
 				// Generates reference pages under `/api/` from the OpenAPI spec.
 				// Replace `src/schemas/api.yaml` with your own spec (YAML or JSON).
