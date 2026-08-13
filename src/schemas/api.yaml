@@ -20,9 +20,15 @@ info:
     { "success": false, "message": "...", "code": "SOME_ERROR_CODE", "statusCode": 400, "errors": { }, "meta": { "timestamp": "...", "location": "..." } }
     ```
 
-    The one exception is **OAuth** (`/oauth/*`): the MCP connector OAuth 2.1
-    Authorization Server surface returns raw RFC-shape JSON per RFC 6749/7591/8414,
-    not this envelope — see that section for details.
+    There are two exceptions:
+    - **OAuth** (`/oauth/*`): the MCP connector OAuth 2.1 Authorization Server
+      surface returns raw RFC-shape JSON per RFC 6749/7591/8414, not this envelope.
+    - **Partner Integrations** (`/partner/*`): authenticates with HTTP Basic
+      auth (a partner client key/secret pair) instead of a Bearer JWT, and
+      `GET /partner/data/acquisition/{view}` returns a differently-shaped
+      envelope than the rest of the API.
+
+    See each section for details.
 
     **What's intentionally excluded from this reference**:
     - Routes under `/internal/*` — these are HMAC-authenticated, service-to-service
@@ -74,12 +80,28 @@ tags:
   - name: Onboarding
   - name: Reports
     description: The Daily Reports feature.
+  - name: Partner Integrations
+    description: |
+      Server-to-server surface for embedded/partner platforms (e.g. Nector.io)
+      to provision a merchant tenant and read its acquisition data on the
+      merchant's behalf. Authenticates with `partnerBasicAuth` (a partner
+      client key/secret pair, issued via `POST /partner/register`) rather
+      than the Bearer JWT the rest of this API uses, and
+      `GET /partner/data/acquisition/{view}` returns a different response
+      envelope than every other endpoint — see that operation's description.
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    partnerBasicAuth:
+      type: http
+      scheme: basic
+      description: |
+        `Authorization: Basic base64(client_key:client_secret)`. Credentials
+        are issued once via `POST /partner/register` (platform admin only) —
+        the secret is returned in that response and never recoverable again.
   parameters:
     TenantIdHeader:
       name: X-Tenant-ID
@@ -2868,3 +2890,202 @@ paths:
       responses:
         "400": { description: "DAILY_REPORT_BAD_DATE / DAILY_REPORT_DATE_OUT_OF_RANGE", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
         "503": { description: "DAILY_REPORT_REGENERATION_UNAVAILABLE — always returned currently", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  # ───────────────────────── Partner Integrations ─────────────────────────
+  /partner/connect:
+    post:
+      tags: [Partner Integrations]
+      summary: Connect a merchant (find-or-create tenant)
+      description: |
+        Finds or creates a Consequential tenant for the given shop and a user
+        for the given email, grants that user an OWNER membership, and mints
+        a 10-minute one-time connect token. Send the merchant's browser to
+        `redirect_url` next — see `GET /partner/login`.
+
+        Rate limits: 60 requests/minute and 1,000/hour per partner credential.
+      security: [{ partnerBasicAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [shop_domain, tenant_name, email]
+              properties:
+                shop_domain: { type: string, example: "example-store.myshopify.com" }
+                tenant_name: { type: string, maxLength: 255 }
+                email: { type: string, format: email }
+      responses:
+        "200":
+          description: Connected (whether the tenant was just created or already existed)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          access_token: { type: string, description: "Short-lived JWT, same value embedded in redirect_url." }
+                          token_type: { type: string, enum: [Bearer] }
+                          expires_in: { type: integer, enum: [600] }
+                          tenant_id: { type: string, description: "Tenant's public identifier (not the internal UUID)." }
+                          onboarding_status: { type: string, enum: [CREATED, ONBOARDING, ACTIVE], description: "CREATED: brand new tenant. ONBOARDING: exists but not yet data-ready. ACTIVE: ready to serve GET /partner/data." }
+                          redirect_url: { type: string, format: uri, description: "Send the merchant's browser here to complete login." }
+                          is_new_tenant: { type: boolean }
+        "400": { description: INVALID_SHOP_DOMAIN, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: "INVALID_CREDENTIALS — bad or missing partner Basic auth", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "403": { description: "EMAIL_CONFLICT — the email is already associated with a different tenant", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "409": { description: "SHOP_ALREADY_CONNECTED — this shop is already connected through a different partner integration", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "429": { description: RATE_LIMIT_EXCEEDED, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /partner/login:
+    get:
+      tags: [Partner Integrations]
+      summary: Exchange a connect token for a real session
+      description: |
+        Public browser-navigation endpoint — the connect token itself is the
+        auth, there's no partner Basic auth on this leg. Verifies the token,
+        sets session cookies, and redirects into the product (`/home` if the
+        merchant's workspace is already named, otherwise
+        `/onboarding/workspace`). Not something a partner's backend calls
+        directly — it's the destination of `connect`'s `redirect_url`, opened
+        in the merchant's own browser.
+      security: []
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "302":
+          description: Redirects into the product with session cookies set, or to `/login?error=...` (token_expired / invalid_token / user_not_found / tenant_not_found) on failure.
+  /partner/data/acquisition/{view}:
+    get:
+      tags: [Partner Integrations]
+      summary: Read acquisition data for a connected merchant
+      description: |
+        Composes over the same acquisition engine `GET /acquisition/{view}`
+        uses, scoped to a tenant previously connected by this partner
+        credential. **Returns a different envelope than the rest of this
+        API** — `{ success, metadata, shapes }`, not `SuccessEnvelope` — to
+        match the documented partner integration contract:
+        `shapes` is always an array of exactly 4 objects, in this order:
+        `timeseries_current`, `timeseries_previous`, `total_metrics`,
+        `channel_breakdown`.
+
+        **Fidelity note**: `channels` has full real daily fidelity. For
+        `campaigns`/`ads`/`pages`, `total_metrics` is real but
+        `timeseries_current`/`timeseries_previous`/`channel_breakdown` are
+        currently returned empty (with a `metadata.note` explaining why) — a
+        true daily-by-entity breakdown for those resources has cost/perf
+        implications that aren't scoped yet.
+
+        Rate limits: 60 requests/minute and 1,000/hour per partner credential.
+      security: [{ partnerBasicAuth: [] }]
+      parameters:
+        - name: view
+          in: path
+          required: true
+          schema: { type: string, enum: [channels, campaigns, ads, pages] }
+        - name: shop_domain
+          in: query
+          required: true
+          schema: { type: string, example: "example-store.myshopify.com" }
+        - name: start_date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: end_date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: currency
+          in: query
+          schema: { type: string }
+        - name: timezone
+          in: query
+          schema: { type: string }
+        - name: model
+          in: query
+          schema: { type: string, enum: [last_click, first_click, platform] }
+      responses:
+        "200":
+          description: Shaped acquisition data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, enum: [true] }
+                  metadata:
+                    type: object
+                    properties:
+                      shape_format: { type: string, enum: [v2] }
+                      bucket: { type: string, enum: [acquisition] }
+                      resource: { type: string }
+                      timestamp: { type: string, format: date-time }
+                      tenant_id: { type: string }
+                  shapes:
+                    type: array
+                    description: "Always 4 items, in this order: timeseries_current, timeseries_previous, total_metrics, channel_breakdown."
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string, enum: [timeseries_current, timeseries_previous, total_metrics, channel_breakdown] }
+                        type: { type: string, enum: [TimeSeries, PeriodComparison] }
+                        purpose: { type: string, enum: [temporal_trend, aggregate_all, aggregate_by_dimension] }
+                        native: { type: boolean }
+                        metadata: { type: object }
+                        aggregation: { type: object }
+                        data:
+                          type: array
+                          description: "TimeSeries shapes: rows of {date, channel, revenue, spend, orders, computedroas, platformroas, cac, ctr, conv, clicks, impressions}. PeriodComparison shapes: rows of {category, metrics: {<Metric Label>: {current, previous, change, accent}}}."
+                          items: { type: object }
+        "400": { description: INVALID_SHOP_DOMAIN, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: "INVALID_CREDENTIALS — bad or missing partner Basic auth", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "404": { description: "TENANT_NOT_FOUND (also returned if the shop belongs to a different partner) / RESOURCE_NOT_FOUND", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "409": { description: "TENANT_NOT_ACTIVE — tenant setup isn't complete yet / TENANT_NO_MEMBERS — connected tenant has no active members to attribute the query to", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "429": { description: RATE_LIMIT_EXCEEDED, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "502": { description: CUBE_UNAVAILABLE, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "503": { description: "PREAGG_WARMING — pre-aggregations are still building", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /partner/register:
+    post:
+      tags: [Partner Integrations]
+      summary: Issue a partner credential (platform admin only)
+      description: |
+        Mints a new `client_key`/`client_secret` pair for a partner. Doubles
+        as rotation: registering again for a `partner_key` that already has
+        an active credential revokes the old one first — there's no separate
+        rotation endpoint. `client_secret` is returned once, here, and is not
+        recoverable again.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [display_name, partner_key]
+              properties:
+                display_name: { type: string, maxLength: 255 }
+                partner_key: { type: string, maxLength: 50, example: nector }
+      responses:
+        "201":
+          description: Credential issued
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessEnvelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          client_key: { type: string, description: "64-character hex string." }
+                          client_secret: { type: string, description: "96-character hex string. Store this now — it is never shown again." }
+                          partner_key: { type: string }
+                          display_name: { type: string }
+        "401": { description: "Not authenticated", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "403": { description: "Not a platform OWNER/ADMIN", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
