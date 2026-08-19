@@ -50,6 +50,24 @@ security:
   - bearerAuth: []
 tags:
   - name: Auth
+    description: |
+      Three ways in: email/password (`/auth/login`), a passwordless magic
+      link (`/auth/magic-link/request` then `/verify`), or Google OAuth
+      (`/auth/google` → `/auth/google/callback`). All three return the same
+      shape as `/auth/login` — an `accessToken` plus the user/tenant/store
+      context — and pair with `/auth/refresh` to renew it and `/auth/logout`
+      to end the session.
+
+      New accounts start unverified: `/auth/register` sends a verification
+      email, confirmed either by posting its token to `/auth/email/verify`
+      or by following the emailed link straight to `/auth/verify-email`.
+      `/auth/verify` is unrelated to that flow — it decodes an existing
+      JWT's claims for inter-service use, not part of sign-in.
+
+      Password reset (`/auth/password/forgot` → `verify-reset-token` →
+      `reset`) and `/auth/email/resend-verification` return the same
+      generic success response whether or not the email is registered, so
+      as not to leak which addresses exist.
   - name: Signup
   - name: OAuth
     description: MCP connector OAuth 2.1 Authorization Server. Raw RFC JSON, not the standard envelope.
