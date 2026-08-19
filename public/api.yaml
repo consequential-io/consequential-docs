@@ -69,33 +69,162 @@ tags:
       generic success response whether or not the email is registered, so
       as not to leak which addresses exist.
   - name: Signup
+    description: |
+      Self-serve tenant creation — `POST /signup` creates a new tenant
+      *and* its owner user in one call, protected by Cloudflare Turnstile
+      and rate limiting. Distinct from `/auth/register`, which creates a
+      user with no tenant. `check-identifier` lets a signup form validate
+      a company-name slug before submitting, and `resend-verification`
+      follows the same anti-enumeration pattern as the equivalent `Auth`
+      endpoints.
   - name: OAuth
     description: MCP connector OAuth 2.1 Authorization Server. Raw RFC JSON, not the standard envelope.
   - name: Profile
+    description: |
+      The caller's own account — distinct from `Users` (admin-facing
+      lookups of *other* people) and `Tenant Settings` (tenant-wide, not
+      personal). Covers profile fields, avatar upload, preferences
+      (theme/timezone/language/notifications), active refresh-token
+      sessions (list and revoke individually), and linked OAuth provider
+      connections.
   - name: Invitations
+    description: |
+      Invite someone into a `TENANT`, `AGENCY`, or `STORE` context — the
+      `contextType`/`contextId` pair on `GET /invitations` selects which.
+      Two invite-acceptance entrypoints exist because the invitee may not
+      have an account yet: `verify` checks the token and completes
+      signup for a new user, while `accept`/`decline` are for an
+      existing, authenticated user responding to an invite they can see
+      under `/invitations/pending`.
   - name: Shopify Connect
+    description: |
+      OAuth install flow for connecting a Shopify store: `install`
+      starts it, `callback` completes it. `callback` is intentionally
+      unauthenticated — it's a cross-site redirect from Shopify, arriving
+      with no session cookie to check.
   - name: Supermetrics Connect
+    description: |
+      Popup-based OAuth for ad/analytics providers, brokered through
+      Supermetrics rather than talking to each provider directly:
+      `login-link` opens the popup, `finalize` completes the connection
+      once it returns, and `accounts` lists then saves which of the
+      provider's accounts to sync.
   - name: Billing
+    description: |
+      Stripe-backed subscription management: browse `plans`/`addons`,
+      read the tenant's current `subscription` and `entitlements`
+      (Owner/Admin only), and change plan via `subscribe`/`upgrade` or
+      an addon via its own `subscribe`/`cancel` (all Owner-only,
+      `subscribe` also rate-limited). `POST /billing/webhook` is the
+      Stripe event receiver — unauthenticated like any webhook, but
+      signature-verified internally against the raw request body.
   - name: Tenants
+    description: |
+      The core multi-tenant resource. Beyond CRUD and resolving a tenant
+      by its `identifier`, this covers tenant membership (`users`
+      sub-routes: list/add/remove/change role) and `switch`, which
+      changes the caller's *active* tenant context for subsequent
+      requests — the same pattern `Stores`' own `switch` uses one level
+      down.
   - name: Tenant Settings
+    description: |
+      Per-tenant configuration, all Owner/Admin-gated: profile,
+      branding, brand guidelines, default metrics-comparison preference,
+      and the Acquisition Dashboard's own settings — attribution/
+      profitability inputs (`acquisition`), grading rules (`grading`),
+      and performance `badges`. `grading/status` reports whether the
+      grading baseline has finished computing, since that's an async
+      job, not immediate.
   - name: Tenant Integrations
+    description: |
+      The tenant's datasource catalog — which providers exist and their
+      current connection state — plus disconnecting one. Connecting a
+      new datasource happens through the provider-specific
+      `Shopify Connect`/`Supermetrics Connect` flows, not here; this tag
+      is read-and-remove only.
   - name: Stores
+    description: |
+      A tenant's stores: CRUD, identifier lookup and availability check,
+      marking one as the tenant's default, and `switch` — changes the
+      caller's active store context, mirroring `Tenants`' own `switch`.
   - name: Users
+    description: |
+      Admin-facing user directory — look up *other* people by ID, email,
+      or username, list, create, or soft-delete them (mostly Admin/Owner
+      only). For the caller's own account, see `Profile` instead;
+      `GET /users/me` is the one endpoint here that's about the caller.
   - name: Consents
+    description: |
+      The current user's consent state for privacy policy, terms of
+      service, marketing, cookies, and data processing — read all of
+      them at once via `GET /consents`, update one at a time via its own
+      `PUT`.
   - name: Agencies
+    description: |
+      Agencies managing multiple tenants on their clients' behalf — a
+      third context type alongside `Tenant` and `Store` (see the
+      `contextType` enum on `Invitations`). CRUD; deletion is soft
+      (Owner only).
   - name: Admin
     description: Platform staff only (platform-level OWNER/ADMIN role) — not usable by ordinary customers.
   - name: Acquisition
     description: Backs the Acquisition Dashboard (Channels/Campaigns/Ad sets/Creatives/Pages).
   - name: Attribution
+    description: |
+      Four dashboard cards answering "what's driving results, and by
+      which model": `funnel`, `spend` by source, `touchpoints` (grouped
+      by source type and name), and `sales-impact` (grouped by
+      attribution model). Sibling to `Acquisition` and `Conversion` —
+      this tag is the attribution-model-aware slice of the same
+      underlying data.
   - name: Conversion
+    description: |
+      The purchase funnel — impressions → clicks → orders — with spend,
+      revenue, CTR, CVR, ROAS, and CPA at each stage (`funnel`), plus a
+      sortable, paginated `breakdown` by any dimension. Complements
+      `Attribution`'s model-driven view with a straightforward
+      stage-by-stage one.
   - name: Lens
     description: An older analytics surface with a different attribution-model vocabulary than Acquisition/Attribution/Conversion (first_touch/last_touch/linear/time_decay/position_based vs. last_click/first_click). Confirm with the Consequential team whether this is still actively maintained before integrating against it.
   - name: Metrics
+    description: |
+      The generic metric layer underneath the dashboards: `definitions`
+      is the full catalog that every metric slug elsewhere in the API
+      refers back to, `query` evaluates one over a period, and `kpis`
+      returns a KPI summary row. `layout/tenant` persists how a tenant
+      has arranged their metrics page (Owner/Admin to save, anyone to
+      read).
   - name: Metric Alerts
+    description: |
+      Threshold alerts on top of `Metrics` — create/list/update/delete
+      an alert, get a summary of alert counts, and pull one alert's
+      fired-event history to see when it tripped and why.
   - name: Chat
+    description: |
+      The in-product AI assistant. `POST /chat/messages` streams its
+      reply as Server-Sent Events rather than a JSON body — event types
+      are `text-delta`, `tool-call`, `tool-result`, `render-block`,
+      `done`, and `error`. The rest of the tag is ordinary conversation
+      management: list, fetch, rename, or archive (soft-delete) a
+      conversation.
   - name: Creative Feedback
+    description: |
+      The caller's own feedback on one ad creative within a tenant — get
+      it, set it. Scoped to the current user, not a tenant-wide feedback
+      log.
   - name: Onboarding
+    description: |
+      Tracks how far a tenant has gotten through setup. `GET /onboarding`
+      and `/onboarding/progress` both read task-checklist progress;
+      `complete-task`/`skip-task`/`current-step`/`reset` drive it
+      manually, and `sync-progress` re-derives it from what's actually
+      connected rather than trusting client-reported state.
+      `detect-platform` — scanning a storefront URL — is the real
+      backing endpoint for the "Connect your data" step. `connectors`
+      returns tiered integration recommendations. `GET /onboarding/status`
+      is a separate concept despite the shared mount: tenant-scoped
+      provisioning/lifecycle state (current phase, phase history), not
+      per-user checklist progress.
   - name: Reports
     description: The Daily Reports feature.
   - name: Partner Integrations
