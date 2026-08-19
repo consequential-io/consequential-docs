@@ -15,7 +15,7 @@ Built on [Astro](https://astro.build/) + [Starlight](https://starlight.astro.bui
 - `academy/` — attribution and metrics explainers
 - `account-management/`, `integrations-platform-setup/` — settings and platform-integration reference
 - `faq/`, `comparisons/` — support and competitive content
-- `api/` — auto-generated from `src/schemas/api.yaml` (core's real OpenAPI spec, via `starlight-openapi`)
+- `api/` — interactive reference, rendered by [Scalar](https://scalar.com/) from `public/api.yaml` (core's real OpenAPI spec) — includes a live "Test Request" console, not just static docs
 - `changelog.mdx`, `reference/`
 
 > **Known gap:** a handful of pages (migrated from a predecessor product's docs) still carry an explicit `<Aside type="caution">` flagging content that couldn't be verified against the current product — see the "Known content caveats" note in `CLAUDE.md` before trusting anything under `academy/attribution/`, `account-management/`, or `integrations-platform-setup/analytics-integrations/` and `cdp-integrations/` at face value.
@@ -73,7 +73,7 @@ This pushes `dist/` straight to the `consequential-docs` Worker on Cloudflare, i
 | Theme colors, fonts | `src/styles/global.css` — see [`wiki/theming.md`](./wiki/theming.md) |
 | Homepage content | `src/content/docs/index.mdx` |
 | Add a new page | Create a `.mdx` file under `src/content/docs/`, then add it to the sidebar in `astro.config.mjs` |
-| API reference | `src/schemas/api.yaml` |
+| API reference | `public/api.yaml` (the spec) + `src/config/api-reference.mjs` (route/slug/layout) |
 | Footer credit | `src/components/CustomFooter.astro` |
 
 For anything Starlight-level (sidebar groups, component overrides, content schema, i18n), the [Starlight docs](https://starlight.astro.build/) are the source of truth.

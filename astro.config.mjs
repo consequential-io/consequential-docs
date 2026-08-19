@@ -4,8 +4,25 @@ import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
 import starlightContextualMenu from '@ekline/starlight-contextual-menu';
 import starlightLlmsTxt from 'starlight-llms-txt';
-import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi';
 import tailwindcss from '@tailwindcss/vite';
+import { openApiSidebarGroup } from './src/lib/openapi-sidebar.mjs';
+import { enabledReferences, listsOperationsInSidebar, routeFor } from './src/config/api-reference.mjs';
+
+// One sidebar entry per API reference, generated from its OpenAPI document.
+// Regenerated on every build. Which references exist, what they are called and
+// which layout each uses lives in `src/config/api-reference.mjs`. See
+// `wiki/api-reference.md` in the upstream template for the full explanation.
+const apiReferenceSidebar = await Promise.all(
+	enabledReferences.map((reference) =>
+		listsOperationsInSidebar(reference)
+			? openApiSidebarGroup({
+					spec: reference.spec,
+					base: routeFor(reference),
+					label: reference.label,
+				})
+			: { label: reference.label, link: routeFor(reference) }
+	)
+);
 
 // https://astro.build/config
 export default defineConfig({
@@ -54,15 +71,6 @@ export default defineConfig({
 					description:
 						'Documentation for Consequential — a data-driven growth platform for eCommerce and DTC brands. Products include Northstar and Pixel for analytics and site monitoring.',
 				}),
-				// Generates reference pages under `/api/` from the OpenAPI spec.
-				// Replace `src/schemas/api.yaml` with your own spec (YAML or JSON).
-				starlightOpenAPI([
-					{
-						base: 'api',
-						label: 'API reference',
-						schema: './src/schemas/api.yaml',
-					},
-				]),
 			],
 			sidebar: [
 				{
@@ -164,8 +172,8 @@ export default defineConfig({
 							],
 						},
 						{ label: 'Reference', items: [{ autogenerate: { directory: 'reference' } }] },
-						// API reference pages auto-generated from `src/schemas/api.yaml`.
-						...openAPISidebarGroups,
+						// API reference, rendered by Scalar from `public/api.yaml`.
+						...apiReferenceSidebar,
 					],
 				},
 				{

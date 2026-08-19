@@ -59,7 +59,8 @@ Standard Starlight layout:
 - `astro.config.mjs` — registers the Starlight integration. Title, sidebar, social links, and all plugin config live here. `site` is already set to `https://docs.consequential.io` (not a placeholder) — sitemap and llms-txt emit absolute URLs from it.
 - `src/content.config.ts` — content collection definition. Uses `docsLoader()` + `docsSchema()` from `@astrojs/starlight`. Extend the schema (don't replace it) when adding custom frontmatter fields.
 - `src/content/docs/` — Markdown/MDX content; each file becomes a route. Subdirs map to URL segments and are referenced by the sidebar config in `astro.config.mjs`.
-- `src/schemas/api.yaml` — the real OpenAPI spec for `core`'s API, source for the auto-generated `/api/` reference pages.
+- `public/api.yaml` — the real OpenAPI spec for `core`'s API. Lives in `public/` (not `src/`) because Scalar fetches it client-side at `/api.yaml`; `src/config/api-reference.mjs` reads the same file from disk at build time to generate the sidebar.
+- `src/config/api-reference.mjs` — declares the API reference (spec path, route slug, layout). The one file to edit if the API reference ever needs to change what it points at.
 - `src/assets/` — images imported from MDX (processed by Astro's image pipeline).
 - `public/` — static assets served as-is at the site root.
 - `tests/markdown-twins.test.mjs` — contract tests verifying every real doc page emits a working `<page>.md` route (see `@ekline/starlight-contextual-menu` below) and that OpenAPI's virtual pages correctly don't.
@@ -71,7 +72,7 @@ Component overrides (Starlight's "Overriding Components" mechanism) go in `src/c
 - **`@astrojs/sitemap`** — emits `sitemap-index.xml` + `sitemap-0.xml` on build.
 - **`starlight-llms-txt`** — emits `/llms.txt`, `/llms-full.txt`, and `/llms-small.txt` on build for AI assistant consumption. Configured in `astro.config.mjs` with Consequential's real product description. Docs: https://github.com/delucis/starlight-llms-txt
 - **`@ekline/starlight-contextual-menu`** — adds the "Copy / View / Open in Claude / Open in ChatGPT" dropdown to each page heading, and (via `injectMarkdownRoutes: true`) generates a `.md` route per page.
-- **`starlight-openapi`** — generates the `/api/` reference pages from `src/schemas/api.yaml`.
+- **`@scalar/astro`** (+ `@scalar/openapi-parser`, `@scalar/workspace-store`) — renders the interactive `/api/` reference (in-browser "Test Request" console) from `public/api.yaml`. Replaced `starlight-openapi` on 2026-08-20 (see the migration commit) to get the interactive console EkLine's upstream template shipped in EK-2358. `src/lib/openapi-sidebar.mjs` generates the per-operation Starlight sidebar entries and feeds Pagefind search (`src/components/ApiSearchIndex.astro`) from the same spec, so the sidebar, the route, and search can't disagree with each other.
 
 ## Deploy
 
