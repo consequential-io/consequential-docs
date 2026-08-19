@@ -9,7 +9,7 @@ import { Steps, Aside } from '@astrojs/starlight/components';
 
 Consequential turns the data from your store, ad platforms, and analytics tools into spend alerts and performance grades. The **Integrations** page in Settings is where you review every data source connected to your workspace and connect new ones yourself.
 
-This guide shows you how to open the Integrations page, connect a data source, manage the accounts a source syncs, and disconnect a source.
+This guide shows you how to open the Integrations page, connect a data source, manage the accounts a source syncs, spot a source that has stopped delivering fresh data, and disconnect a source.
 
 ## Prerequisites
 
@@ -35,10 +35,14 @@ Each source shows its name, a status badge, and — once connected — the accou
 
 | Status | What it means |
 | --- | --- |
-| **Connected** | The source is linked and syncing data into your workspace. |
+| **Connected** | The source's credentials are linked and Consequential is set up to sync it. |
 | **Disconnected** | The source was connected before but is no longer syncing. Reconnect it to resume. |
 | **Available** | The source is ready for you to connect. |
 | **Coming soon** | The Consequential team sets this source up for you. |
+
+<Aside type="caution">
+A **Connected** status confirms only that the credentials are linked — it doesn't guarantee the source is still delivering fresh data. A source can keep the **Connected** badge while it quietly stops sending new data (for example, after an expired token or a change on the source's side). To catch this, check data freshness and the status badge. See [Spot a source that stopped updating](#spot-a-source-that-stopped-updating).
+</Aside>
 
 ## Connect a Shopify store
 
@@ -86,6 +90,41 @@ For a connected ads, analytics, or email source, you can change which accounts C
 ## Reconnect a source
 
 A source with a **Disconnected** status is no longer syncing. To resume it, click **Reconnect** and follow the same steps as the first connection.
+
+## Spot a source that stopped updating
+
+A source can stay **Connected** yet stop delivering new data — for example, when an access token expires or the source changes something on its side. When that happens, the connection status still reads **Connected**, so you must check data freshness to catch it.
+
+Consequential flags a source as stopped when both of these are true:
+
+- A metric that depends on the source returns no data for the period you're viewing.
+- The source's most recent data is several days old — well past the normal daily refresh. (Sources refresh once a day, so a source being a day or two behind is expected, and Consequential stays quiet.)
+
+When Consequential detects this, the affected metric card shows the message *"This source stopped updating on \<date\>"* — where the date is the last day the source delivered data — instead of the usual *"No data for this period."* The two messages mean different things:
+
+| Message on a metric card | What it means |
+| --- | --- |
+| *No data for this period* | The source is current, but it has no data for the dates you selected. Try a wider date range. |
+| *This source stopped updating on \<date\>* | The source hasn't delivered new data since that date. Follow the steps below. |
+
+<Aside type="note">
+This message appears on metric cards on your Home page and metrics pages. Other surfaces, such as the Acquisition Dashboard and daily reports, may show an empty state without this message. If metrics look empty across several surfaces, check the source's freshness here first.
+</Aside>
+
+To resolve a source that stopped updating:
+
+<Steps>
+
+1. Open the **Integrations** page and find the source named in the affected metrics.
+2. If its status is **Disconnected**, click **Reconnect** and complete the connection again.
+3. If its status is still **Connected**, its stored credentials may have expired or been revoked on the source's side. Click **Reconnect** to re-authorize the source with fresh credentials.
+4. After you reconnect, allow up to a day for the next scheduled sync to bring the data current.
+
+</Steps>
+
+<Aside type="tip">
+If a source keeps stopping after you reconnect it, or data doesn't return after the next daily sync, contact the Consequential Support Team at [support@outoftheblue.ai](mailto:support@outoftheblue.ai) with the source name and the date shown in the message.
+</Aside>
 
 ## Disconnect a source
 
