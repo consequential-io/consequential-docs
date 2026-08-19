@@ -52,51 +52,109 @@ const isFullWidth = reference.layout === 'full';
 		/**
 		 * Honour the anchor the page was opened with.
 		 *
-		 * Scalar reads `location.hash` when it mounts and scrolls there — but it
-		 * also runs a scroll-spy that rewrites the hash to whatever is on screen.
-		 * On a cold load the spy can fire first, overwriting the incoming anchor
-		 * with the top of the document before the router acts on it. The reader
-		 * then lands at the introduction, and any shared deep link silently loses
-		 * its place. It is a race, so it fails perhaps half the time.
-		 *
-		 * Recording the anchor before Scalar mounts and re-applying it once, after
-		 * the document renders, settles the race in the reader's favour.
+		 * A whole reference — every tag, every operation, in one page — takes
+		 * real time to mount, and nothing here scrolls to an anchor on its own
+		 * once it exists: verified directly (not assumed) that toggling
+		 * `location.hash` off and back on, even after confirming the target
+		 * element is in the DOM, moves the URL but never the viewport. Whatever
+		 * hash-triggered scroll this Scalar version may once have had, relying
+		 * on it silently strands the reader wherever the page happened to be
+		 * when it stopped growing — which for a tag anywhere past the first
+		 * few is nowhere near where they asked to go. Calling
+		 * `scrollIntoView()` on the element directly, once it exists, is the
+		 * one thing confirmed to actually move the page.
 		 *
 		 * `is:inline` keeps this in document order rather than being bundled and
-		 * deferred, so the hash is captured before Scalar's bundle can touch it.
+		 * deferred, so the hash is captured before Scalar's bundle can touch it
+		 * — but the same ordering means this script runs *before* the browser
+		 * has even parsed `<ScalarApiReference>` below it, so
+		 * `[data-ek-scalar]` doesn't exist in the DOM yet either. Querying for
+		 * it once, synchronously, always comes back empty; this has to watch
+		 * `document.documentElement` for that container to be inserted before
+		 * it can watch anything inside it.
+		 *
+		 * The trigger for "has Scalar rendered enough to scroll now" has to be
+		 * the target anchor actually existing, not a generic amount of text
+		 * anywhere in the container. A whole reference renders hundreds of
+		 * operations across dozens of tags in one go, so a fixed character
+		 * count is reached almost immediately from whatever's nearest the top
+		 * — long before a tag further down (its own DOM not mounted yet) gets
+		 * anywhere close.
+		 *
+		 * Watching for the actual element is a suffix match, not
+		 * `getElementById(wanted)`: Scalar namespaces every ID it renders with
+		 * its own per-document prefix (`api-1/tag/...`), which has nothing to
+		 * do with the bare `tag/...` this template's own sidebar links and
+		 * search index use — that prefix is Scalar's internal bookkeeping, not
+		 * a contract, so matching on it by name would be one Scalar upgrade
+		 * from silently breaking. The suffix is the part both sides agree on.
 		 */
 		(() => {
 			const wanted = location.hash;
 			if (!wanted) return;
 
-			const container = document.querySelector('[data-ek-scalar]');
-			if (!container) return;
+			// Native fragment navigation URL-decodes the hash before matching
+			// it against rendered content — replicate that here since this
+			// checks for the element directly instead of leaning on that
+			// browser behaviour. Operation anchors carry path templates like
+			// `{payment_id}`, which can arrive percent-encoded.
+			let id;
+			try {
+				id = decodeURIComponent(wanted.slice(1));
+			} catch {
+				id = wanted.slice(1);
+			}
+			const suffixSelector = `[id$="${CSS.escape('/' + id)}"], [id="${CSS.escape(id)}"]`;
 
 			const deadline = Date.now() + 15_000;
 			let done = false;
+			let settleTimer;
+			let contentObserver;
+			let containerObserver;
 
-			const reapply = () => {
-				if (done || Date.now() > deadline) return true;
-				// Wait for Scalar to have rendered something to scroll to.
-				if ((container.textContent ?? '').trim().length < 500) return false;
-
+			const finish = () => {
 				done = true;
-				if (location.hash !== wanted) {
-					// Round-trip through empty so the router sees a change even when
-					// the spy has already written this exact value back.
-					location.hash = '';
-					location.hash = wanted;
-				}
-				return true;
+				clearTimeout(settleTimer);
+				if (contentObserver) contentObserver.disconnect();
+				if (containerObserver) containerObserver.disconnect();
 			};
 
-			if (reapply()) return;
+			const settle = (container) => {
+				clearTimeout(settleTimer);
+				settleTimer = setTimeout(() => {
+					if (done) return;
+					if (Date.now() > deadline) {
+						finish();
+						return;
+					}
+					const target = container.querySelector(suffixSelector);
+					if (!target) return;
 
-			const observer = new MutationObserver(() => {
-				if (reapply()) observer.disconnect();
-			});
-			observer.observe(container, { childList: true, subtree: true });
-			setTimeout(() => observer.disconnect(), 15_000);
+					target.scrollIntoView({ block: 'start' });
+					finish();
+				}, 200);
+			};
+
+			const watchContent = (container) => {
+				settle(container);
+				contentObserver = new MutationObserver(() => settle(container));
+				contentObserver.observe(container, { childList: true, subtree: true });
+			};
+
+			const existingContainer = document.querySelector('[data-ek-scalar]');
+			if (existingContainer) {
+				watchContent(existingContainer);
+			} else {
+				containerObserver = new MutationObserver(() => {
+					const found = document.querySelector('[data-ek-scalar]');
+					if (!found) return;
+					containerObserver.disconnect();
+					watchContent(found);
+				});
+				containerObserver.observe(document.documentElement, { childList: true, subtree: true });
+			}
+
+			setTimeout(finish, 15_000);
 		})();
 	</script>
 	<ScalarApiReference
