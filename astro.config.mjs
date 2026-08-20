@@ -125,6 +125,7 @@ export default defineConfig({
 						{ label: 'Analytics Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/analytics-integrations' } }] },
 						{ label: 'Ads & Marketing Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/ads-marketing-integrations' } }] },
 						{ label: 'E-Commerce Platform Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/ecommerce-integrations' } }] },
+						{ label: 'Partner Integrations', items: [{ autogenerate: { directory: 'integrations-platform-setup/partner-integrations' } }] },
 					],
 				},
 				{

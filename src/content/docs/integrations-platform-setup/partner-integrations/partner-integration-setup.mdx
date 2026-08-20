@@ -1,0 +1,144 @@
+---
+title: Partner Integration Setup
+description: How embedded partner platforms (for example, Nector.io) connect a merchant tenant and read acquisition data through Consequential's partner API.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This guide walks through the server-to-server flow **embedded partner platforms** use to provision a Consequential tenant for a merchant and read that merchant's acquisition data — for example, Nector.io connecting a Shopify store to Consequential on the merchant's behalf.
+
+This is a narrative walkthrough. For the exact request/response shapes, and to try requests live, see the **Partner Integrations** section of the [API reference](/api/) — it's the source of truth and isn't changing here.
+
+## How partner integrations differ from the regular API
+
+- They authenticate with **HTTP Basic auth** (a partner `client_key` / `client_secret` pair), not a Bearer JWT.
+- `GET /partner/data/acquisition/{view}` returns a different response envelope (`{ success, metadata, shapes }`) than the rest of the API.
+
+## Credentials
+
+The Consequential team issues each partner a `client_key` / `client_secret` pair (via an internal admin-only endpoint — see **Issue a partner credential** in the [API reference](/api/)).
+
+- **`client_key`** — 64-character hex string, the public identifier.
+- **`client_secret`** — 96-character hex string, returned once at issuance. It cannot be recovered if lost — contact the Consequential team to rotate it.
+
+Every partner call sends:
+
+```
+Authorization: Basic base64(client_key:client_secret)
+```
+
+<Aside type="caution">
+Confirm the production API base URL with the Consequential team before you integrate — don't hardcode one from an older doc or a different Consequential/OTB property. Store credentials in environment variables or a secrets manager, never in source code.
+</Aside>
+
+## Integration flow
+
+<Steps>
+
+1. **Connect** — call `POST /partner/connect` with the merchant's Shopify shop domain, a display name, and an email.
+2. **Open `redirect_url`** in the merchant's browser. They see the onboarding flow and connect their data sources (Shopify, Meta Ads, Google Ads, etc.).
+3. **Poll** — call `POST /partner/connect` again periodically (every 30 seconds is a reasonable interval) and check `onboarding_status` until it reads `ACTIVE`.
+4. **Fetch data** — once `onboarding_status` is `ACTIVE`, call `GET /partner/data/acquisition/{view}` to retrieve analytics.
+
+</Steps>
+
+## Step 1: Connect a merchant
+
+Finds or creates a tenant for the given shop and a user for the given email, and mints a one-time connect token.
+
+```bash
+curl -s -X POST "${BASE_URL}/partner/connect" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic ${BASIC_AUTH}" \
+  -d '{
+    "shop_domain": "example-store.myshopify.com",
+    "tenant_name": "Example Store",
+    "email": "owner@example-store.com"
+  }'
+```
+
+**Response fields:**
+
+| Field | Description |
+|---|---|
+| `access_token` | Short-lived JWT (10 minutes), same value embedded in `redirect_url` |
+| `token_type` | `Bearer` |
+| `expires_in` | `600` (seconds) |
+| `tenant_id` | Tenant's public identifier |
+| `onboarding_status` | `CREATED`, `ONBOARDING`, or `ACTIVE` |
+| `redirect_url` | URL to open in the merchant's browser |
+| `is_new_tenant` | Whether this call just created the tenant |
+
+**`onboarding_status` values:**
+
+| Status | Meaning | Action |
+|---|---|---|
+| `CREATED` | New tenant, not yet onboarded | Open `redirect_url` to start onboarding |
+| `ONBOARDING` | Onboarding in progress | Open `redirect_url` to continue |
+| `ACTIVE` | Onboarding complete, data available | Call the Data endpoint |
+
+**Notes:**
+
+- **Idempotent** — calling Connect again for the same `shop_domain` returns the same tenant; no duplicates are created.
+- **Existing merchants** — if the merchant already uses Consequential, Connect returns their existing account and current status.
+- Rate limited to 60 requests/minute and 1,000/hour per partner credential.
+
+## Browser login (`GET /partner/login`)
+
+`redirect_url` points at this endpoint. It's a browser-navigation redirect, not something your backend calls directly — the connect token itself is the auth. It verifies the token, sets session cookies (valid 24 hours), and sends the merchant into the product: onboarding if they're new, or the dashboard if `onboarding_status` was already `ACTIVE`.
+
+## Step 2: Read acquisition data
+
+Available once `onboarding_status` is `ACTIVE`. Composes over the same acquisition engine the regular product API uses, scoped to the tenant this partner credential connected.
+
+```bash
+curl -s "${BASE_URL}/partner/data/acquisition/channels?shop_domain=example-store.myshopify.com&start_date=2026-04-01&end_date=2026-04-14" \
+  -H "Authorization: Basic ${BASIC_AUTH}"
+```
+
+**Query parameters:**
+
+| Parameter | Required | Description |
+|---|---|---|
+| `view` (path) | Yes | `channels`, `campaigns`, `ads`, or `pages` |
+| `shop_domain` | Yes | Shopify shop domain |
+| `start_date` / `end_date` | Yes | `YYYY-MM-DD` |
+| `currency` | No | Currency code |
+| `timezone` | No | IANA timezone |
+| `model` | No | Attribution model: `last_click`, `first_click`, or `platform` |
+
+**Response shape** — always `{ success, metadata, shapes }`, where `shapes` is an array of exactly 4 objects, in this order: `timeseries_current`, `timeseries_previous`, `total_metrics`, `channel_breakdown`.
+
+<Aside type="note">
+**Fidelity note:** `channels` has full daily fidelity. For `campaigns`, `ads`, and `pages`, `total_metrics` is real, but `timeseries_current`, `timeseries_previous`, and `channel_breakdown` are currently returned empty (with a `metadata.note` explaining why) — a true daily-by-entity breakdown for those resources isn't built yet.
+</Aside>
+
+## Error responses
+
+Both endpoints share the same error envelope. Endpoint-specific codes:
+
+**Connect:**
+
+| HTTP | Code | Description |
+|---|---|---|
+| 400 | `INVALID_SHOP_DOMAIN` | Invalid shop domain format |
+| 401 | `INVALID_CREDENTIALS` | Bad or missing partner Basic auth |
+| 403 | `EMAIL_CONFLICT` | Email already associated with a different tenant |
+| 409 | `SHOP_ALREADY_CONNECTED` | This shop is already connected through a different partner integration |
+| 429 | `RATE_LIMIT_EXCEEDED` | Too many requests |
+
+**Data:**
+
+| HTTP | Code | Description |
+|---|---|---|
+| 400 | `INVALID_SHOP_DOMAIN` | Invalid shop domain format |
+| 401 | `INVALID_CREDENTIALS` | Bad or missing partner Basic auth |
+| 404 | `TENANT_NOT_FOUND` / `RESOURCE_NOT_FOUND` | No tenant for this shop (or it belongs to a different partner) / invalid resource name |
+| 409 | `TENANT_NOT_ACTIVE` / `TENANT_NO_MEMBERS` | Tenant setup isn't complete / connected tenant has no active members to attribute the query to |
+| 429 | `RATE_LIMIT_EXCEEDED` | Too many requests |
+| 502 | `CUBE_UNAVAILABLE` | Analytics engine temporarily unavailable |
+| 503 | `PREAGG_WARMING` | Pre-aggregations are still building |
+
+## See also
+
+- **[API reference](/api/)** — live, interactive request/response docs for every partner endpoint, including **Issue a partner credential**.
