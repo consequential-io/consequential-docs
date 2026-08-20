@@ -5,7 +5,7 @@ description: How Consequential's public API authenticates requests, and what to 
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-The Consequential API (`https://api.consequential.io`) secures every endpoint with a **Bearer JWT** tied to your signed-in session — there is no separate, long-lived "API key" to generate. This guide covers how to get a token for testing and what to know before wiring up an external integration.
+The Consequential API (`https://app.consequential.io/api/v1`) secures every endpoint with a **Bearer JWT** tied to your signed-in session — there is no separate, long-lived "API key" to generate. This guide covers how to get a token for testing and what to know before wiring up an external integration.
 
 <Aside type="caution">
 This page previously described a self-serve **Settings → API Keys** page for generating static, revocable API keys (the kind of long-lived credential you'd hand to Zapier or a CRM sync). That flow could not be confirmed against the current product — the backend's auth routes only support session-based Bearer JWTs (login, magic link, Google OAuth, refresh tokens) with no key-issuance endpoint. If Consequential ships a dedicated API key management UI, update this page to match. Until then, treat the steps below as the accurate, verified flow.
