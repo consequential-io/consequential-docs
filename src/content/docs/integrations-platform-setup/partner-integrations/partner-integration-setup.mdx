@@ -33,6 +33,65 @@ Confirm the production API base URL with the Consequential team before you integ
 
 ## Integration flow
 
+<div style="overflow-x: auto; margin: 1.5rem 0;">
+<svg viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Sequence diagram: the partner backend calls Connect, opens redirect_url for the merchant, polls until onboarding is active, then reads acquisition data from the Consequential platform." style="max-width: 100%; height: auto; font-family: var(--sl-font); color: var(--sl-color-gray-2);">
+  <title>Partner integration sequence diagram</title>
+  <defs>
+    <marker id="pis-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="currentColor" />
+    </marker>
+  </defs>
+
+  {/* Actor boxes */}
+  <rect x="20" y="8" width="260" height="44" rx="6" fill="color-mix(in srgb, var(--sl-color-text-accent) 12%, transparent)" stroke="currentColor" stroke-opacity="0.5" />
+  <text x="150" y="35" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">Partner Backend</text>
+
+  <rect x="500" y="8" width="260" height="44" rx="6" fill="color-mix(in srgb, var(--sl-color-text-accent) 12%, transparent)" stroke="currentColor" stroke-opacity="0.5" />
+  <text x="630" y="35" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">Consequential Platform</text>
+
+  {/* Lifelines */}
+  <line x1="150" y1="52" x2="150" y2="580" stroke="currentColor" stroke-opacity="0.3" />
+  <line x1="630" y1="52" x2="630" y2="580" stroke="currentColor" stroke-opacity="0.3" />
+
+  {/* 1. Connect request */}
+  <text x="390" y="90" text-anchor="middle" font-size="13" fill="currentColor">1. POST /partner/connect</text>
+  <text x="390" y="105" text-anchor="middle" font-size="11" font-family="var(--sl-font-mono)" fill-opacity="0.7" fill="currentColor">{'{ shop_domain, tenant_name, email }'}</text>
+  <line x1="150" y1="118" x2="630" y2="118" stroke="currentColor" marker-end="url(#pis-arrow)" />
+
+  {/* 2. Connect response */}
+  <text x="390" y="150" text-anchor="middle" font-size="13" fill="currentColor">2. 200 OK</text>
+  <text x="390" y="165" text-anchor="middle" font-size="11" font-family="var(--sl-font-mono)" fill-opacity="0.7" fill="currentColor">{'{ access_token, onboarding_status, redirect_url }'}</text>
+  <line x1="630" y1="178" x2="150" y2="178" stroke="currentColor" marker-end="url(#pis-arrow)" />
+
+  {/* 3. Open redirect_url */}
+  <text x="390" y="210" text-anchor="middle" font-size="13" fill="currentColor">3. Open redirect_url</text>
+  <text x="390" y="225" text-anchor="middle" font-size="11" fill-opacity="0.7" fill="currentColor">(in the merchant's browser)</text>
+  <line x1="150" y1="238" x2="630" y2="238" stroke="currentColor" stroke-dasharray="6 4" marker-end="url(#pis-arrow)" />
+
+  <rect x="280" y="258" width="220" height="36" rx="6" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="3 3" />
+  <text x="390" y="280" text-anchor="middle" font-size="12" fill-opacity="0.8" fill="currentColor">Merchant completes onboarding</text>
+
+  {/* 4. Poll */}
+  <text x="390" y="330" text-anchor="middle" font-size="13" fill="currentColor">4. Poll: POST /partner/connect</text>
+  <text x="390" y="345" text-anchor="middle" font-size="11" fill-opacity="0.7" fill="currentColor">(check onboarding_status, e.g. every 30s)</text>
+  <line x1="150" y1="358" x2="630" y2="358" stroke="currentColor" marker-end="url(#pis-arrow)" />
+
+  {/* 5. Active */}
+  <text x="390" y="390" text-anchor="middle" font-size="13" fill="currentColor">5. 200 OK</text>
+  <text x="390" y="405" text-anchor="middle" font-size="11" font-family="var(--sl-font-mono)" fill-opacity="0.7" fill="currentColor">{'{ onboarding_status: "ACTIVE" }'}</text>
+  <line x1="630" y1="418" x2="150" y2="418" stroke="currentColor" marker-end="url(#pis-arrow)" />
+
+  {/* 6. Fetch data */}
+  <text x="390" y="450" text-anchor="middle" font-size="13" fill="currentColor">6. GET /partner/data/acquisition/{'{view}'}</text>
+  <line x1="150" y1="463" x2="630" y2="463" stroke="currentColor" marker-end="url(#pis-arrow)" />
+
+  {/* 7. Data response */}
+  <text x="390" y="495" text-anchor="middle" font-size="13" fill="currentColor">7. 200 OK</text>
+  <text x="390" y="510" text-anchor="middle" font-size="11" font-family="var(--sl-font-mono)" fill-opacity="0.7" fill="currentColor">{'{ success, metadata, shapes }'}</text>
+  <line x1="630" y1="523" x2="150" y2="523" stroke="currentColor" marker-end="url(#pis-arrow)" />
+</svg>
+</div>
+
 <Steps>
 
 1. **Connect** — call `POST /partner/connect` with the merchant's Shopify shop domain, a display name, and an email.
