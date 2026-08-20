@@ -42,7 +42,7 @@ info:
     url: https://consequential.io/support
     email: support@consequential.io
 servers:
-  - url: https://api.consequential.io/api/v1
+  - url: https://app.consequential.io/api/v1
     description: Production
   - url: http://localhost:4040/api/v1
     description: Local development

@@ -26,7 +26,7 @@ list a tenant's daily reports, then fetch one report by date.
    <Tabs syncKey="lang">
      <TabItem label="curl">
        ```bash
-       curl https://api.consequential.io/tenants/$TENANT_ID/reports \
+       curl https://app.consequential.io/api/v1/tenants/$TENANT_ID/reports \
          -H "Authorization: Bearer $TOKEN" \
          -H "X-Tenant-ID: $TENANT_ID"
        ```
@@ -34,7 +34,7 @@ list a tenant's daily reports, then fetch one report by date.
      <TabItem label="JavaScript">
        ```js
        const reports = await fetch(
-         `https://api.consequential.io/tenants/${tenantId}/reports`,
+         `https://app.consequential.io/api/v1/tenants/${tenantId}/reports`,
          {
            headers: {
              Authorization: `Bearer ${process.env.TOKEN}`,
@@ -55,7 +55,7 @@ list a tenant's daily reports, then fetch one report by date.
    <Tabs syncKey="lang">
      <TabItem label="curl">
        ```bash
-       curl https://api.consequential.io/tenants/$TENANT_ID/reports/$REPORT_DATE \
+       curl https://app.consequential.io/api/v1/tenants/$TENANT_ID/reports/$REPORT_DATE \
          -H "Authorization: Bearer $TOKEN" \
          -H "X-Tenant-ID: $TENANT_ID"
        ```
@@ -63,7 +63,7 @@ list a tenant's daily reports, then fetch one report by date.
      <TabItem label="JavaScript">
        ```js
        const report = await fetch(
-         `https://api.consequential.io/tenants/${tenantId}/reports/${reportDate}`,
+         `https://app.consequential.io/api/v1/tenants/${tenantId}/reports/${reportDate}`,
          {
            headers: {
              Authorization: `Bearer ${process.env.TOKEN}`,
