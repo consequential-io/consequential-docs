@@ -1,6 +1,12 @@
 ---
 title: How to create browser and server conversion actions?
 description: Create browser and server conversion actions in Google Ads, fix the blocked app error, and report profit margins with EdgeTag.
+head:
+  - tag: script
+    attrs:
+      type: application/ld+json
+    content: |
+      {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"I get the \"This app is blocked\" error when I authenticate. How do I fix it?","acceptedAnswer":{"@type":"Answer","text":"If you encounter this error, you don't need to worry. Some companies apply stricter rules for Google Workspaces. You must add the app to the list of trusted apps. To do this, you must be the administrator of your Google Workspace.<br><ol><li>Go to your <a href=\"https://admin.google.com/ac/owl?hl=en\">Google Admin Console &gt; Security &gt; Access and data control &gt; API controls</a> and click <strong>Manage third-party app access</strong>.</li><li>Click <strong>Add app</strong> then <strong>OAuth App Name or Client ID</strong>.</li><li>In the search, enter Consequential's OAuth Client ID (contact <a href=\"mailto:support@consequential.io\">support@consequential.io</a> if you don't have this on hand), click <strong>Search</strong>, and click the result.</li><li>Select the checkbox and click <strong>Select</strong>.</li><li>On the next screen, select <strong>Trusted: Can access all Google services</strong> and click <strong>Configure</strong>.</li></ol>You have added the app to your list of allowed apps. Go back to the app and add the Google Ads provider again."}},{"@type":"Question","name":"How do I report profit margins in Google Ads?","acceptedAnswer":{"@type":"Answer","text":"To report profit margins in Google Ads, first send cart data with the conversion. Configure both the Merchant ID and Identifier format fields in the Google Ads form within EdgeTag if you haven't configured them yet. These fields are required to attach cart data to the conversion.<br>Once that's done, refer to Google's official guide to <a href=\"https://support.google.com/google-ads/answer/14944137?hl=en&amp;ref_topic=14944136&amp;sjid=284824452501880859-NC#zippy=%2Cset-up-with-google-ads\">report profit margins</a> in Google Ads."}}]}
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
