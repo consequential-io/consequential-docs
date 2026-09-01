@@ -21,7 +21,10 @@ Every error response from the standard envelope has this shape:
 `code` is a specific, upper-snake-case identifier (for example `TENANT_CONTEXT_REQUIRED`, `STORE_NOT_FOUND`) — check the [API reference](/api/) for the specific codes each endpoint can return.
 
 <Aside type="note">
-The one exception is the OAuth surface (`/oauth/*`), which returns raw RFC 6749-shape errors (`{"error": "...", "error_description": "..."}`), not this envelope — see the [API reference](/api/) OAuth section for details.
+Two surfaces don't use this envelope:
+
+- **OAuth** (`/oauth/*`) returns raw RFC 6749-shape errors (`{"error": "...", "error_description": "..."}`) — see the [API reference](/api/) OAuth section for details.
+- **Partner integrations** (`/partner/*`) nest the same fields under an `error` object: `{"success": false, "error": {"code": "...", "message": "...", "statusCode": 404}}`. See [Partner integration setup](/integrations-platform-setup/partner-integrations/partner-integration-setup/#error-responses).
 </Aside>
 
 ## Status codes
@@ -34,10 +37,12 @@ The one exception is the OAuth surface (`/oauth/*`), which returns raw RFC 6749-
 | `401` | Unauthorized — missing, invalid, or expired credentials. |
 | `403` | Forbidden — authenticated, but lacking the required role/permission. |
 | `404` | Not Found. |
-| `409` | Conflict — e.g. an email or identifier that's already taken. |
+| `409` | Conflict — for example an email or identifier that's already taken. |
+| `422` | Unprocessable Entity — the request body or query failed schema validation. |
+| `429` | Too Many Requests — you've exceeded a rate limit. Read the `RateLimit-*` response headers. |
+| `500` | Internal Server Error. |
 | `502` | Upstream service unavailable (for example the Cube.js analytics sidecar, or a third-party integration). |
 | `503` | The requested data or feature isn't ready yet (for example pre-aggregations still warming up), or the endpoint is temporarily unavailable. |
-| `500` | Internal Server Error. |
 
 ## Common error codes seen across the API
 

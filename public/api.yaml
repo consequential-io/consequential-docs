@@ -328,6 +328,38 @@ components:
             location:
               type: string
       required: [success, message, code, statusCode]
+    PartnerErrorEnvelope:
+      type: object
+      description: |
+        Every error under `/partner/*` nests its detail under `error`, rather than
+        using the flat top-level `code`/`message` of `ErrorEnvelope`. The HTTP status
+        is the same either way — only the body differs. Read `error.code`.
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            statusCode:
+              type: integer
+            errors:
+              type: object
+              description: Present on 422 VALIDATION_ERROR; the failing fields.
+            meta:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+                location:
+                  type: string
+          required: [code, message]
+      required: [success, error]
     AnalyticsEnvelope:
       type: object
       description: Response shape shared by Attribution and Conversion cards.
@@ -3081,11 +3113,11 @@ paths:
                           onboarding_status: { type: string, enum: [CREATED, ONBOARDING, ACTIVE], description: "CREATED: brand new tenant. ONBOARDING: exists but not yet data-ready. ACTIVE: ready to serve GET /partner/data." }
                           redirect_url: { type: string, format: uri, description: "Send the merchant's browser here to complete login." }
                           is_new_tenant: { type: boolean }
-        "400": { description: INVALID_SHOP_DOMAIN, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "401": { description: "INVALID_CREDENTIALS — bad or missing partner Basic auth", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "403": { description: "EMAIL_CONFLICT — the email is already associated with a different tenant", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "409": { description: "SHOP_ALREADY_CONNECTED — this shop is already connected through a different partner integration", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "429": { description: RATE_LIMIT_EXCEEDED, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "400": { description: INVALID_SHOP_DOMAIN, content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "401": { description: "INVALID_CREDENTIALS — bad or missing partner Basic auth", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "403": { description: "EMAIL_CONFLICT — the email is already associated with a different tenant", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "409": { description: "SHOP_ALREADY_CONNECTED — this shop is already connected through a different partner integration", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "429": { description: RATE_LIMIT_EXCEEDED, content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
   /partner/login:
     get:
       tags: [Partner Integrations]
@@ -3175,27 +3207,38 @@ paths:
                       tenant_id: { type: string }
                   shapes:
                     type: array
-                    description: "Always 4 items, in this order: timeseries_current, timeseries_previous, total_metrics, channel_breakdown."
+                    description: |
+                      The shape set is specific to the requested view — it is not the same four
+                      shapes for every resource. Match on `id` rather than array position or length.
+
+                      - `channels`: timeseries_current, timeseries_previous, total_metrics, channel_breakdown
+                      - `campaigns`: campaigns, total_metrics, performance_distribution, grade_distribution, match_rates, campaign_status_distribution
+                      - `ads`: ads, total_metrics, performance_distribution, grade_distribution, match_rates
+                      - `pages`: pages, total_metrics, performance_distribution, grade_distribution, match_rates
+
+                      Only `channels` returns a daily timeseries and a channel breakdown.
+                      `campaign_status_distribution` is campaigns-only and is always empty, with
+                      an explanation in its `metadata.note`.
                     items:
                       type: object
                       properties:
-                        id: { type: string, enum: [timeseries_current, timeseries_previous, total_metrics, channel_breakdown] }
-                        type: { type: string, enum: [TimeSeries, PeriodComparison] }
-                        purpose: { type: string, enum: [temporal_trend, aggregate_all, aggregate_by_dimension] }
+                        id: { type: string, enum: [timeseries_current, timeseries_previous, total_metrics, channel_breakdown, campaigns, ads, pages, performance_distribution, grade_distribution, match_rates, campaign_status_distribution] }
+                        type: { type: string, enum: [TimeSeries, PeriodComparison, EntityList, Distribution] }
+                        purpose: { type: string, enum: [temporal_trend, aggregate_all, aggregate_by_dimension, raw_data] }
                         native: { type: boolean }
                         metadata: { type: object }
                         aggregation: { type: object }
                         data:
                           type: array
-                          description: "TimeSeries shapes: rows of {date, channel, revenue, spend, orders, computedroas, platformroas, cac, ctr, conv, clicks, impressions}. PeriodComparison shapes: rows of {category, metrics: {<Metric Label>: {current, previous, change, accent}}}."
+                          description: "TimeSeries shapes: rows of {date, channel, revenue, spend, orders, computedroas, platformroas, cac, ctr, conv, clicks, impressions}. PeriodComparison shapes: rows of {category, metrics: {<Metric Label>: {current, previous, change, accent}}}. EntityList shapes: the view's own entity rows. performance_distribution/grade_distribution: rows of {category, count, percentage}, zero-filled for every declared category. match_rates: one row per ad provider, with {ad_provider, match_rate, match_rate_via_id, match_rate_via_name, matched_orders, matched_via_id, matched_via_name, unmatched_orders, total_attributed_orders}."
                           items: { type: object }
-        "400": { description: INVALID_SHOP_DOMAIN, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "401": { description: "INVALID_CREDENTIALS — bad or missing partner Basic auth", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "404": { description: "TENANT_NOT_FOUND (also returned if the shop belongs to a different partner) / RESOURCE_NOT_FOUND", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "409": { description: "TENANT_NOT_ACTIVE — tenant setup isn't complete yet / TENANT_NO_MEMBERS — connected tenant has no active members to attribute the query to", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "429": { description: RATE_LIMIT_EXCEEDED, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "502": { description: CUBE_UNAVAILABLE, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "503": { description: "PREAGG_WARMING — pre-aggregations are still building", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "400": { description: INVALID_SHOP_DOMAIN, content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "401": { description: "INVALID_CREDENTIALS — bad or missing partner Basic auth", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "404": { description: "TENANT_NOT_FOUND (also returned if the shop belongs to a different partner) / RESOURCE_NOT_FOUND", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "409": { description: "TENANT_NOT_ACTIVE — tenant setup isn't complete yet / TENANT_NO_MEMBERS — connected tenant has no active members to attribute the query to", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "429": { description: RATE_LIMIT_EXCEEDED, content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "502": { description: CUBE_UNAVAILABLE, content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "503": { description: "PREAGG_WARMING — pre-aggregations are still building", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
   /partner/register:
     post:
       tags: [Partner Integrations]
@@ -3234,5 +3277,5 @@ paths:
                           client_secret: { type: string, description: "96-character hex string. Store this now — it is never shown again." }
                           partner_key: { type: string }
                           display_name: { type: string }
-        "401": { description: "Not authenticated", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "403": { description: "Not a platform OWNER/ADMIN", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: "Not authenticated", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "403": { description: "Not a platform OWNER/ADMIN", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }

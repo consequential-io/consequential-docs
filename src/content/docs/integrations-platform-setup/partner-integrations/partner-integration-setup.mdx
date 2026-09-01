@@ -159,42 +159,93 @@ curl -s "${BASE_URL}/partner/data/acquisition/channels?shop_domain=example-store
 
 | Parameter | Required | Description |
 |---|---|---|
-| `view` (path) | Yes | `channels`, `campaigns`, `ads`, or `pages` |
+| `view` (path) | Yes | `channels`, `campaigns`, `ads`, or `pages`. `ads` returns creative-level rows, one per ad. |
 | `shop_domain` | Yes | Shopify shop domain |
 | `start_date` / `end_date` | Yes | `YYYY-MM-DD` |
 | `currency` | No | Currency code |
 | `timezone` | No | IANA timezone |
 | `model` | No | Attribution model: `last_click`, `first_click`, or `platform` |
 
-**Response shape** — always `{ success, metadata, shapes }`, where `shapes` is an array of exactly 4 objects, in this order: `timeseries_current`, `timeseries_previous`, `total_metrics`, `channel_breakdown`.
+**Response envelope** — every response is `{ success, metadata, shapes }`. `metadata` carries `shape_format` (`v2`), `bucket` (`acquisition`), `resource`, `timestamp`, and `tenant_id`. `shapes` is an array of `{ id, type, purpose, native, metadata, aggregation, data }` objects.
+
+### Which shapes each view returns
+
+The shape set depends on the view you request — the same four shapes aren't returned for every resource. Match on `shapes[].id` rather than relying on a fixed array length or position.
+
+| View | Shapes returned, in order |
+|---|---|
+| `channels` | `timeseries_current`, `timeseries_previous`, `total_metrics`, `channel_breakdown` |
+| `campaigns` | `campaigns`, `total_metrics`, `performance_distribution`, `grade_distribution`, `match_rates`, `campaign_status_distribution` |
+| `ads` | `ads`, `total_metrics`, `performance_distribution`, `grade_distribution`, `match_rates` |
+| `pages` | `pages`, `total_metrics`, `performance_distribution`, `grade_distribution`, `match_rates` |
+
+Each shape declares its own `type` and `purpose`:
+
+| Shape | `type` | `purpose` |
+|---|---|---|
+| `timeseries_current`, `timeseries_previous` | `TimeSeries` | `temporal_trend` |
+| `total_metrics` | `PeriodComparison` | `aggregate_all` |
+| `channel_breakdown` | `PeriodComparison` | `aggregate_by_dimension` |
+| `campaigns`, `ads`, `pages` | `EntityList` | `raw_data` |
+| `performance_distribution`, `grade_distribution`, `match_rates`, `campaign_status_distribution` | `Distribution` | `aggregate_by_dimension` |
+
+`performance_distribution` and `grade_distribution` return rows of `{ category, count, percentage }`, zero-filled for every declared category:
+
+- `performance_distribution` — `winners`, `high_potential`, `iteration_needed`
+- `grade_distribution` — `A`, `B`, `C`, `D`
+
+`match_rates` returns one row per ad provider instead, each with `ad_provider`, `match_rate`, `match_rate_via_id`, `match_rate_via_name`, `matched_orders`, `matched_via_id`, `matched_via_name`, `unmatched_orders`, and `total_attributed_orders`. The three rate fields are percentages rounded to two decimal places.
 
 <Aside type="note">
-**Fidelity note:** `channels` has full daily fidelity. For `campaigns`, `ads`, and `pages`, `total_metrics` is real, but `timeseries_current`, `timeseries_previous`, and `channel_breakdown` are currently returned empty (with a `metadata.note` explaining why) — a true daily-by-entity breakdown for those resources isn't built yet.
+	`channels` is the only view with a daily time series and a channel breakdown. `campaigns`, `ads`, and `pages` return entity rows plus aggregates instead — a daily-by-entity breakdown for those resources isn't built yet.
+</Aside>
+
+<Aside type="caution">
+	`campaign_status_distribution` is returned for `campaigns` only, and is always empty, with an explanation in its `metadata.note`. Consequential doesn't compute an equivalent campaign-status classification yet, so the categories are reported as empty rather than fabricated.
 </Aside>
 
 ## Error responses
 
-Both endpoints share the same error envelope. Endpoint-specific codes:
+Every endpoint under `/partner/` nests its error detail under `error`:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "TENANT_NOT_FOUND",
+    "message": "No tenant found for this shop_domain",
+    "statusCode": 404,
+    "meta": { "timestamp": "2026-08-24T09:00:00.000Z", "location": "Base Controller" }
+  }
+}
+```
+
+Read `error.code`. The rest of the Consequential API uses a flat envelope with `code` and `message` at the top level, so a client that shares one error handler across both surfaces needs to branch on the partner routes.
+
+Codes shared by both endpoints:
+
+| HTTP | Code | Description |
+|---|---|---|
+| 401 | `INVALID_CREDENTIALS` | Bad or missing partner Basic auth. Returned for an unknown `client_key` and a wrong `client_secret` alike, so a caller can't tell the two apart. |
+| 422 | `VALIDATION_ERROR` | A parameter failed validation. `error.errors` lists the failing fields. |
+| 429 | `RATE_LIMIT_EXCEEDED` | Too many requests. Read the `RateLimit-*` response headers. |
 
 **Connect:**
 
 | HTTP | Code | Description |
 |---|---|---|
 | 400 | `INVALID_SHOP_DOMAIN` | Invalid shop domain format |
-| 401 | `INVALID_CREDENTIALS` | Bad or missing partner Basic auth |
 | 403 | `EMAIL_CONFLICT` | Email already associated with a different tenant |
 | 409 | `SHOP_ALREADY_CONNECTED` | This shop is already connected through a different partner integration |
-| 429 | `RATE_LIMIT_EXCEEDED` | Too many requests |
+| 500 | `PARTNER_CONNECT_ERROR` | Connect couldn't complete. Retry; the endpoint is idempotent. |
 
 **Data:**
 
 | HTTP | Code | Description |
 |---|---|---|
 | 400 | `INVALID_SHOP_DOMAIN` | Invalid shop domain format |
-| 401 | `INVALID_CREDENTIALS` | Bad or missing partner Basic auth |
 | 404 | `TENANT_NOT_FOUND` / `RESOURCE_NOT_FOUND` | No tenant for this shop (or it belongs to a different partner) / invalid resource name |
 | 409 | `TENANT_NOT_ACTIVE` / `TENANT_NO_MEMBERS` | Tenant setup isn't complete / connected tenant has no active members to attribute the query to |
-| 429 | `RATE_LIMIT_EXCEEDED` | Too many requests |
 | 502 | `CUBE_UNAVAILABLE` | Analytics engine temporarily unavailable |
 | 503 | `PREAGG_WARMING` | Pre-aggregations are still building |
 
