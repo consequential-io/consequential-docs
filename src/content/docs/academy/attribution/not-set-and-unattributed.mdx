@@ -1,0 +1,123 @@
+---
+title: "Why you see (not set) and Unattributed"
+description: Understand what (not set) and Unattributed mean in Consequential, what causes them, and how to reduce them with correct tagging.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+If a row in your reporting says **`(not set)`** or **Unattributed**, it means Consequential received a visit or an order but could not determine where it came from. The traffic and the revenue are still counted — only the *source* is missing.
+
+These are two different labels produced by two different parts of Consequential, and they have different causes and different fixes. This guide covers both.
+
+## Which label am I looking at?
+
+| Label | Where it appears | What it means |
+|-------|------------------|---------------|
+| `(not set)` | Web session dimensions sourced from Google Analytics 4 — source/medium, campaign, ad group, ad network | GA4 itself had no value for that dimension. Consequential passes GA4's value through exactly as GA4 reports it. |
+| **Unattributed** | The **Channels** tab of **Analyze → Acquisition**, and the source breakdown on **Analyze → Attribution** | Consequential could not match the order to any known channel from Shopify's customer journey data or your UTM parameters. |
+| **Direct** | The **Channels** tab of **Analyze → Acquisition** | Consequential *did* identify the visit — as a direct visit with no referrer. This is a real classification, not a failure to classify. |
+
+<Aside type="note">
+**Direct is not the same as Unattributed.** Direct means "we know this was a direct visit." Unattributed means "we could not tell." A sudden move of revenue from a named channel into Direct usually points at a tagging problem; a move into Unattributed points at missing source data altogether.
+</Aside>
+
+## Part 1 — `(not set)` in Google Analytics data
+
+Consequential reads session dimensions from the GA4 Data API and stores them without rewriting them. When GA4 has no value for a dimension, GA4 returns the literal string `(not set)`, and that is what you see in Consequential.
+
+Because the value originates in GA4, **every fix for `(not set)` is made in your Google Analytics and Google Ads setup, not in Consequential.** Correcting it at the source will change what Consequential reports going forward.
+
+### What causes it
+
+<Steps>
+
+1. **Missing session-start information.** GA4 attaches attribution details to the automatically collected `session_start` event. If your `config` command fires *after* your event commands, those events get batched with `session_start` and lose their attribution. Make sure the Google tag is initialized before any event method is called.
+
+2. **Consent state.** If `ad_user_data` is denied through Consent Mode, GA4 may not be able to retrieve campaign dimensions automatically. Verify your default consent values are set and propagate across every page, and add manual UTM tagging alongside auto-tagging so campaign data survives when automatic retrieval is unavailable.
+
+3. **Google Ads not linked to GA4.** Your Google Ads account holds the campaign information GA4 needs. If the accounts are not linked, campaign dimensions come back as `(not set)` — this happens even if you are not importing conversions into Ads.
+
+4. **Auto-tagging disabled in Google Ads.** Auto-tagging appends the GCLID parameter to your final URLs. Without it, GA4 has no click ID to resolve the campaign against.
+
+5. **Incomplete or incorrect UTM parameters.** Any manually tagged link — a social post, a newsletter, a partner placement — that is missing `utm_source` or `utm_medium` will produce `(not set)` for the dimensions it did not supply.
+
+6. **Processing time.** GA4 takes 24–48 hours to reflect collection or configuration changes. A small amount of recent `(not set)` that resolves itself within two days is expected and needs no action.
+
+</Steps>
+
+Less common causes include invalid click IDs, user spam, unusually long conversion windows, and rare failures between Google Ads and Analytics.
+
+<Aside type="caution">
+A persistently high `(not set)` rate usually has **more than one** cause. Work through the list above and fix each one you find rather than stopping at the first.
+</Aside>
+
+## Part 2 — Unattributed in the Acquisition dashboard
+
+The **Channels** tab classifies every order into a channel category: Paid Ads, Email Marketing, Organic, Direct, Referrals, Marketplaces, Others, and **Unattributed**.
+
+This classification does **not** come from Google Analytics. Consequential builds it from Shopify's own customer journey data for the order, in this order of preference:
+
+<Steps>
+
+1. The **app** that created the order, for subscription and marketplace orders (Recharge, TikTok Shop, Amazon, Walmart, eBay, Shop app).
+
+2. Your **UTM parameters** (`utm_source` and `utm_medium`) on the visit.
+
+3. Shopify's **resolved visit source** and **source description** for the visit.
+
+4. A **direct** signal, when Shopify reports the visit as direct.
+
+</Steps>
+
+If none of these produce a recognizable source, the order falls through to **Unattributed**.
+
+### Why orders land in Unattributed
+
+- **The link had no UTM parameters and Shopify could not resolve a referrer.** This is by far the most common cause. Common culprits are links shared in messaging apps, PDFs, QR codes, in-app browsers, and email clients that strip parameters.
+- **The UTM values are non-standard.** Consequential recognises conventional medium values — `cpc`, `paid_social`, `paid`, `ppc`, `email`, `sms`, `organic`, `social`, `referral`, `affiliate`, `subscription`, `push`, `app`. A custom medium such as `newsletter-june` or `fb-ad` will not match a channel rule.
+- **The source is a platform Consequential does not yet recognise.** A niche affiliate, a regional marketplace, or a new partner may not have a classification rule.
+
+<Aside type="note">
+**Paid traffic is classified from the medium, not the source.** An untagged click from a Meta or TikTok ad does not become Paid Ads simply because the source looks like a social platform — it is treated as organic social. This is deliberate: it prevents organic social traffic from being credited as paid spend. It also means **untagged paid campaigns will understate your Paid Ads revenue.** Tag every paid link.
+</Aside>
+
+## Tagging checklist
+
+Most of both problems come down to tagging. Working through this list will reduce `(not set)` and Unattributed together.
+
+### Tag ordering
+
+- Initialize the Google tag **before** any event method, including audience-triggered events.
+- Provide all page configuration in the `config` command (or the Google tag settings in GTM) as early on the page as possible, and before any events.
+- Never fire custom events before the `config` command — they will be batched with `session_start` and lose attribution.
+- If you use Google Tag Manager, follow its four-step setup and keep tag sequencing consistent across pages.
+
+### Server-side tagging
+
+- Do not run a server-side and a standalone client-side implementation on the same property.
+- Route **all** measurement for the stream through your server container, with none sent directly to Google's servers.
+
+### Identity settings
+
+- Use **one consistent `cookie_prefix`** across your site. Multiple prefixes break user continuity between sessions.
+- Do not customise or manually set `client_id` or `session_id`. Use `user_id` if you need to supply a custom user identity. Manual cross-domain setup should be reserved for the rare cases that genuinely need it.
+- Configure the cross-domain `linker` early. Late initialization shifts user identity mid-session and produces short sessions that are then discarded.
+
+### Campaign links
+
+- Enable auto-tagging on your Google Ads final URLs, and link Google Ads to GA4.
+- Tag every non-Google paid placement manually with at least `utm_source` and `utm_medium`.
+- Use a standard `utm_medium` value from the list above so the link maps to the channel you expect.
+- Keep a single documented naming convention and reuse it — inconsistent values fragment your reporting even when nothing is technically broken.
+
+## What to expect after fixing tagging
+
+Corrections apply to **new** traffic and new orders. Historical rows keep the classification they were given at the time, so give it a full reporting period before judging whether a fix worked, and compare like-for-like date ranges rather than a partial week against a full one.
+
+A small residual amount of `(not set)` and Unattributed is normal for every store. The goal is to keep it small and stable, not to reach zero.
+
+## Related
+
+- [Attribution Models](/academy/attribution/attribution-models/)
+- [Understand the Acquisition Dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/)
+- [Connect Google Analytics 4](/get-started/connect-ga4/)
