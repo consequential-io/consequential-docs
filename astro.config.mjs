@@ -31,6 +31,10 @@ export default defineConfig({
 		// Old page was a stale duplicate of `daily-reports/view-and-interpret-your-daily-report`
 		// (had gone out of date on the Regenerate behavior); consolidated into that page.
 		'/guides/daily-reports/': '/daily-reports/view-and-interpret-your-daily-report/',
+		// Renamed when the page was refocused on GA4 alone (the Consequential
+		// Unattributed/Direct half was dropped), so the old slug no longer described it.
+		'/academy/attribution/not-set-and-unattributed/':
+			'/academy/attribution/not-set-in-google-analytics/',
 	},
 	integrations: [
 		sitemap(),

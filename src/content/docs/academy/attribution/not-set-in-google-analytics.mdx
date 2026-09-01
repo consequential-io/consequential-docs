@@ -1,0 +1,78 @@
+---
+title: "Why you see (not set) in your Google Analytics reports"
+description: What the (not set) value means in Google Analytics, what causes it, and the tagging practices that reduce it.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+**`(not set)`** is a placeholder Google Analytics writes when it has no value for a dimension. It means GA4 recorded the session but could not determine that particular detail about it — most often the campaign, source, or medium that brought the visitor in. The traffic is still counted; only the description of where it came from is missing.
+
+You may also see `(not set)` on Google Analytics data inside Consequential. Consequential reads session dimensions — source/medium, campaign, ad group, and ad network — from the GA4 Data API and reports them exactly as GA4 returns them, without rewriting the values.
+
+<Aside type="note">
+Because the value originates in GA4, **every fix below is made in your Google Analytics and Google Ads setup.** Correcting it at the source changes what GA4 reports from that point on.
+</Aside>
+
+## What causes it
+
+<Steps>
+
+1. **Missing session-start information.** GA4 attaches attribution details to the automatically collected `session_start` event. If your `config` command fires *after* your event commands, those events get batched with `session_start` and lose their attribution. Make sure the Google tag is initialized before any event method is called.
+
+2. **Consent state.** If `ad_user_data` is denied through Consent Mode, GA4 may not be able to retrieve campaign dimensions automatically. Verify your default consent values are set and propagate across every page, and add manual UTM tagging alongside auto-tagging so campaign data survives when automatic retrieval is unavailable.
+
+3. **Google Ads not linked to GA4.** Your Google Ads account holds the campaign information GA4 needs. If the accounts are not linked, campaign dimensions come back as `(not set)` — this happens even if you are not importing conversions into Ads.
+
+4. **Auto-tagging disabled in Google Ads.** Auto-tagging appends the GCLID parameter to your final URLs. Without it, GA4 has no click ID to resolve the campaign against.
+
+5. **Incomplete or incorrect UTM parameters.** Any manually tagged link — a social post, a newsletter, a partner placement — that is missing `utm_source` or `utm_medium` will produce `(not set)` for the dimensions it did not supply.
+
+6. **Processing time.** GA4 takes 24–48 hours to reflect collection or configuration changes. A small amount of recent `(not set)` that resolves itself within two days is expected and needs no action.
+
+</Steps>
+
+Less common causes include invalid click IDs, user spam, unusually long conversion windows, and rare failures between Google Ads and Analytics.
+
+<Aside type="caution">
+A persistently high `(not set)` rate usually has **more than one** cause. Work through the list above and fix each one you find rather than stopping at the first.
+</Aside>
+
+## Tagging checklist
+
+Most `(not set)` comes down to tagging. Working through this list also reduces unassigned rows and inflated direct traffic, which have the same root causes.
+
+### Tag ordering
+
+- Initialize the Google tag **before** any event method, including audience-triggered events.
+- Provide all page configuration in the `config` command (or the Google tag settings in GTM) as early on the page as possible, and before any events.
+- Never fire custom events before the `config` command — they will be batched with `session_start` and lose attribution.
+- If you use Google Tag Manager, follow its four-step setup and keep tag sequencing consistent across pages.
+
+### Server-side tagging
+
+- Do not run a server-side and a standalone client-side implementation on the same property.
+- Route **all** measurement for the stream through your server container, with none sent directly to Google's servers.
+
+### Identity settings
+
+- Use **one consistent `cookie_prefix`** across your site. Multiple prefixes break user continuity between sessions.
+- Do not customise or manually set `client_id` or `session_id`. Use `user_id` if you need to supply a custom user identity. Manual cross-domain setup should be reserved for the rare cases that genuinely need it.
+- Configure the cross-domain `linker` early. Late initialization shifts user identity mid-session and produces short sessions that are then discarded.
+
+### Campaign links
+
+- Enable auto-tagging on your Google Ads final URLs, and link Google Ads to GA4.
+- Tag every non-Google paid placement manually with at least `utm_source` and `utm_medium`.
+- Keep a single documented naming convention and reuse it — inconsistent values fragment your reporting even when nothing is technically broken.
+
+## What to expect after fixing tagging
+
+Corrections apply to **new** traffic only. Sessions already recorded keep the values they were given at the time, so give it a full reporting period before judging whether a fix worked, and compare like-for-like date ranges rather than a partial week against a full one.
+
+A small residual amount of `(not set)` is normal for every site. The goal is to keep it small and stable, not to reach zero.
+
+## Related
+
+- [Connect Google Analytics 4](/get-started/connect-ga4/) — connect a GA4 property to Consequential.
+- [What the value (not set) means in your reports](https://support.google.com/analytics/answer/15598150) — Google Analytics Help.
+- [Tagging best practices to avoid unassigned, (not set), and direct traffic issues](https://support.google.com/analytics/answer/14847402) — Google Analytics Help.
