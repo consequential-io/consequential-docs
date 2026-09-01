@@ -1,0 +1,51 @@
+---
+title: Date ranges and presets
+description: How the date range picker works — what each preset covers, why windows end yesterday, and which timezone they use.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The date range picker sets the window every metric, chart, and dashboard on the page is computed over. It sits in the page header and applies to whichever store or view you have selected.
+
+## Presets
+
+The picker offers these presets:
+
+| Preset | Covers |
+| --- | --- |
+| **Yesterday** | Yesterday only. |
+| **Last 7 days** | The 7 days ending yesterday. |
+| **Last 30 days** | The 30 days ending yesterday. |
+| **Month to date** | The 1st of the current month through yesterday. |
+| **Last month** | The whole of the previous calendar month. |
+| **Year to date** | January 1 of the current year through yesterday. |
+| **Last year** | The whole of the previous calendar year. |
+
+**Last 7 days** is the default, and it's what the **Reset** button restores.
+
+To set a specific window instead, pick a start and end date and click **Apply**. A custom range can span up to 400 days.
+
+## Why windows end yesterday
+
+Every preset ends at **yesterday**, not today. The current day is still in progress, so its data is incomplete and would understate any total. Ending each window at yesterday keeps figures complete and matches Consequential's daily data pipeline, so the numbers line up across metrics, dashboards, daily reports, and the API.
+
+<Aside type="note">
+Because presets end yesterday, **Last 7 days** covers yesterday and the six days before it — it doesn't include today.
+</Aside>
+
+## Which timezone a range uses
+
+A date range is measured in the **store's timezone**, not your browser's. "Yesterday" means yesterday where the store is, so a teammate in another timezone sees the same window and the same numbers. When you have the **All stores** view selected, the view's timezone applies.
+
+<Aside type="tip">
+This is separate from the **Timezone** display preference under **Settings → Preferences**, which only affects how times are shown to you. To set a store's timezone, see [Switch stores and manage display preferences](/how-tos/onboarding/manage-store-preferences/).
+</Aside>
+
+## The range follows you
+
+Your selected range stays applied as you move between pages, so you don't need to reset it on every screen. It persists until you change it or click **Reset**.
+
+## Related
+
+- [How it works](/concepts/how-it-works/) — the mental model behind Consequential's data and metrics.
+- [Understand the Acquisition Dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/) — the Acquisition Dashboard has its own **Period** filter that follows the same "ends yesterday" rule.
