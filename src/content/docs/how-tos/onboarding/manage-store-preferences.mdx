@@ -1,33 +1,90 @@
 ---
 title: How to switch stores and manage display preferences
-description: Switch between a tenant's stores, and set display preferences like timezone and date format.
+description: Switch between a tenant's stores and views, set each store's currency, and set display preferences like timezone and date format.
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
 <Aside type="note">
-	"Store preferences" here covers two separate things: **switching which
-	store you're viewing** (done from the sidebar, not Settings) and **display
-	preferences** like timezone and date format (done from Settings).
+	"Store preferences" here covers three separate things: **switching which
+	store or view you're looking at** (done from the sidebar, not Settings),
+	**each store's reporting currency** (done from Settings), and **display
+	preferences** like timezone and date format (also done from Settings).
 </Aside>
 
-## Switch stores
+## Switch stores and views
+
+The switcher in the sidebar controls your **scope** — the store or view every
+metric, chart, and dashboard on the page is computed over. It shows the
+current scope name on the first line and your tenant name on the second.
 
 <Steps>
 
 1. Log in at [app.consequential.io](https://app.consequential.io).
-2. Click the workspace switcher in the **top left** of the sidebar (shows
-   your current tenant and store, for example "Acme Co. IN").
-3. Pick a different store from the **Stores** list, or click **Add Store**
-   to connect a new one.
+2. Click the scope switcher in the sidebar.
+3. Pick a scope from the list. Each row shows the scope's name, its currency
+   code, and — for a store — its country. A checkmark marks your current
+   scope, and the tenant's default scope carries a **Default** pill.
+4. To connect another storefront, click **Add Store** at the bottom of the
+   list.
 
 </Steps>
+
+When a tenant has more than one store, the list is titled **Stores &amp;
+views** and includes an **All stores** view (tagged with a **View** badge)
+alongside the individual stores. Otherwise it's titled **Stores**.
+
+Your selected scope is remembered across page loads and sign-ins until you
+change it again.
+
+<Aside type="note">
+	**All stores** is a view — a group that reports across every store in the
+	tenant at once. Consequential creates it automatically once a tenant has
+	two or more stores, and it stays up to date as you add stores. You can't
+	create or remove views in the app today; **All stores** is the only one.
+</Aside>
+
+<Aside type="tip">
+	Some Settings pages act on a single store — for example, connecting a data
+	source attaches it to the active store. While the **All stores** view is
+	selected, those store-specific sections are hidden; switch to an individual
+	store to see them.
+</Aside>
+
+## Set a store's currency
+
+Each store reports its money figures in a currency you set. New stores start
+in the currency picked from the store's country when it was connected, and you
+can change it from Settings.
+
+<Steps>
+
+1. Click **Settings** in the sidebar, which follows **Support** in the list.
+2. Open the **Preferences** tab (the default tab).
+3. Find the **Store currency** section. If your tenant has more than one
+   store, each store has its own row; the active store's row is expanded, and
+   you can expand any other store's row to change it.
+4. Choose a currency from the store's dropdown. Your options are US Dollar,
+   British Pound, Euro, Canadian Dollar, Australian Dollar, Indian Rupee,
+   Japanese Yen, Singapore Dollar, and UAE Dirham.
+
+</Steps>
+
+The change saves as soon as you select it — there's no separate Save button
+for this section — and a confirmation appears.
+
+<Aside type="note">
+	Changing a store's currency doesn't convert its existing figures, and it's
+	separate from the **Currency display** preference under **Display**, which
+	only controls whether amounts show as a symbol (`$`) or a code (`USD`).
+	Only the **Admin** and **Owner** roles can change a store's currency.
+</Aside>
 
 ## Update display preferences
 
 <Steps>
 
-1. Click **Settings** in the **bottom left** of the sidebar, below Support.
+1. Click **Settings** in the sidebar, which follows **Support** in the list.
 2. Open the **Preferences** tab (the default tab).
 3. At the top, an **Active context** panel confirms which tenant and store
    you're currently editing preferences for.
