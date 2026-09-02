@@ -66,6 +66,12 @@ const mdFiles = [...walk(DIST, (name) => name.endsWith('.md'))];
 const isOpenApiPage = (htmlPath) =>
 	relative(DIST, htmlPath).split(sep)[0] === 'api';
 
+// A `redirects:` entry in astro.config.mjs emits a meta-refresh stub, not a page.
+// It has no content collection entry, so `injectMarkdownRoutes` never generates a
+// `.md` twin for it — correctly. Detected by the refresh meta rather than by a list
+// of paths, so new redirects don't need this test edited.
+const isRedirectStub = (html) => /<meta\s+http-equiv="refresh"/i.test(html);
+
 test('build output exists (did `npm run build` run?)', () => {
 	assert.ok(existsSync(DIST), 'dist/ does not exist');
 	assert.ok(htmlFiles.length > 0, 'no .html files emitted');
@@ -79,6 +85,7 @@ test('real docs pages emit <link rel="alternate" type="text/markdown">', () => {
 	const missing = [];
 	for (const f of expected) {
 		const html = readFileSync(f, 'utf-8');
+		if (isRedirectStub(html)) continue;
 		if (!extractAlternateHref(html)) missing.push(relative(DIST, f));
 	}
 	assert.equal(

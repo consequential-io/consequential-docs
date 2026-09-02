@@ -76,11 +76,21 @@ Component overrides (Starlight's "Overriding Components" mechanism) go in `src/c
 
 ## Deploy
 
-Production deploys are **manual**, via Cloudflare Workers static assets — there is no CI/CD pipeline wired to this repo, and merging a PR on GitHub does **not** by itself update the live site:
+**Merging to `main` deploys.** `.github/workflows/deploy.yml` runs `npm ci` → `npm run test`
+(which builds first) → `cloudflare/wrangler-action`, publishing `dist/` to the
+`consequential-docs` Worker. It needs the `CLOUDFLARE_API_TOKEN` repo secret; the account ID
+is in the workflow. PRs run the same build + test via `ci.yml` without deploying.
+
+This replaced a manual-only flow, so **older notes in this repo and in commit messages saying
+"merging does not deploy" are out of date** — that was true until 2026-09-02. The manual path
+still works and is the fallback if Actions is down:
 
 ```bash
 npm run build
 CLOUDFLARE_ACCOUNT_ID=705a25199f79333ff0e4db56e2078036 npx wrangler deploy
 ```
+
+Deploying by hand from a dirty or behind-`main` checkout will publish exactly that state —
+prefer letting the workflow do it.
 
 **GitHub write access gap**: as of this writing, the account used from this machine has `pull`-only access to `consequential-io/consequential-docs` — PRs can be opened but not merged from here. The working pattern has been: make the change, verify with `npm run build`/`npm run test`, deploy directly via `wrangler deploy` above (bypassing GitHub entirely for the live site), then push the branch to a fork for someone with real access to reconcile GitHub's history later. Don't assume "committed" means "live," or that "live" means "merged on GitHub" — check both independently.

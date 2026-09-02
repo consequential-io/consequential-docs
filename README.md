@@ -56,14 +56,33 @@ Site is live at <http://localhost:4321/> with hot reload.
 
 ## Deploy
 
-Production deploys are **manual**, via Cloudflare Workers static assets — there is currently no CI/CD pipeline wired to this repo:
+**Merging to `main` deploys the site.** `.github/workflows/deploy.yml` builds, runs the
+contract tests, and publishes `dist/` to the `consequential-docs` Cloudflare Worker. Pull
+requests get the same build + test via `.github/workflows/ci.yml`, without deploying.
+
+### One-time setup
+
+The deploy workflow needs a repository secret named **`CLOUDFLARE_API_TOKEN`**:
+
+1. Cloudflare dashboard → My Profile → API Tokens → **Create Token** → *Edit Cloudflare Workers*
+   template, scoped to the **Connect@outoftheblue.ai** account
+   (`705a25199f79333ff0e4db56e2078036`).
+2. Add it under this repo's Settings → Secrets and variables → Actions.
+
+The account ID is not secret and is set directly in the workflow.
+
+### Deploying by hand
+
+Still supported, and the fallback if Actions is unavailable:
 
 ```bash
 npm run build
 CLOUDFLARE_ACCOUNT_ID=705a25199f79333ff0e4db56e2078036 npx wrangler deploy
 ```
 
-This pushes `dist/` straight to the `consequential-docs` Worker on Cloudflare, independent of GitHub — merging a PR alone does **not** update the live site. (A `vercel.json` also exists in this repo but isn't the actual deploy path; its Vercel preview checks on PRs are known to fail for unrelated account reasons.)
+Note a `vercel.json` also exists in this repo. It is **not** the deploy path — its PR checks
+fail for unrelated account reasons ("Account is blocked") on every PR, and should be
+disconnected so a red check means something.
 
 ## Editing content
 

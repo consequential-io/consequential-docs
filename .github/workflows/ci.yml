@@ -1,0 +1,30 @@
+name: CI
+
+# Green here means the PR builds and every page still emits its markdown twin.
+# It does NOT verify that content claims match the product — a drift PR asserting
+# how the app behaves still needs a human who can check it against core/pulse.
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build and test
+        run: npm run test

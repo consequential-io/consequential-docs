@@ -1,0 +1,50 @@
+name: Deploy
+
+# Publishes docs.consequential.io on every merge to main.
+#
+# Before this existed, merging a PR changed nothing publicly — the site only moved
+# when someone remembered to run `npm run build && wrangler deploy` by hand, so
+# "merged" and "live" were independent facts and PRs sat merged-but-unpublished.
+#
+# Requires one repository secret: CLOUDFLARE_API_TOKEN (see README → Deploy).
+
+on:
+  push:
+    branches: [main]
+    # Skip the run when nothing that reaches the site changed.
+    paths-ignore:
+      - 'README.md'
+      - 'CLAUDE.md'
+      - '.github/**'
+  workflow_dispatch: # manual re-run, e.g. after rotating the token
+
+# Never let two deploys race; queue instead of cancelling, so an in-flight
+# upload is not killed half-way through replacing the asset set.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22 # matches the version verified in CLAUDE.md
+          cache: npm
+
+      - run: npm ci
+
+      # `npm run test` runs the build first, then the markdown-twin contract
+      # tests against dist/ — so this both produces the artifact and gates it.
+      - name: Build and test
+        run: npm run test
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: '705a25199f79333ff0e4db56e2078036'
