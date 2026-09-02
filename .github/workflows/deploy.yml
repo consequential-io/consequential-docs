@@ -11,11 +11,17 @@ name: Deploy
 on:
   push:
     branches: [main]
-    # Skip the run when nothing that reaches the site changed.
+    # Skip the run when nothing that reaches the site changed. README/CLAUDE
+    # live outside src/, so they cannot alter the build.
+    #
+    # `.github/**` is deliberately NOT ignored. A workflow change doesn't alter
+    # the site either, but ignoring it means a broken deploy.yml stays invisible
+    # until someone merges unrelated content and it fails on them. Re-deploying
+    # an identical site is nearly free — wrangler uploads only changed assets
+    # (12 of 462 on the last run) — so the smoke test is worth the run.
     paths-ignore:
       - 'README.md'
       - 'CLAUDE.md'
-      - '.github/**'
   workflow_dispatch: # manual re-run, e.g. after rotating the token
 
 # Never let two deploys race; queue instead of cancelling, so an in-flight
