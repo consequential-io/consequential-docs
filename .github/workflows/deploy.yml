@@ -43,8 +43,16 @@ jobs:
       - name: Build and test
         run: npm run test
 
+      # Invoked directly rather than via cloudflare/wrangler-action. The action
+      # bootstraps wrangler with `npx`, which on the runner cannot install
+      # non-interactively ("npx canceled due to missing packages and no YES
+      # option"). It then continued with a wrangler that could not read
+      # wrangler.jsonc, so it saw no `assets` config and failed with the
+      # misleading "Missing entry-point". wrangler is a pinned devDependency
+      # now, so `npm ci` above installs the exact version, and this is the same
+      # command the README documents for deploying by hand.
       - name: Deploy to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: '705a25199f79333ff0e4db56e2078036'
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: '705a25199f79333ff0e4db56e2078036'
