@@ -1,0 +1,164 @@
+name: Assign reviewers
+
+# EkLine's Docs Agent opens PRs that nobody is notified about, so they sit —
+# nine of them had queued up before the last sweep. This tags the humans whose
+# work the agent is editing, using history the repository already has.
+#
+# Bot-authored PRs only. A person opening a PR picks their own reviewers, and
+# a human already knows who to ask; the agent is the one with no social graph.
+#
+# The selection logic lives in .github/scripts/select-reviewers.mjs and is unit
+# tested (tests/select-reviewers.test.mjs) — this file is only the wiring.
+
+on:
+  pull_request:
+    # NOT `synchronize`: reviewers are chosen once, when the PR appears. Re-tagging
+    # on every push would turn a helpful ping into a reason to mute the repo.
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  assign:
+    # `user.type` is what the API reports for a GitHub App; the `[bot]` suffix
+    # catches app identities that report as User.
+    if: >-
+      github.event.pull_request.draft == false &&
+      (github.event.pull_request.user.type == 'Bot' ||
+       endsWith(github.event.pull_request.user.login, '[bot]'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # Checked out only for the selector script — history itself comes from the
+      # API, which resolves commit emails to GitHub logins. Reading `git log`
+      # here would not: the same person commits under two emails in this repo,
+      # and one of them maps to no account at all.
+      - uses: actions/checkout@v5
+
+      - uses: actions/github-script@v7
+        env:
+          # One person, two accounts: map the second onto the first. Left empty
+          # deliberately — two logins in this repo's history are not members of
+          # it (they get an @-mention instead of a review request), and guessing
+          # who they belong to is not this workflow's call to make.
+          REVIEWER_ALIASES: '{}'
+          # Used only when history names nobody at all — a PR touching genuinely
+          # new ground. Empty means "say nothing rather than ping a bystander".
+          FALLBACK_REVIEWERS: '[]'
+          MAX_REVIEWERS: '3'
+        with:
+          script: |
+            const { pathToFileURL } = require('node:url')
+            const { selectReviewers } = await import(
+              pathToFileURL(`${process.env.GITHUB_WORKSPACE}/.github/scripts/select-reviewers.mjs`).href
+            )
+
+            const { owner, repo } = context.repo
+            const pull_number = context.payload.pull_request.number
+            const base = context.payload.pull_request.base.sha
+            const MARKER = '<!-- assign-reviewers -->'
+
+            // Re-running the workflow must not re-notify anyone.
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number: pull_number, per_page: 100,
+            })
+            if (comments.some((comment) => comment.body?.includes(MARKER))) {
+              core.info('Already ran on this PR — nothing to do.')
+              return
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner, repo, pull_number, per_page: 100,
+            })
+
+            const cache = new Map()
+            const listAuthorsForPath = async (path) => {
+              if (cache.has(path)) return cache.get(path)
+              const { data } = await github.rest.repos.listCommits({
+                owner, repo, path, sha: base, per_page: 20,
+              })
+              const authors = data.map((commit) => ({
+                login: commit.author?.login,
+                type: commit.author?.type,
+                date: commit.commit?.author?.date,
+              }))
+              cache.set(path, authors)
+              return authors
+            }
+
+            const { reviewers, tier, truncated } = await selectReviewers({
+              changedFiles: files.map((file) => file.filename),
+              listAuthorsForPath,
+              prAuthor: context.payload.pull_request.user.login,
+              alreadyRequested: (context.payload.pull_request.requested_reviewers ?? [])
+                .map((reviewer) => reviewer.login),
+              aliases: JSON.parse(process.env.REVIEWER_ALIASES),
+              fallbackReviewers: JSON.parse(process.env.FALLBACK_REVIEWERS),
+              maxReviewers: Number(process.env.MAX_REVIEWERS),
+            })
+
+            core.info(`tier=${tier} truncated=${truncated} picked=${reviewers.join(', ') || '(nobody)'}`)
+            if (reviewers.length === 0) return
+
+            // A review can only be requested from someone with access to the
+            // repo. Asking for anyone else 422s the WHOLE call, which is also
+            // why each name goes in its own request: one outsider must not
+            // silently drop the reviewers beside them.
+            const requested = []
+            const mentionOnly = []
+
+            for (const reviewer of reviewers) {
+              let isCollaborator = false
+              try {
+                await github.rest.repos.checkCollaborator({ owner, repo, username: reviewer })
+                isCollaborator = true
+              } catch {
+                isCollaborator = false
+              }
+
+              if (!isCollaborator) {
+                mentionOnly.push(reviewer)
+                continue
+              }
+
+              try {
+                await github.rest.pulls.requestReviewers({
+                  owner, repo, pull_number, reviewers: [reviewer],
+                })
+                requested.push(reviewer)
+              } catch (error) {
+                core.warning(`Could not request ${reviewer}: ${error.message}`)
+                mentionOnly.push(reviewer)
+              }
+            }
+
+            const basis = tier === 'file'
+              ? 'they have committed to the files this PR edits'
+              : tier === 'directory'
+                ? 'the files this PR edits have no human history of their own, so this is who owns their section'
+                : 'no history matched, so this is the configured fallback'
+
+            const lines = [
+              MARKER,
+              `Picked from this repository's history — ${basis}.`,
+              '',
+            ]
+            if (requested.length > 0) {
+              lines.push(`**Review requested:** ${requested.map((r) => `@${r}`).join(', ')}`)
+            }
+            if (mentionOnly.length > 0) {
+              lines.push(
+                `**Also wrote this content:** ${mentionOnly.map((r) => `@${r}`).join(', ')} — ` +
+                'mentioned rather than assigned, because GitHub only accepts review requests ' +
+                'for people with access to this repository.'
+              )
+            }
+            if (truncated) {
+              lines.push('', '_This PR touches more files than the selector walks; the list above is based on a subset._')
+            }
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: pull_number, body: lines.join('\n'),
+            })
