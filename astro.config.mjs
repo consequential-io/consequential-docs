@@ -73,7 +73,7 @@ export default defineConfig({
 				starlightLlmsTxt({
 					projectName: 'Consequential',
 					description:
-						'Documentation for Consequential — a data-driven growth platform for eCommerce and DTC brands. Products include Northstar and Pixel for analytics and site monitoring.',
+						'Documentation for Consequential — a data-driven growth platform for eCommerce and DTC brands. Products include Northstar and Pixel for analytics and site monitoring. Consequential also hosts an MCP (Model Context Protocol) server at https://mcp.consequential.io/mcp that lets Claude and ChatGPT query your marketing analytics; see the MCP guide for setup.',
 				}),
 			],
 			sidebar: [

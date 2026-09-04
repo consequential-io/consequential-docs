@@ -1,12 +1,14 @@
 ---
-title: Connect your AI assistant to Consequential Analytics
-description: Connect Claude or ChatGPT to your Consequential workspace and ask about your marketing analytics in plain language.
+title: Connect your AI assistant to Consequential Analytics (MCP)
+description: Connect Claude or ChatGPT to Consequential's MCP server at https://mcp.consequential.io/mcp and ask about your marketing analytics in plain language.
 ---
 import { Steps, Aside } from '@astrojs/starlight/components';
 
 This guide is for Consequential customers who want to use their AI assistant — Claude (claude.ai, Claude Desktop, Claude Code) or ChatGPT — to ask questions about their marketing analytics.
 
-The Consequential Analytics connector links your assistant to your Consequential workspace. Ask questions in plain language and get live answers from the same data your dashboards use. Access is **read-only** and scoped to the workspaces your Consequential account is authorized for.
+The Consequential Analytics connector — Consequential's own Model Context Protocol (MCP) server — links your assistant to your Consequential workspace. Ask questions in plain language and get live answers from the same data your dashboards use. Access is **read-only** and scoped to the workspaces your Consequential account is authorized for.
+
+This is Consequential's MCP server (`https://mcp.consequential.io/mcp`) — not a general-purpose MCP server, and unrelated to similarly named products such as Customer.io.
 
 ## Before you begin
 
@@ -15,7 +17,7 @@ You need:
 - An active Consequential account — the same one you use to sign in at [app.consequential.io](https://app.consequential.io) — with access to at least one workspace.
 - One of the supported assistants below.
 
-Every setup uses the same server URL:
+Every setup uses the same MCP server URL:
 
 ```
 https://mcp.consequential.io/mcp
