@@ -1,0 +1,233 @@
+---
+title: Google Ads UTM and tracking setup
+description: Configure Google Ads custom parameters and the Final URL suffix so campaign, ad group, and ad names are captured consistently in your UTMs.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+This guide explains how to configure Google Ads tracking so that campaign, ad group, and ad-level information is captured consistently in UTMs.
+
+Consequential reports the session dimensions it reads from Google Analytics — source/medium, campaign, ad group, and ad network — exactly as GA4 returns them. The values you set here are the values you see in your reports, so it is worth getting the tagging right before a campaign starts serving.
+
+## How the setup works
+
+Google Ads does not provide ValueTrack parameters for campaign, ad group, or ad *names*. Instead, you use custom parameters to pass those names into the Final URL.
+
+| Custom parameter | Set at | Value |
+|------------------|--------|-------|
+| `{_cname}` | Campaign | Full campaign name |
+| `{_gname}` | Ad group | Full ad group name |
+| `{_adname}` | Ad | Ad name / title |
+
+Custom parameters are inherited from higher levels. Define sensible defaults at the campaign level, then override each one at the level it belongs to.
+
+## Campaign-level setup
+
+<Steps>
+
+1. Go to **Campaign → Settings → Additional settings → Campaign URL options**.
+
+2. Under **Custom parameters**, add all three parameters:
+
+   | Parameter | Value |
+   |-----------|-------|
+   | `{_cname}` | Full campaign name |
+   | `{_gname}` | `na` |
+   | `{_adname}` | `na` |
+
+   For a campaign named `Google|cpc|BOFU|Broad|MaxClicks|Search|na|in|festival_edit_c01_v1`, set:
+
+   ```text
+   _cname  = Google|cpc|BOFU|Broad|MaxClicks|Search|na|in|festival_edit_c01_v1
+   _gname  = na
+   _adname = na
+   ```
+
+3. Leave the **Final URL suffix** empty at campaign level.
+
+</Steps>
+
+## Ad group-level setup
+
+<Steps>
+
+1. Go to the ad group's **URL options / Custom parameters** section.
+
+2. Set only the ad group parameter:
+
+   | Parameter | Value |
+   |-----------|-------|
+   | `{_gname}` | Full ad group name |
+
+   For example:
+
+   ```text
+   _gname = Text|all|festival
+   ```
+
+   The campaign-level values for `{_cname}` and `{_adname}` remain inherited.
+
+3. Leave the **Final URL suffix** empty at ad group level.
+
+</Steps>
+
+## Ad-level setup
+
+<Steps>
+
+1. Go to the ad's **URL options / Custom parameters** section.
+
+2. Set the ad name:
+
+   | Parameter | Value |
+   |-----------|-------|
+   | `{_adname}` | Ad name / title |
+
+   For example:
+
+   ```text
+   _adname = 260822 Seasonal For Raksha Bandhan still
+   ```
+
+   The campaign's `{_cname}` and the ad group's `{_gname}` are inherited automatically.
+
+3. In **Final URL suffix**, enter the complete suffix:
+
+   ```text
+   utm_source=google&utm_medium=cpc&utm_campaign={_cname}_{campaignid}&utm_term={_gname}_{adgroupid}&utm_content={_adname}_{creative}&utm_kw={keyword}&utm_match={matchtype}
+   ```
+
+</Steps>
+
+<Aside type="note">
+`{campaignid}`, `{adgroupid}`, `{creative}`, `{keyword}`, and `{matchtype}` are Google's own ValueTrack parameters — Google fills them in at click time with the campaign ID, ad group ID, ad ID, keyword, and match type. Only `{_cname}`, `{_gname}`, and `{_adname}` are the custom parameters you defined above.
+</Aside>
+
+## Final hierarchy
+
+| Level | `{_cname}` | `{_gname}` | `{_adname}` | Final URL suffix |
+|-------|------------|------------|-------------|------------------|
+| Campaign | Campaign name | `na` | `na` | Empty |
+| Ad group | Inherited | Ad group name | `na` (inherited) | Empty |
+| Ad | Inherited | Inherited | Ad name | Full suffix |
+
+In practical terms:
+
+```text
+CAMPAIGN
+_cname  → Campaign name
+_gname  → na
+_adname → na
+Final URL suffix → EMPTY
+
+AD GROUP
+_gname  → Ad group name
+Final URL suffix → EMPTY
+
+AD
+_adname → Ad name
+Final URL suffix → FULL SUFFIX
+```
+
+The tracking suffix is maintained at the ad level only, while each level supplies the naming information relevant to it.
+
+## Worked example
+
+**Campaign** — `Google|cpc|BOFU|Broad|MaxClicks|Search|na|in|festival_edit_c01_v1`
+
+```text
+_cname  = Google|cpc|BOFU|Broad|MaxClicks|Search|na|in|festival_edit_c01_v1
+_gname  = na
+_adname = na
+```
+
+**Ad group** — `Text|all|festival`
+
+```text
+_gname = Text|all|festival
+```
+
+**Ad** — `260822 Seasonal For Raksha Bandhan still`
+
+```text
+_adname = 260822 Seasonal For Raksha Bandhan still
+```
+
+**Ad-level Final URL suffix**
+
+```text
+utm_source=google&utm_medium=cpc&utm_campaign={_cname}_{campaignid}&utm_term={_gname}_{adgroupid}&utm_content={_adname}_{creative}&utm_kw={keyword}&utm_match={matchtype}
+```
+
+A live click resolves these into values such as:
+
+```text
+utm_source=google
+utm_medium=cpc
+utm_campaign=Google|cpc|BOFU|Broad|MaxClicks|Search|na|in|festival_edit_c01_v1_281499154173044
+utm_term=Text|all|festival_281675099716968
+utm_content=260822 Seasonal For Raksha Bandhan still_281440087654321
+utm_kw=festival%20bracelet
+utm_match=p
+```
+
+## Update custom parameters when names change
+
+<Aside type="caution">
+Custom parameters are **not** dynamically linked to the campaign, ad group, or ad name. If you rename an entity, its custom parameter does not change with it — the old name keeps arriving in your UTMs until you edit the parameter. Always rename the entity and update its custom parameter together.
+</Aside>
+
+## Do not use a tracking template
+
+| Setting | Value |
+|---------|-------|
+| Tracking template | Empty |
+| Final URL suffix at campaign | Empty |
+| Final URL suffix at ad group | Empty |
+| Final URL suffix at ad | Use the full suffix |
+
+Do not put the same UTMs in both a tracking template and the Final URL suffix. A tracking template is only necessary when a third-party click-tracking or redirect service requires one.
+
+## URL encoding
+
+Do not add spaces around the `|` separator:
+
+```text
+Google|cpc|BOFU|Broad
+```
+
+Not:
+
+```text
+Google | cpc | BOFU | Broad
+```
+
+<Aside type="tip">
+If you follow the [ad naming convention](/faq/advertising-best-practices/ad-naming-conventions/), which writes separators with spaces for readability in dashboards, drop those spaces in any name that feeds a UTM.
+</Aside>
+
+Spaces inside a value are a separate matter. A keyword such as `festival bracelet` correctly appears in the URL as `festival%20bracelet` — that is normal URL encoding, not a tagging error.
+
+## Pre-launch checklist
+
+- `{_cname}` is populated at campaign level
+- `{_gname}` is set to `na` at campaign level
+- `{_adname}` is set to `na` at campaign level
+- `{_gname}` is overridden with the ad group name
+- `{_adname}` is overridden with the ad name
+- Campaign Final URL suffix is empty
+- Ad group Final URL suffix is empty
+- Ad Final URL suffix contains the complete UTM suffix
+- Tracking template is empty
+- No spaces surround `|`
+- Custom parameters were populated before the ad started serving
+- A live, serving ad has been tested
+- Renaming an entity also updates its custom parameter
+
+## Related
+
+- [Naming convention best practices for ads](/faq/advertising-best-practices/ad-naming-conventions/) — the campaign, ad group, and ad names this setup passes through.
+- [Why you see (not set) in your Google Analytics reports](/academy/attribution/not-set-in-google-analytics/) — what missing or inconsistent tagging looks like in your reports.
+- [Connect Google Ads](/get-started/connect-google-ads/) — connect the ad account to Consequential.
+- [Set up tracking with ValueTrack parameters](https://support.google.com/google-ads/answer/6305348) — Google Ads Help.
+- [Add a Final URL suffix](https://support.google.com/google-ads/answer/9054021) — Google Ads Help.
