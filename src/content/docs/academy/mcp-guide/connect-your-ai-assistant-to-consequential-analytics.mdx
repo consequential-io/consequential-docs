@@ -66,6 +66,30 @@ Custom connectors in ChatGPT require developer mode. To enable it, open **Settin
 
 </Steps>
 
+## Other assistants
+
+Consequential Analytics is a standard **remote MCP server**: streamable HTTP at the
+URL above, with OAuth sign-in. Any assistant that supports both can connect to it
+through that assistant's own custom-connector flow — the steps differ, the server
+URL does not.
+
+Two you may come across:
+
+- **Grok** — connectors are managed at [grok.com/connectors](https://grok.com/connectors);
+  choose **New Connector**, then **Custom**, and enter the server URL. xAI documents
+  the flow in [its connector guide](https://docs.x.ai/grok/connectors).
+- **Gemini Enterprise** — **not supported today.** Its custom MCP connector asks an
+  administrator for an OAuth client ID *and* client secret. Consequential issues
+  public OAuth clients, which have no secret, so there is nothing to enter in that
+  field. Get in touch at [consequential.io/support](https://consequential.io/support)
+  if you need this — knowing there is demand is what moves it up the list.
+
+<Aside type="note">
+Whichever assistant you use, the connection is the same underneath: read-only, scoped
+to the workspaces your Consequential account is a member of, and revocable from that
+assistant's connector settings.
+</Aside>
+
 ## Signing in and permissions
 
 When you connect, you sign in with your existing Consequential account and approve a consent screen. The connection:
