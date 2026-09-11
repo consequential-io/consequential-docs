@@ -1,6 +1,12 @@
 ---
 title: Recommended settings defaults and industry benchmarks
 description: Default values and industry benchmarks for the P&L Model Assumptions that drive Gross Profit, Contribution Margin, and EBITDA across dashboards.
+head:
+  - tag: script
+    attrs:
+      type: application/ld+json
+    content: |
+      {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"When should I switch from \"Manual\" to \"From P&amp;L\" for contribution margin?","acceptedAnswer":{"@type":"Answer","text":"Switch once you have at least 3 months of complete P&amp;L data in Consequential. \"From P&amp;L\" pulls your calculated CM2% automatically and keeps the iROAS threshold in sync with actual results."}},{"@type":"Question","name":"Why does my Effective Margin in the Impact Preview look different from my gross margin?","acceptedAnswer":{"@type":"Answer","text":"Effective Margin accounts for COGS, discounts, and returns applied together. It's always lower than pure gross margin because it deducts the revenue lost to returns and promotions before applying COGS."}},{"@type":"Question","name":"My COGS is low (under 10%), is that correct?","acceptedAnswer":{"@type":"Answer","text":"Only if your upstream data pipeline already contains actuals-based COGS and this field acts as an incremental adjustment. If this is your only COGS input, a value below 20% is almost certainly understated for any physical goods brand."}},{"@type":"Question","name":"How do I find my actual transaction fee rate?","acceptedAnswer":{"@type":"Answer","text":"Divide last month's total payment processing fees (from Stripe, Shopify Payments, or PayPal statements) by total gross revenue. The result is your blended effective rate."}}]}
 ---
 
 import { Aside } from '@astrojs/starlight/components';
