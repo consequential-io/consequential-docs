@@ -1,0 +1,304 @@
+---
+title: Consequential MCP Server
+description: Reference for the Consequential MCP Server — endpoint, OAuth sign-in, the nine read-only tools, limits and behaviour, and troubleshooting.
+---
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Query your governed revenue metrics from Claude, ChatGPT, or any MCP-compatible client. Read-only.
+
+| Property | Value |
+|---|---|
+| **Endpoint** | `https://mcp.consequential.io/mcp` |
+| **Transport** | Streamable HTTP |
+| **Sign-in** | OAuth 2.1 with PKCE |
+| **Scope** | `mcp:read` — there is no write scope |
+
+For step-by-step setup in claude.ai, Claude Desktop, Claude Code, ChatGPT, and Grok, see [Connect your AI assistant](/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/). For question ideas, see the [MCP Prompt Guide](/academy/mcp-guide/mcp-prompt-guide/). This page is the reference for what the server is, what each tool does, and where its limits are.
+
+## What it is
+
+The Consequential MCP Server is a [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI assistants query the same governed metric layer that powers your dashboards, your alerts, and your daily report.
+
+It does not call Meta, Google, or TikTok live. It reads the reconciled layer underneath them — the same data your dashboard uses, where each platform's self-reported figures sit alongside Consequential's cross-channel attribution of the orders your store actually recorded. That is why a number you get here matches the number in your daily report, and why both can differ from what the ad platforms say about themselves.
+
+What is queryable depends on your workspace's metric catalog and the sources you have connected: revenue, orders, AOV, customer mix, profitability, and more, plus acquisition analytics across channels, campaigns, ad sets, creatives, and landing pages.
+
+**A Consequential account is required.** The server resolves your workspaces from the account you sign in with; there is no anonymous or trial mode. If you don't have an account yet, [sign up](https://app.consequential.io/signup) or [get in touch](https://consequential.io/support).
+
+{/* PRICING DEPENDENCY: Ask MCP is plan-dependent today ("usage limits vary by plan" on /pricing).
+    If /pricing changes to include it everywhere, replace the line below with:
+    "Included with every Consequential plan." */}
+**Availability.** Ask MCP is part of Consequential's plans, and usage limits vary by plan — [see plans](https://consequential.io/pricing) or talk to your account contact.
+
+## Compatible clients
+
+Any client that supports **remote MCP servers over streamable HTTP with OAuth sign-in** can connect. Consequential issues public OAuth clients through dynamic client registration — there is no client secret — so the client must support that flow too.
+
+- **Step-by-step guides:** claude.ai, Claude Desktop, Claude Code, ChatGPT, and Grok — see [Connect your AI assistant](/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/).
+- **Other clients** — Cursor, Windsurf, VS Code with GitHub Copilot, Goose, and similar tools — connect through their own remote-server or custom-connector flow using the endpoint above. We haven't verified every client individually; if yours rejects the URL, look for a "remote server", "custom connector", or "HTTP transport" option before assuming a fault.
+- **Not supported today:** Gemini Enterprise, whose custom MCP connector requires an OAuth client secret. Clients that only support local stdio servers cannot connect either.
+
+## Setup
+
+### Prerequisites
+
+- A Consequential account with access to at least one workspace — the same account you use at [app.consequential.io](https://app.consequential.io).
+- An MCP-compatible client (see above).
+- Nothing else — no API key to generate, no secrets to manage.
+
+### Endpoint
+
+```
+https://mcp.consequential.io/mcp
+```
+
+<Tabs>
+
+<TabItem label="claude.ai / Claude Desktop">
+
+<Steps>
+
+1. Open **Settings → Connectors** and click **Add custom connector**.
+
+2. Enter a name (for example, `Consequential Analytics`) and the endpoint, then click **Add**.
+
+3. Click **Connect**. Your browser opens the Consequential sign-in page — sign in with your usual credentials and click **Approve** on the consent screen.
+
+</Steps>
+
+Claude Desktop shares the same connectors as claude.ai; connect once and it is available in both.
+
+</TabItem>
+
+<TabItem label="Claude Code">
+
+```bash
+claude mcp add --transport http consequential-analytics https://mcp.consequential.io/mcp
+```
+
+Then run `/mcp` inside a Claude Code session, select **consequential-analytics**, and choose **Authenticate** to complete the OAuth flow.
+
+</TabItem>
+
+<TabItem label="ChatGPT">
+
+Custom connectors in ChatGPT require developer mode: **Settings → Apps & Connectors → Advanced settings → Developer mode**. Then create a connector with the endpoint above and **OAuth** authentication. Full steps are in the [connect guide](/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/#set-up-in-chatgpt).
+
+</TabItem>
+
+<TabItem label="Config-file clients">
+
+For clients configured through a JSON file (Cursor, Windsurf, and others), add the server:
+
+```json
+{
+  "mcpServers": {
+    "consequential": {
+      "url": "https://mcp.consequential.io/mcp"
+    }
+  }
+}
+```
+
+Some clients require an explicit transport declaration:
+
+```json
+{
+  "mcpServers": {
+    "consequential": {
+      "type": "http",
+      "url": "https://mcp.consequential.io/mcp"
+    }
+  }
+}
+```
+
+The client discovers the OAuth flow from the endpoint and opens a browser window for sign-in on first use.
+
+</TabItem>
+
+</Tabs>
+
+### Verify
+
+Ask your client: *"Using Consequential, what was our revenue over the last 7 days?"* A correct setup returns a figure and names the exact dates it covers. If it returns nothing, ask for `status` — that tool reports gateway and data-service health without touching your metrics.
+
+## Authentication
+
+OAuth 2.1 with PKCE. There are no API keys, no bearer tokens to paste into a config file, and no long-lived credentials sitting on disk.
+
+| Property | Value |
+|---|---|
+| Endpoint | `https://mcp.consequential.io/mcp` |
+| Transport | Streamable HTTP, stateless — a fresh session per request |
+| Auth flow | OAuth 2.1 + PKCE with dynamic client registration, discovered automatically from the endpoint |
+| Scope | `mcp:read` |
+| Write scope | None. Does not exist. |
+| Workspaces | The workspaces your account is a member of — the same access you have in the Consequential app |
+| Sessions | Short-lived access tokens (1 hour) refreshed automatically; a connection stays signed in for up to 90 days (30 days without use) before you sign in again |
+| Compliance | SOC 2 certified. Data stays within your workspace boundary. |
+
+Your client discovers the authorisation server from the endpoint, opens a consent screen, receives a token, and stores it. The token carries every workspace your account is a member of: with one workspace, every tool uses it automatically; with several, the assistant lists them and works in the one you name. There is nothing to disconnect and reconnect when you switch.
+
+<Aside type="caution" title="There is no write path">
+No tool changes a budget, pauses a campaign, edits a setting, or writes to an ad account. The scope is `mcp:read`, no write scope exists to request, and every tool declares itself read-only to the client. Decisions still go through approval inside the product.
+
+This is a deliberate boundary, not a roadmap gap. An assistant that can both read your numbers and move your money is a different risk profile than most teams want to accept.
+</Aside>
+
+## Tools
+
+Nine tools. Your client selects among them; you don't need to name one in your question. The server also publishes a `gateway://guidelines` resource — the workflow and attribution rules the assistant is expected to follow — for clients that read resources.
+
+### `get_tenant_context`
+
+The first call in every conversation. Returns the workspaces you're authorised for and, for one workspace, its stores and views (including the combined **All stores** view for multi-store workspaces), reporting currency and timezone, and capabilities: how many metrics are in the catalog, which pillars they cover, and whether acquisition and profitability data are available. An account with one workspace gets it directly; an account with several gets a directory of names and ids first.
+
+### `list_metrics`
+
+The governed metric catalog for a workspace: every metric with its slug, description, format, pillar, supported grains, aggregation, and the dimensions it can be broken down by. Use it to find out what is measurable before asking for a number, and to see how a metric is defined when two teams disagree about what it means. The assistant is expected to call it before `query_metrics` and to use slugs verbatim.
+
+### `query_metrics`
+
+The primary query tool. One to five metrics over a period — a preset (`7d`, `30d`, `90d`, `mtd`, `ytd`) or explicit dates — at hourly to quarterly grain, broken down by up to two dimensions from the metric's own list (store, channel, customer type, product, landing page, country, and so on, depending on the metric and your catalog), with up to five filters and a `top_n` cap per breakdown. Comparison baselines: previous period, previous year, or the same weekday last year (a 364-day shift). Every result states the exact dates it covers and the currency of each money metric, and carries a staleness note when a source is behind.
+
+### `query_acquisition`
+
+Acquisition analytics for one view — channels, campaigns, ad sets, creatives, or landing pages — under a chosen attribution model. `last_click` (the default) and `first_click` are Consequential's cross-channel attribution of your orders; `platform` is what each ad platform reports about itself. Filter by store, ad provider, campaign status, ad type, or customer type (new versus returning); drill into a campaign, ad set, ad, or page; include the previous period. Rows carry the grade (A–D), performance segment, and recommended action from your workspace's configured health model, and the response metadata says whether the snapshot is stale and whether every store is present.
+
+### `get_entity_timeseries`
+
+Daily grade and metric history for one campaign, ad set, or creative — spend, attributed revenue and orders, ROAS, CTR, impressions, clicks — using an entity id from `query_acquisition`. This is what answers "show me how that campaign performed over the last six weeks" without pulling the whole account. Capped at the most recent 120 points (one per store per day for a multi-store entity); attributed figures are available at campaign grain only.
+
+### `search`
+
+Free-text search across the metric catalog, workspace name, and recent campaigns. Returns ids that `fetch` can resolve, and is what powers Consequential results in ChatGPT's search panel.
+
+### `fetch`
+
+Resolves an id from `search` into one full document: a metric definition with a 30-day value series, a workspace's context entry, or a campaign's 30-day performance drill.
+
+### `validate_response`
+
+Called before any answer that contains numbers or an attribution claim. Takes the draft answer, the source rows it was built from, and their metadata, and returns a claim-by-claim self-review checklist; if no data was available it returns `valid: false` and the assistant is instructed not to present a figure at all. It is the guard against a confident number that isn't in the tool output — the failure mode that makes people distrust AI over data in the first place.
+
+### `status`
+
+Gateway health, whether the analytics backend is reachable, and whether its semantic layer is `ok`, `degraded`, or `down`. Call it when other tools report `CORE_UNAVAILABLE`, or when numbers look unexpected.
+
+## Workspace context
+
+`get_tenant_context` matters more than it sounds. Without it, an assistant answering "how are we doing" doesn't know which store you mean, what currency the figures are in, or which parts of the product have data for your workspace.
+
+The context includes your stores and views, the reporting currency and timezone of each — period presets such as "last 7 days" resolve against the workspace's timezone, not the assistant's idea of today — and capabilities: the size and pillars of your metric catalog, and whether acquisition and profitability data are available.
+
+Coverage is explicit. If acquisition or profitability data isn't available for a workspace, the context says so, and the assistant is expected to report a gap rather than silently treat it as healthy. Multi-store workspaces get a combined **All stores** view, and when a store is missing from a snapshot the response names it, so a total is never presented as complete when it isn't.
+
+## Data sources
+
+The MCP server queries the reconciled layer, not the platforms, so its answers are consistent with everything else in the product. Consequential connects 160+ ad and marketing connectors; the core sources are:
+
+| Category | Includes |
+|---|---|
+| Commerce | Shopify, including Shopify Plus |
+| Advertising | Meta, Google Ads, TikTok |
+| Analytics | GA4, Adobe Analytics, first-party server-side collection |
+| Lifecycle & CRM | Klaviyo, Zoho CRM |
+
+See **Integrations & platform setup** in the sidebar for how each source connects.
+
+## Examples
+
+Question shapes that work well, and what they exercise. For a longer list, see the [MCP Prompt Guide](/academy/mcp-guide/mcp-prompt-guide/).
+
+### Diagnosing a drop
+
+*"Revenue fell last week compared with the week before. Where did it go?"* — `query_metrics` with a previous-period comparison broken down by channel or store, then `query_acquisition` on the campaigns that carry the movement. Expect an answer that names a dimension rather than restating the decline.
+
+### New versus returning
+
+*"How much of last month's ad spend went to customers we already had?"* — `query_acquisition` filtered to returning customers, where new-versus-returning comes from your order history rather than the ad platform's view of the user.
+
+### Platform versus attributed
+
+*"Why does Meta's revenue number differ from yours?"* — `query_acquisition` under the `platform` model and again under `last_click`. The assistant presents both and never mixes them in one table: platform figures count the conversions the platform believes it caused (Meta includes view-through and 7-day click), while attributed figures credit the orders your store recorded to the last or first touch across all channels.
+
+### One campaign over time
+
+*"Show me how our top Meta campaign has performed day by day this quarter."* — `query_acquisition` to find the campaign, then `get_entity_timeseries` for its daily grade, spend, attributed revenue, and ROAS.
+
+### Same weekday last year
+
+*"How does this month compare with the same period last year?"* — `query_metrics` with the same-weekday-last-year baseline, so a Saturday compares with a Saturday.
+
+### Finding what's measurable
+
+*"What can I ask about margin?"* — `search` or `list_metrics`, to see how profitability metrics are defined for your workspace before querying them.
+
+## Limits and behaviour
+
+### Read-only
+
+Every tool is a read. Nothing mutates state in Consequential or in any connected platform.
+
+### Data freshness
+
+Answers reflect the last completed data refresh, not the live platform APIs. A campaign launched an hour ago may not appear until the next run, and acquisition views can lag up to 24 hours after a refresh. Responses carry a staleness flag and age when a source is behind, and the assistant is expected to say so.
+
+### Governed definitions only
+
+The server will not invent a metric. A slug that isn't in your catalog returns an error for that metric rather than an approximation — a deliberate choice, because a plausible-sounding approximation is worse than a refusal when the number is going into a board deck.
+
+### Workspace isolation
+
+A token carries only the workspaces your account is a member of. Asking about any other returns `TENANT_NOT_ALLOWED`, and there is no way to widen access from inside a session.
+
+### Request limits
+
+- 60 requests per minute per signed-in user. Beyond that the server answers HTTP 429 with a `Retry-After` header, and the assistant should back off.
+- Each request has 30 seconds to complete; a slow analytics backend returns `CORE_TIMEOUT` rather than a partial answer.
+- Each tool has a response-size budget. A response that exceeds it returns `RESPONSE_TOO_LARGE` with a hint — fewer metrics, a coarser grain, a shorter period, or a lower row limit.
+
+## Troubleshooting
+
+### The client rejects the URL
+
+It probably supports only local stdio servers. Check for a "remote server", "custom connector", or "HTTP transport" option, or update to a build that supports remote MCP.
+
+### No consent screen appears, or "connection expired"
+
+A stale token is usually the cause. Remove the connector, add it again, and the OAuth flow restarts from the beginning.
+
+### `TENANT_NOT_ALLOWED`
+
+You asked about a workspace your account isn't a member of. Ask your workspace admin to invite you at [app.consequential.io](https://app.consequential.io). If you were invited in the last few minutes, wait briefly and try again — memberships are cached for up to five minutes.
+
+### `CORE_UNAVAILABLE` or `CORE_TIMEOUT`
+
+The data service is briefly unreachable or slow. Ask the assistant to call `status`, then retry in a minute.
+
+### `RESPONSE_TOO_LARGE`
+
+The answer exceeded the tool's response budget. Narrow the question: fewer metrics, a coarser grain, a shorter period, or a lower row limit.
+
+### Numbers differ from yesterday
+
+Data refreshes run on a schedule, and acquisition views can lag up to a day. Ask the assistant whether the snapshot was marked stale — the response says so, and how old it is.
+
+### Numbers differ from Meta or Google
+
+Expected, and the point. Platform figures count conversions the platform believes it caused; attributed figures credit the orders your store recorded. Ask the assistant to show both models — it can, as long as they aren't mixed in one comparison.
+
+### A metric is missing
+
+Ask for `list_metrics`. If the metric genuinely isn't in your catalog, it hasn't been configured for your workspace yet — a configuration change rather than a server fault.
+
+### Diagnostic logs
+
+For Claude Desktop log locations and what to include in a support request, see [Collecting diagnostic logs](/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/#collecting-diagnostic-logs) in the connect guide.
+
+## Support
+
+[support@consequential.io](mailto:support@consequential.io) · [consequential.io/support](https://consequential.io/support) · [docs.consequential.io](https://docs.consequential.io)
+
+When reporting a problem, include the output of `status`, your client and its version, and the question you asked. That is almost always enough to reproduce it.
