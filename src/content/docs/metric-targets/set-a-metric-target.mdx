@@ -1,0 +1,89 @@
+---
+title: Set a target on a metric
+description: Set a goal on any Consequential metric and get alerted when it falls off pace or reaches the target.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+A target turns a metric into a goal Consequential tracks for you. Set the number you want a metric to reach in a period, and Consequential watches it on a schedule and alerts you when the metric falls behind the pace it needs or reaches the goal. Targets work on both value metrics (such as Total Sales) and rate metrics (such as ROAS, conversion rate, or AOV).
+
+This guide shows you how to set a target on a metric, choose how and when it alerts, and edit or remove it later.
+
+## Prerequisites
+
+- Access to your Consequential account with a connected store.
+- Enough data for the metric you want to track. A `% vs last year` target also needs data from the same period a year ago.
+
+## Where to find it
+
+You set a target from the metric itself, wherever it appears — on your **Home** dashboard, or under **Metrics** (**Category**, **Funnel**, or **Source**).
+
+- On a metric **card**, the target control appears when you hover over the card.
+- In a metric **list**, the target control is always visible on each row.
+
+Click the target icon to open the **Set a target** panel.
+
+<Aside type="note">
+A target applies to the store selected in the store picker. Select **All stores** to set a target for the whole account, or select a single store to set one that applies to that store only. A metric holds one target per scope.
+</Aside>
+
+## Set a target
+
+<Steps>
+
+1. Open the **Set a target** panel from the metric you want to track.
+
+2. Under **Detect when this metric**, select **Hits a target**.
+
+   <Aside type="note">
+   **AI trend** and **Comp (prev. year)** also appear in this step but are marked "Not available yet." Only **Hits a target** is available today.
+   </Aside>
+
+3. Set the **Target value**:
+
+   - **Absolute** — a fixed number, such as `15000`.
+   - **% vs last year** — a percentage change from the same period last year, such as `7.8`. Consequential recomputes the absolute goal from last year's figure and previews the resulting number below the field.
+
+4. Choose the **Time period** the target is measured over: **Daily**, **Weekly**, **Monthly**, **Quarterly**, or **Yearly**. The panel shows the exact dates the current period covers.
+
+5. Choose the **Check frequency** — how often Consequential evaluates the target: **Daily**, **Every 3 days**, **Weekly** (every Monday), or **Monthly** (on the 1st). Some frequencies are unavailable for shorter periods.
+
+   <Aside type="note">
+   The period's final day is always checked, so a target's verdict is never missed even if it falls between scheduled checks.
+   </Aside>
+
+6. Choose **Alert when**:
+
+   - **Off pace** — the metric falls behind the pace it needs to reach the target by the end of the period.
+   - **Target hit** — the goal is reached.
+
+   <Aside type="note">
+   **Target hit** is not available for rate metrics such as conversion rate, ROAS, or AOV. A rate can drop back below its target within a period, so "permanently hit" isn't meaningful — these metrics alert on **Off pace** only.
+   </Aside>
+
+7. Click **Save alert**. Consequential begins tracking the metric against the target and alerts you based on your **Alert when** choice.
+
+</Steps>
+
+## Edit or delete a target
+
+Open the **Set a target** panel from a metric that already has a target and select **Hits a target**. The panel shows **Update target** and fills in the current settings.
+
+- To change the target, edit any field and click **Update target**. Saving replaces the existing target rather than adding a second one.
+- To remove the target, click **Delete**, then confirm. The metric stops being tracked against a goal. You can set a new target for it afterward.
+
+## Troubleshooting
+
+| Problem | Cause and resolution |
+| --- | --- |
+| The target icon doesn't appear on a metric | On cards, the control shows on hover. Some metrics aren't eligible for targets and show no control at all. |
+| **Target hit** is disabled | The metric is a rate metric (such as conversion rate or ROAS). Rate metrics alert on **Off pace** only. |
+| A `% vs last year` target can't be saved | Last year's figure for the period is missing or zero, so the percentage can't resolve to a goal. Use an **Absolute** target instead, or choose a period with prior-year data. |
+| A check frequency is grayed out | That frequency isn't valid for the selected time period. Choose a shorter frequency or a longer period. |
+
+## Related
+
+- [How to set up Slack alerts](/account-management/setup-slack-alerts/) — receive Consequential alerts in Slack.
+- [Manage notification preferences](/account-management/manage-notification-preferences/) — choose which alerts you receive and where.
+- [Date ranges and presets](/concepts/date-ranges/) — how Consequential defines periods.
+- [Metrics](/academy/metrics/roas-return-on-ad-spend/) — definitions and formulas for the metrics you can set targets on.
