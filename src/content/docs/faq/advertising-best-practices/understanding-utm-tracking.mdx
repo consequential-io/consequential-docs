@@ -1,0 +1,106 @@
+---
+title: Understanding UTM tracking
+description: A beginner-friendly guide to UTM parameters — what they are, why they matter for attribution, the five standard parameters, and the rules that keep your campaign reporting clean.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+A UTM is the small piece of text on the end of a link that tells your analytics where a visitor came from and why they clicked. This guide explains what UTMs are, how Consequential uses them, and the handful of rules that keep them useful.
+
+## What is a UTM?
+
+A **UTM** (Urchin Tracking Module) is a set of parameters added to the end of a URL. They do not change the page the visitor lands on. They tell your analytics system which platform, campaign, and ad sent the visitor.
+
+In simple terms:
+
+- UTMs tell your analytics tool **how someone found your site**
+- They are used on **ads, emails, and social media links** — anywhere you control the link
+- Without UTMs, most traffic looks generic and cannot be tied back to a campaign
+
+Example:
+
+```text
+https://example.com/signup?utm_source=google&utm_medium=cpc&utm_campaign=spring_launch
+```
+
+This link tells you:
+
+- The visitor came from **Google** (`utm_source`)
+- It was a **paid ad** (`utm_medium=cpc`)
+- It belonged to the **Spring Launch** campaign (`utm_campaign`)
+
+## Why it matters
+
+UTMs help you answer questions like:
+
+- Which ad platform brings the best customers?
+- Which campaign drives the most orders, not just the most clicks?
+- Which email or social post actually converted?
+- Where should the next dollar of budget go?
+
+In Consequential, the [Acquisition Dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/) classifies every order into a channel and, where it can, a campaign. It works from the acquisition signals on the visit that led to the order: the UTMs on the landing URL, the referring site, and the store's own referrer data. Of those, the UTMs are the only signal you control. On an ad, an email, a social post, or a partner link, they are what turns "a visit from facebook.com" into "a visit from *this* campaign". A link with no UTMs falls back to whatever the referrer says — often just **Direct** or **Unattributed** — and a link with inconsistent UTMs is split across several rows that should have been one.
+
+<Aside type="caution">
+A missing `utm_source` or `utm_medium` is the most common cause of `(not set)` and unattributed traffic. See [Why you see (not set) in your Google Analytics reports](/academy/attribution/not-set-in-google-analytics/).
+</Aside>
+
+## The standard UTM parameters
+
+| Parameter | What it records | Example values | Required |
+|-----------|-----------------|----------------|----------|
+| `utm_source` | The platform or site the visitor came from | `google`, `facebook`, `klaviyo`, `tiktok`, `newsletter` | Yes |
+| `utm_medium` | The type of traffic | `cpc`, `paid_social`, `email`, `organic_social`, `affiliate`, `referral` | Yes |
+| `utm_campaign` | The campaign, promotion, or product push | `spring_launch`, `bfcm_2026`, `new_arrivals` | Yes |
+| `utm_term` | The keyword or audience that triggered the ad | `running_shoes`, `lookalike_1pct` | Optional |
+| `utm_content` | The specific ad, link, or creative, to tell variants apart | `video_a`, `hero_banner`, `footer_link` | Optional |
+
+`utm_source`, `utm_medium`, and `utm_campaign` together are enough to attribute a visit. `utm_term` and `utm_content` add detail for comparing keywords, audiences, and creatives within a campaign.
+
+## Best practices for UTM parameters
+
+**Use lowercase everywhere.** `Facebook`, `facebook`, and `FACEBOOK` are three different sources to an analytics tool. Pick lowercase and never deviate.
+
+**Fix a vocabulary for `utm_source` and `utm_medium`.** Decide once what each platform and traffic type is called, write it down, and reuse it. A short table is enough:
+
+| Where the link goes | `utm_source` | `utm_medium` |
+|---------------------|--------------|--------------|
+| Google Ads | `google` | `cpc` |
+| Meta ads | `facebook` | `paid_social` |
+| TikTok ads | `tiktok` | `paid_social` |
+| Email campaigns | `klaviyo` (or your ESP) | `email` |
+| Organic social posts | `instagram`, `facebook`, `tiktok` | `organic_social` |
+| Influencers and partners | the partner's name | `influencer` or `affiliate` |
+
+**No spaces.** Spaces become `%20` in the URL and break copy-pasted links. Use underscores or hyphens: `spring_launch`, not `Spring Launch`.
+
+**Make `utm_campaign` follow your naming convention.** If your campaigns already use the [ad naming convention](/faq/advertising-best-practices/ad-naming-conventions/), reuse the same name in the UTM with the spaces removed, so the platform, the dashboard, and the URL all agree on what a campaign is called.
+
+**Do not put UTMs on internal links.** A UTM on a link from your own homepage to your own product page starts a new attributed session and overwrites the real source. UTMs belong only on links that bring people *to* your site from somewhere else.
+
+**Do not put personal data in UTMs.** UTMs are visible in the URL, in browser history, and in any tool that receives the page URL. Never include an email address, a name, or a customer ID.
+
+**Use a builder, not a keyboard.** A shared spreadsheet or a link builder removes typos and keeps everyone on the same vocabulary. Keep the sheet as the record of every tagged link.
+
+**Let Google Ads tag itself.** Google Ads auto-tagging (`gclid`) plus a Final URL suffix with `ValueTrack` parameters gives you consistent UTMs without hand-typing them on every ad. See [Google Ads UTM and tracking setup](/integrations-platform-setup/ads-marketing-integrations/google-ads-utm-tracking-setup/).
+
+## Final checklist before launching a campaign
+
+- Every external link in the campaign has `utm_source`, `utm_medium`, and `utm_campaign`
+- All values are lowercase, with no spaces
+- `utm_source` and `utm_medium` use the agreed vocabulary, not a new spelling
+- `utm_campaign` matches the campaign name on the platform, spaces removed
+- No UTMs on links between pages of your own site
+- No personal data in any parameter
+- The tagged link was opened in a browser and landed on the right page
+- The link is recorded in the shared UTM sheet
+
+## Summary
+
+UTMs are five short parameters that turn "someone visited" into "someone visited from *this* ad in *this* campaign". Three of them — source, medium, campaign — are required for a visit to be attributed. The rules that matter are consistency rules: lowercase, no spaces, one vocabulary, one naming convention. Get those right and the Acquisition Dashboard can tell you what every channel is actually worth.
+
+## Related
+
+- [Naming convention best practices for ads](/faq/advertising-best-practices/ad-naming-conventions/) — the campaign names your `utm_campaign` values should mirror.
+- [Google Ads UTM and tracking setup](/integrations-platform-setup/ads-marketing-integrations/google-ads-utm-tracking-setup/) — automate consistent UTMs on every Google ad.
+- [Why you see (not set) in your Google Analytics reports](/academy/attribution/not-set-in-google-analytics/) — what missing or inconsistent tagging looks like in your reports.
+- [Understand the Acquisition Dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/) — where attributed channels and campaigns show up in Consequential.
