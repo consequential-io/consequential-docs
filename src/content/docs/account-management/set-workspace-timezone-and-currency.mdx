@@ -1,0 +1,59 @@
+---
+title: Set your workspace timezone and currency
+description: Set the base timezone and currency for your Consequential workspace from Settings → Tenant profile, and learn what changing them affects.
+sidebar:
+  order: 2
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Your workspace has a **base timezone** and a **base currency**. Consequential uses these defaults to group your data into days, schedule your reports, and calculate your metrics. Consequential sets them from your Shopify store when you install the app, and you can change them from Settings.
+
+## Prerequisites
+
+- A Consequential workspace at [app.consequential.io](https://app.consequential.io).
+- An **Owner** or **Admin** role in the workspace. Other roles see the Tenant profile page in read-only mode.
+
+## Set the base timezone and currency
+
+<Steps>
+
+1. Log in to [app.consequential.io](https://app.consequential.io).
+2. Click **Settings** in the sidebar.
+3. Under the **Workspace** group, open **Tenant profile**.
+4. Find the **Regional** section.
+5. In the **Base timezone** field, enter an IANA timezone identifier, such as `America/New_York` or `Europe/London`.
+6. In the **Base currency** field, enter a three-letter ISO 4217 currency code, such as `USD`, `EUR`, `GBP`, or `INR`.
+7. Click **Save changes**. A confirmation appears when the update saves.
+
+</Steps>
+
+<Aside type="note">
+If a new workspace has no value yet, the base timezone defaults to `UTC` and the base currency defaults to `USD` until you set them.
+</Aside>
+
+## What changing these affects
+
+The base timezone and currency are workspace-level defaults. Consequential uses the base timezone to group your data into daily buckets, schedule your [daily reports](/daily-reports/configure-and-schedule-daily-reports/), and time the pipeline that refreshes your data. It uses the base currency as the default reporting currency for your metrics.
+
+When you change the base timezone or currency, Consequential also applies the change to your workspace's default store so your store and workspace stay aligned.
+
+<Aside type="caution">
+Changing the base timezone shifts how Consequential groups your daily figures and when your scheduled reports run. New data uses the updated timezone right away, but your historical daily figures re-group on the next full data refresh, so recent days can look different until that refresh completes.
+</Aside>
+
+## How this differs from store and display settings
+
+The base currency and timezone control your workspace defaults. Two other settings are separate:
+
+- **Store currency** — each store reports its money figures in a currency you set per store. See [Set a store's currency](/how-tos/onboarding/manage-store-preferences/#set-a-stores-currency).
+- **Display preferences** — the **Timezone** and **Currency display** options under **Display** control only how dates and amounts appear for your account. They don't change how Consequential groups or calculates your data. See [Update display preferences](/how-tos/onboarding/manage-store-preferences/#update-display-preferences).
+
+## Verify your changes
+
+<Steps>
+
+1. Return to **Settings** → **Tenant profile**.
+2. Confirm the **Regional** section shows your new base timezone and base currency.
+
+</Steps>
