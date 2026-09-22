@@ -102,13 +102,6 @@ tags:
       starts it, `callback` completes it. `callback` is intentionally
       unauthenticated — it's a cross-site redirect from Shopify, arriving
       with no session cookie to check.
-  - name: Connectors
-    description: |
-      Popup-based OAuth for ad/analytics providers, brokered through
-      Consequential's connector service rather than talking to each provider directly:
-      `login-link` opens the popup, `finalize` completes the connection
-      once it returns, and `accounts` lists then saves which of the
-      provider's accounts to sync.
   - name: Billing
     description: |
       Stripe-backed subscription management: browse `plans`/`addons`,
@@ -139,9 +132,9 @@ tags:
     description: |
       The tenant's datasource catalog — which providers exist and their
       current connection state — plus disconnecting one. Connecting a
-      new datasource happens through the provider-specific
-      `Shopify Connect`/`Connectors` flows, not here; this tag
-      is read-and-remove only.
+      new datasource happens in the app — Shopify through the
+      `Shopify Connect` flow, ad/analytics/email sources through the
+      in-app sign-in popup — not here; this tag is read-and-remove only.
   - name: Stores
     description: |
       A tenant's stores: CRUD, identifier lookup and availability check,
@@ -1049,75 +1042,6 @@ paths:
       responses:
         "302":
           description: "Redirects to {CLIENT_URL}{returnTo}?connected=shopify on success, or ?error={reason} on failure"
-
-  # ───────────────────────────── Connectors ─────────────────────────────
-  /connect/supermetrics/login-link:
-    post:
-      tags: [Connectors]
-      summary: Create a connector login-link (popup OAuth) for an ad/analytics provider
-      description: Requires tenant OWNER/ADMIN role.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [provider, storeId]
-              properties:
-                provider: { type: string, enum: [facebook_ads, google_ads, ga4, tiktok_ads, klaviyo] }
-                storeId: { type: string, format: uuid }
-      responses:
-        "200": { description: Login link created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-        "404": { description: SUPERMETRICS_STORE_NOT_FOUND, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "409": { description: SUPERMETRICS_CONNECT_DISABLED, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "502": { description: SUPERMETRICS_UPSTREAM_ERROR, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-  /connect/supermetrics/finalize:
-    post:
-      tags: [Connectors]
-      summary: Finalize a connector connection after the popup returns
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, required: [stateToken], properties: { stateToken: { type: string } } }
-      responses:
-        "200": { description: Connection finalized, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /connect/supermetrics/accounts:
-    get:
-      tags: [Connectors]
-      summary: List available accounts for a provider
-      parameters:
-        - name: provider
-          in: query
-          required: true
-          schema: { type: string, enum: [facebook_ads, google_ads, ga4, tiktok_ads, klaviyo] }
-        - name: storeId
-          in: query
-          required: true
-          schema: { type: string, format: uuid }
-      responses:
-        "200": { description: Accounts, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-    post:
-      tags: [Connectors]
-      summary: Save the selected accounts for a provider
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [provider, storeId, accounts]
-              properties:
-                provider: { type: string, enum: [facebook_ads, google_ads, ga4, tiktok_ads, klaviyo] }
-                storeId: { type: string, format: uuid }
-                accounts:
-                  type: array
-                  maxItems: 200
-                  items:
-                    type: object
-                    properties: { id: { type: string }, name: { type: string, maxLength: 255 } }
-      responses:
-        "200": { description: Saved selection, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
 
   # ───────────────────────── Billing ─────────────────────────
   /billing/plans:
