@@ -5,10 +5,10 @@ description: Connect Adobe Analytics to Consequential using OAuth Server-to-Serv
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-This guide walks you through connecting Adobe Analytics to Consequential (Supermetrics) using OAuth Server-to-Server authentication. You handle the initial Adobe setup, and Consequential (Supermetrics) manages all ongoing authentication automatically.
+This guide walks you through connecting Adobe Analytics to Consequential using OAuth Server-to-Server authentication. You handle the initial Adobe setup, and Consequential manages all ongoing authentication automatically.
 
 <Aside type="caution">
-Adobe Analytics is not part of Consequential's standard self-serve connector catalog (unlike Shopify, Facebook Ads, Google Ads, GA4, TikTok Ads, and Klaviyo, which connect through an in-app popup OAuth flow). It's typically set up as a manual, white-glove integration coordinated with the Consequential team. The steps below reflect Supermetrics' generic OAuth Server-to-Server documentation — verify the exact wording of the "link from Consequential" in Step 3 against the current onboarding flow before publishing.
+Adobe Analytics is not part of Consequential's standard self-serve connector catalog (unlike Shopify, Facebook Ads, Google Ads, GA4, TikTok Ads, and Klaviyo, which connect through an in-app popup OAuth flow). It's set up as a manual, white-glove integration coordinated with the Consequential team, who provide the connection link used in Step 3.
 </Aside>
 
 ## Prerequisites
@@ -60,20 +60,20 @@ Generate the secure credentials that allow Consequential to authenticate with Ad
 Treat your Client Secret like a password. Never share it in emails, chat, or public repositories.
 </Aside>
 
-## Step 3: Connect Consequential (Supermetrics)
+## Step 3: Connect Consequential
 
-Provide your credentials to Consequential (Supermetrics). From here, the system automates everything.
+Provide your credentials to Consequential. From here, the system automates everything.
 
 <Steps>
 
-1. Open the link from Consequential (powered by Supermetrics).
+1. Open the link from Consequential.
 2. Paste your **Client ID** and **Client Secret**.
 3. For **Credentials name**, give it a clear name like "Consequential Integration".
 4. Click **Start**.
 
 </Steps>
 
-Consequential (Supermetrics) handles the following automatically:
+Consequential handles the following automatically:
 
 - Requests access tokens from Adobe.
 - Refreshes tokens before they expire.
@@ -85,13 +85,13 @@ You don't need to manage tokens, refreshes, or API calls manually.
 
 ## Step 4: Ongoing maintenance
 
-Consequential (Supermetrics) handles authentication automatically, but review your Adobe setup periodically.
+Consequential handles authentication automatically, but review your Adobe setup periodically.
 
 Quarterly checklist:
 
 - Review permissions in Adobe Admin Console. Are the right people/profiles still assigned? Do permissions match current needs?
 - Audit Product Profiles. Remove unused profiles and update permissions if data access requirements change.
-- Rotate Client Secrets when required by security policy. Generate a new secret in Developer Console, update Supermetrics with the new secret, and revoke the old secret.
+- Rotate Client Secrets when required by security policy. Generate a new secret in Developer Console, update Consequential with the new secret, and revoke the old secret.
 
 <Aside type="tip">
 Set a calendar reminder to review access quarterly or after team changes.
@@ -99,7 +99,7 @@ Set a calendar reminder to review access quarterly or after team changes.
 
 ## Troubleshooting
 
-### Connection fails in Consequential (Supermetrics)
+### Connection fails in Consequential
 
 Check that:
 
@@ -120,7 +120,7 @@ Check that:
 
 1. Go to Adobe Developer Console.
 2. Open your project.
-3. Delete the OAuth Server-to-Server credential. Supermetrics immediately loses access.
+3. Delete the OAuth Server-to-Server credential. Consequential immediately loses access.
 
 </Steps>
 
@@ -130,7 +130,7 @@ Check that:
 | --- | --- |
 | Create Product Profile and assign permissions | You (Admin) |
 | Generate OAuth credentials (Client ID/Secret) | You (Admin) |
-| Enter credentials in Supermetrics | You (one time) |
+| Enter credentials in Consequential | You (one time) |
 | Request and refresh access tokens | Consequential (automatic) |
 | Make API calls to fetch data | Consequential (automatic) |
 | Monitor and update permissions | You (periodic) |
@@ -140,6 +140,5 @@ Check that:
 
 - Adobe Admin Console help: [Adobe Admin Console Documentation](https://helpx.adobe.com/enterprise/admin-guide.html)
 - Adobe Developer Console help: [Adobe Developer Documentation](https://developer.adobe.com/developer-console/docs/)
-- Supermetrics support: [Adobe Analytics with OAuth (server-to-server)](https://docs.supermetrics.com/v1/docs/how-to-connect-to-adobe-analytics-with-oauth-server-to-server)
 
 {/* TODO: 7 image artifact(s) on DevRev ART-1305 could not be retrieved through the DevRev MCP — re-add manually. */}
