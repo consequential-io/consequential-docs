@@ -1,0 +1,70 @@
+---
+title: Read an AI trend insight
+description: Understand the AI trend card Consequential opens when a metric moves outside its expected range — the numbers, the chart, and what moved with it.
+sidebar:
+  order: 3
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+When a [trend alert](/metric-targets/set-a-trend-alert/) fires, Consequential opens an **AI trend** insight — a card on your Insights page that shows what moved, how far outside its expected range it landed, and what else moved with it.
+
+<Aside type="note">
+AI trend insights are rolling out alongside trend alerts. If the Insights page or the **AI trend** cards aren't in your workspace yet, they'll appear once the feature is enabled for you.
+</Aside>
+
+## Open an insight
+
+<Steps>
+
+1. Open **Insights** from the sidebar.
+2. Find a card tagged **AI trend**. The tags next to it show the metric, the store, and the period.
+3. Click the card to open its detail page.
+
+</Steps>
+
+## The header
+
+The top of the page tells you what kind of move this was:
+
+- **Anomaly · Declining / Rising / Flat** — the direction the metric moved.
+- **AI summary** — present when Consequential generated a written explanation, which appears under the title.
+- **Live** — the metric is still outside its expected range. Without this badge, the move has resolved.
+- The date it was detected, and the pillar it belongs to.
+
+When several metrics moved together, the heading reads **AI trend · N metrics moved together**.
+
+## The three numbers
+
+| Tile | What it tells you |
+| --- | --- |
+| **The metric on the detection date** | The actual value, with what percentage it is of the value the model expected. |
+| **Gap against expectation** | How far off the expectation it landed, as an absolute gap and a percentage. Where available, it also shows the move as a multiple of the day-to-day variation the metric normally shows — a `3.0×` move is far more unusual than a `1.2×` one. |
+| **Days outside range** | How many days in the recent window fell outside the expected range, such as *3 of the last 14*, plus what counts as normal for that day. More than one day means a pattern rather than a blip. |
+
+## The tabs
+
+**Timeline** charts the metric around the detection date: the actual value, the same weekday a year earlier for comparison, and the expected range as a band. Each fired breach is marked on its own date.
+
+<Aside type="note">
+The band is drawn only on days Consequential has a stored expectation for, and is left open where it doesn't — the gaps are honest, not missing data. A breach marker's own range can differ slightly from the band, because the check that fired it and the stored band come from separate model fits.
+</Aside>
+
+**Funnel** places the metric in its funnel, where the metric belongs to one.
+
+**Dimension** breaks the move down by segment. If it reads *"No dimensional drivers yet"*, anomaly detection doesn't send a segment-level breakdown for that metric yet. The tab fills in automatically once it does — there's nothing to configure.
+
+## What moved with it
+
+The panel beside the chart lists everything that moved at the same time, switchable between:
+
+- **By Dimension** — dimensions that moved together, for a metric with a segment-level breakdown.
+- **By Metric** — other metrics that moved together, which is what makes a multi-metric card worth reading as one story rather than several.
+
+Selecting an entry re-points the numbers and the chart at it, so you can compare members without leaving the page.
+
+## Related
+
+- [Set a trend alert on a metric](/metric-targets/set-a-trend-alert/) — create the alert that produces these insights.
+- [Set a target on a metric](/metric-targets/set-a-metric-target/) — alert on a number you choose instead.
+- [Manage notification preferences](/account-management/manage-notification-preferences/) — choose which alerts you receive and where.

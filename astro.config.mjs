@@ -102,7 +102,7 @@ export default defineConfig({
 					items: [
 						{ label: 'Daily Reports', items: [{ autogenerate: { directory: 'daily-reports' } }] },
 						{ label: 'Acquisition Dashboard', items: [{ autogenerate: { directory: 'acquisition-dashboard' } }] },
-						{ label: 'Metric Targets', items: [{ autogenerate: { directory: 'metric-targets' } }] },
+						{ label: 'Metric Alerts', items: [{ autogenerate: { directory: 'metric-targets' } }] },
 					],
 				},
 				{
