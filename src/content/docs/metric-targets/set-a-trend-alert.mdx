@@ -1,0 +1,85 @@
+---
+title: Set a trend alert on a metric
+description: Let Consequential learn a metric's normal range and alert you when it moves outside it, without you setting a number.
+sidebar:
+  order: 2
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+A **trend alert** watches a metric against the range Consequential expects it to stay in, and tells you when a day falls outside that range. Unlike a [target](/metric-targets/set-a-metric-target/), you don't pick a number — the expected range is learned from the metric's own history and moves with it, so a seasonal rise doesn't read as a problem and a quiet slide doesn't go unnoticed.
+
+<Aside type="note">
+Trend alerts are rolling out. If they're enabled for your workspace, **AI trend** is selectable in the alert panel; if not, it shows "Not available yet." Everything else on this page works the same once it's on.
+</Aside>
+
+## Prerequisites
+
+- Access to your Consequential account with a connected store.
+- Enough history on the metric for Consequential to learn its normal range.
+- A metric that carries its own series. Composite metrics can't take a trend alert — the option shows "Trend detection needs a metric with a series of its own to forecast."
+
+## Set a trend alert
+
+<Steps>
+
+1. Open the alert panel from the metric you want to watch — the target icon on a metric **card** (it appears on hover) or on a metric **list** row (always visible).
+
+2. Under **Detect when this metric**, select **AI trend**. The panel heading changes to **Set a trend alert**.
+
+3. Choose a **Sensitivity**:
+
+   - **Low** — major shifts only.
+   - **Medium** — balanced, meaningful moves.
+   - **High** — catch early signals.
+
+   <Aside type="caution">
+   Higher sensitivity means **more** alerts, not fewer. A higher setting uses a narrower expected range, so smaller moves fall outside it and get reported.
+   </Aside>
+
+4. Choose a **Trend direction**:
+
+   - **Declining** — alert when the metric falls below its expected range.
+   - **Rising** — alert when the metric rises above its expected range.
+
+   Pick the direction that would be bad news for that metric. Watch Total Sales for **Declining** and refunds for **Rising**.
+
+5. Click **Save alert**. Consequential names the alert after the metric and direction, and starts watching it.
+
+</Steps>
+
+<Aside type="note">
+A trend alert applies to the store selected in the store picker. Select **All stores** for a workspace-wide alert, or a single store to watch that store only. A metric holds one trend alert per scope, and it's separate from any target on the same metric.
+</Aside>
+
+## Edit or delete a trend alert
+
+Open the alert panel from a metric that already has one and select **AI trend**. The panel shows **Update trend alert** with the current settings filled in.
+
+- Change any setting and click **Update alert**. Saving replaces the existing alert rather than adding a second one.
+- Click **Delete**, then confirm, to stop watching the metric. You can set a new alert for it afterwards.
+
+<Aside type="note">
+An alert set up outside this panel can carry a third direction, **Either direction**, which alerts on any move outside the expected range. The panel shows that option when the alert already uses it, so you can open and save the alert without losing the setting. New alerts are created as **Declining** or **Rising**.
+</Aside>
+
+## What happens when one fires
+
+A fired trend alert becomes an **AI trend** card on your Insights page, showing what moved, by how much, and how far outside the expected range it landed. See [Read an AI trend insight](/metric-targets/read-an-ai-trend-insight/).
+
+## Troubleshooting
+
+| Problem | Cause and resolution |
+| --- | --- |
+| **AI trend** shows "Not available yet." | Trend alerts aren't enabled for your workspace yet. Targets still work — see [Set a target on a metric](/metric-targets/set-a-metric-target/). |
+| "Trend detection needs a metric with a series of its own to forecast." | The metric is composite and has no series to learn from. Set a [target](/metric-targets/set-a-metric-target/) on it instead. |
+| The options are greyed out with "Checking whether this metric already has a trend alert…" | The panel is still loading the existing alert. It becomes editable once that finishes. |
+| Too many alerts | Lower the sensitivity. **Low** reports only major shifts. |
+| Too few alerts | Raise the sensitivity. **High** uses a narrower range and catches earlier signals. |
+
+## Related
+
+- [Set a target on a metric](/metric-targets/set-a-metric-target/) — alert on a number you choose.
+- [Read an AI trend insight](/metric-targets/read-an-ai-trend-insight/) — what a fired alert shows you.
+- [How to set up Slack alerts](/account-management/setup-slack-alerts/) — receive alerts in Slack.
+- [Manage notification preferences](/account-management/manage-notification-preferences/) — choose which alerts you receive and where.
