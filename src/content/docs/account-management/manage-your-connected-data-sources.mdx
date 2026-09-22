@@ -1,15 +1,15 @@
 ---
 title: Manage your connected data sources
-description: Connect, reconnect, and disconnect the data sources that feed your Consequential workspace from Settings → Integrations, and manage more than one login per source.
+description: Connect, reconnect, and disconnect the data sources that feed your Consequential workspace from Settings → Connectors, and manage more than one login per source.
 sidebar:
   order: 8
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-Consequential turns the data from your store, ad platforms, and analytics tools into spend alerts and performance grades. The **Integrations** page in Settings is where you review every data source connected to your workspace and connect new ones yourself.
+Consequential turns the data from your store, ad platforms, and analytics tools into spend alerts and performance grades. The **Connectors** page in Settings is where you review every data source connected to your workspace and connect new ones yourself.
 
-This guide shows you how to open the Integrations page, connect a data source, add and manage more than one login for a source, choose the accounts each login syncs, spot a source that has stopped delivering fresh data, and disconnect a source.
+This guide shows you how to open the Connectors page, connect a data source, add and manage more than one login for a source, choose the accounts each login syncs, spot a source that has stopped delivering fresh data, and disconnect a source.
 
 ## Prerequisites
 
@@ -20,12 +20,12 @@ This guide shows you how to open the Integrations page, connect a data source, a
 The Consequential team labels some sources as **Coming soon** and sets these up for you, so you don't need to take any action.
 </Aside>
 
-## Open the Integrations page
+## Open the Connectors page
 
 <Steps>
 
 1. In Consequential, open **Settings** from the sidebar.
-2. Select the **Integrations** tab. The **Data sources** section lists every source that feeds this workspace's metrics.
+2. Under the **Workspace** group, select **Connectors**. The **Data sources** section lists every source that feeds this workspace's metrics.
 
 </Steps>
 
@@ -53,7 +53,7 @@ Shopify connects through a hosted approval flow on Shopify's side.
 1. Find your Shopify store in the **Data sources** list and click **Connect**.
 2. In the **Connect Shopify** dialog, enter your store domain, for example `acme.myshopify.com`.
 3. Click **Continue to Shopify**. Consequential sends you to Shopify to approve access.
-4. Approve the connection on Shopify. You return to the Integrations page and the store's status changes to **Connected**.
+4. Approve the connection on Shopify. You return to the Connectors page and the store's status changes to **Connected**.
 
 </Steps>
 
@@ -63,11 +63,11 @@ Connecting attaches the store to the store selected in your sidebar switcher. If
 
 ## Connect an ads, analytics, or email source
 
-Ad platforms, analytics tools, and email sources connect through Supermetrics in a popup window. Each Supermetrics sign-in you complete becomes a **connection** on the source. A source can hold more than one connection — see [Manage multiple connections for a source](#manage-multiple-connections-for-a-source).
+Ad platforms, analytics tools, and email sources connect through a sign-in popup window. Each sign-in you complete becomes a **connection** on the source. A source can hold more than one connection — see [Manage multiple connections for a source](#manage-multiple-connections-for-a-source).
 
 <Steps>
 
-1. Find the source in the **Data sources** list and click **Connect**. A Supermetrics sign-in window opens.
+1. Find the source in the **Data sources** list and click **Connect**. A sign-in window for that source opens.
 2. Sign in to the source and approve access. When the window closes, the source's status changes to **Connected**.
 3. In the accounts dialog that opens, select the accounts you want Consequential to sync, then confirm your selection.
 
@@ -77,14 +77,14 @@ If the connection window expires before you finish, the source stays unconnected
 
 ## Manage multiple connections for a source
 
-A single ads, analytics, or email source can hold more than one Supermetrics login — for example, your own Business Manager and your agency's. Each connection keeps its own account selection, so you choose which accounts every login syncs.
+A single ads, analytics, or email source can hold more than one login — for example, your own Business Manager and your agency's. Each connection keeps its own account selection, so you choose which accounts every login syncs.
 
 ### Add a connection
 
 <Steps>
 
 1. Find the connected source in the **Data sources** list.
-2. Click **+ Add connection**. A Supermetrics sign-in window opens.
+2. Click **+ Add connection**. A sign-in window opens.
 3. Sign in to the second login and approve access, then select the accounts for that connection and confirm.
 
 </Steps>
@@ -95,7 +95,7 @@ When a source holds one or more connections, its row shows a summary you can rea
 
 | Part of the summary | What it tells you |
 | --- | --- |
-| **N connections** | How many Supermetrics logins the source holds. |
+| **N connections** | How many logins the source holds. |
 | **M accounts reporting** | The total accounts selected across every connection. |
 | **K needs accounts** | How many connections have no accounts selected yet, so they report nothing. The row also shows a **Needs attention** badge when this count is above zero. |
 
@@ -114,7 +114,7 @@ Expand the source's row to see each connection on its own line, with the login i
 </Steps>
 
 <Aside type="note">
-You manage individual connections from **Settings → Integrations**. During onboarding, the connect step lets you sign in to a source but doesn't offer these per-connection controls.
+You manage individual connections from **Settings → Connectors**. During onboarding, the connect step lets you sign in to a source but doesn't offer these per-connection controls.
 </Aside>
 
 ## Reconnect a source
@@ -145,7 +145,7 @@ To resolve a source that stopped updating:
 
 <Steps>
 
-1. Open the **Integrations** page and find the source named in the affected metrics.
+1. Open the **Connectors** page and find the source named in the affected metrics.
 2. If its status is **Disconnected**, click **Reconnect** and complete the connection again.
 3. If its status is still **Connected**, its stored credentials may have expired or been revoked on the source's side. Click **Reconnect** to re-authorize the source with fresh credentials.
 4. After you reconnect, allow up to a day for the next scheduled sync to bring the data current.
