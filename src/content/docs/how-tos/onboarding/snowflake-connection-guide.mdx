@@ -5,7 +5,7 @@ description: Permissions and steps to connect Snowflake data to Consequential us
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-This guide contains all permissions and requirements for connecting Snowflake data to Consequential. Consequential connects to Snowflake through its Supermetrics-powered data pipeline.
+This guide contains all permissions and requirements for connecting Snowflake data to Consequential. Consequential connects to Snowflake through its managed data pipeline.
 
 ## Required permissions
 
@@ -53,7 +53,7 @@ For the first step, choose to authenticate the connection using either OAuth2 or
 
    ```sql
    CREATE SECURITY INTEGRATION
-   "Supermetrics App"
+   "Consequential App"
    TYPE = OAUTH
    ENABLED = TRUE
    OAUTH_CLIENT = CUSTOM
@@ -64,7 +64,7 @@ For the first step, choose to authenticate the connection using either OAuth2 or
    Use the same integration name in both commands. Second command:
 
    ```sql
-   SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS('Supermetrics App');
+   SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS('Consequential App');
    ```
 
 4. Click row 1 in the output. You find this at the bottom of the screen. A popup opens with 3 key-value pairs in JSON format.

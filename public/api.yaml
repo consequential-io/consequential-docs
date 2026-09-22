@@ -102,10 +102,10 @@ tags:
       starts it, `callback` completes it. `callback` is intentionally
       unauthenticated — it's a cross-site redirect from Shopify, arriving
       with no session cookie to check.
-  - name: Supermetrics Connect
+  - name: Connectors
     description: |
       Popup-based OAuth for ad/analytics providers, brokered through
-      Supermetrics rather than talking to each provider directly:
+      Consequential's connector service rather than talking to each provider directly:
       `login-link` opens the popup, `finalize` completes the connection
       once it returns, and `accounts` lists then saves which of the
       provider's accounts to sync.
@@ -140,7 +140,7 @@ tags:
       The tenant's datasource catalog — which providers exist and their
       current connection state — plus disconnecting one. Connecting a
       new datasource happens through the provider-specific
-      `Shopify Connect`/`Supermetrics Connect` flows, not here; this tag
+      `Shopify Connect`/`Connectors` flows, not here; this tag
       is read-and-remove only.
   - name: Stores
     description: |
@@ -1050,11 +1050,11 @@ paths:
         "302":
           description: "Redirects to {CLIENT_URL}{returnTo}?connected=shopify on success, or ?error={reason} on failure"
 
-  # ───────────────────────── Supermetrics Connect ─────────────────────────
+  # ───────────────────────────── Connectors ─────────────────────────────
   /connect/supermetrics/login-link:
     post:
-      tags: [Supermetrics Connect]
-      summary: Create a Supermetrics login-link (popup OAuth) for an ad/analytics provider
+      tags: [Connectors]
+      summary: Create a connector login-link (popup OAuth) for an ad/analytics provider
       description: Requires tenant OWNER/ADMIN role.
       requestBody:
         required: true
@@ -1073,8 +1073,8 @@ paths:
         "502": { description: SUPERMETRICS_UPSTREAM_ERROR, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
   /connect/supermetrics/finalize:
     post:
-      tags: [Supermetrics Connect]
-      summary: Finalize a Supermetrics connection after the popup returns
+      tags: [Connectors]
+      summary: Finalize a connector connection after the popup returns
       requestBody:
         required: true
         content:
@@ -1084,7 +1084,7 @@ paths:
         "200": { description: Connection finalized, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
   /connect/supermetrics/accounts:
     get:
-      tags: [Supermetrics Connect]
+      tags: [Connectors]
       summary: List available accounts for a provider
       parameters:
         - name: provider
@@ -1098,7 +1098,7 @@ paths:
       responses:
         "200": { description: Accounts, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
     post:
-      tags: [Supermetrics Connect]
+      tags: [Connectors]
       summary: Save the selected accounts for a provider
       requestBody:
         required: true
