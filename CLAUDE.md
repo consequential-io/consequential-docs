@@ -77,9 +77,13 @@ Component overrides (Starlight's "Overriding Components" mechanism) go in `src/c
 ## Deploy
 
 **Merging to `main` deploys.** `.github/workflows/deploy.yml` runs `npm ci` → `npm run test`
-(which builds first) → `cloudflare/wrangler-action`, publishing `dist/` to the
-`consequential-docs` Worker. It needs the `CLOUDFLARE_API_TOKEN` repo secret; the account ID
-is in the workflow. PRs run the same build + test via `ci.yml` without deploying.
+(which builds first) → `npx wrangler deploy` directly (PR #39 dropped
+`cloudflare/wrangler-action`, whose `npx` bootstrap could not install
+non-interactively on the runner; `wrangler` is now a pinned `devDependency`,
+so `npm ci` installs the exact version `npx wrangler deploy` runs), publishing
+`dist/` to the `consequential-docs` Worker. It needs the `CLOUDFLARE_API_TOKEN`
+repo secret; the account ID is in the workflow. PRs run the same build + test
+via `ci.yml` without deploying.
 
 This replaced a manual-only flow, so **older notes in this repo and in commit messages saying
 "merging does not deploy" are out of date** — that was true until 2026-09-02. The manual path
