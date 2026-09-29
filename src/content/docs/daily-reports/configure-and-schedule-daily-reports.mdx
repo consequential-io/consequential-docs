@@ -1,152 +1,234 @@
 ---
 title: Configure and schedule daily reports
-description: Turn on the daily report, set its schedule and comparison, pin metrics, choose recipients, and deliver it by email or Slack from Settings.
+description: Build your daily report in Settings — pick a template, choose sections, metrics and breakdowns, preview it live, tune the AI wording, email yourself a sample, and set who receives it and when.
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-The **Reports** settings page controls how your daily report is built and
-delivered: when it sends, which comparison and level of detail it uses, which
-metrics sit at the top, who receives it, and whether it arrives by email, Slack,
-or both.
+The **Reports** settings page has two tabs:
 
-This guide shows you how to open the Reports settings, turn the daily report on,
-set its schedule, and configure recipients and delivery channels.
+- **Your report** — personalize your own report: pick a template, turn sections
+  on or off, choose the metrics and breakdowns each section shows, preview it
+  live, and email yourself a sample. Every member can edit their own report.
+- **Delivery** — set the schedule, recipients, and channels for the whole
+  workspace. Only **Owner** and **Admin** roles can change these; other roles
+  see them in read-only mode.
 
-## Prerequisites
+This guide covers both, starting with building your report.
 
-- The **Owner** or **Admin** role on the workspace. Other roles see the settings
-  in read-only mode and can't save changes.
-- At least one team member to add as a recipient. Members are managed on the
-  **Team** settings page.
-- To deliver by Slack, an incoming webhook URL from your Slack workspace.
-
-## Open the reports settings
+## Open the report editor
 
 <Steps>
 
 1. In Consequential, open **Settings**.
-2. Select **Reports**.
+2. Select **Reports**, then the **Your report** tab.
 
 </Steps>
 
-The page is organized into four sections: **Schedule**, **Pinned metrics**,
-**Recipients**, and **Delivery channels**. Changes take effect after you save.
+The editor has three steps, shown as linked boxes: **Composition** (choose what
+appears), **Prompts** (tune the AI wording), and **Test** (email yourself a
+sample).
+
+## Turn your report on
+
+Two switches sit at the top of **Composition**:
+
+| Switch | What it does |
+| --- | --- |
+| **Receive this report** | Your personal on/off switch for the daily report. |
+| **AI summaries** | Include the AI-written narrative. Tables always show either way. On by default. |
 
 <Aside type="note">
-	The **Reports** settings page controls report delivery. To change the wording
-	and structure of the report itself, use the **Report prompts** page instead.
+	You receive a report only when **both** your **Receive this report** switch
+	and the workspace's **Daily report enabled** switch (on the **Delivery** tab)
+	are on, and you are listed as a recipient.
 </Aside>
 
-## Turn on and schedule the report
+## Choose a template
 
-The **Daily report enabled** switch is the primary switch. Nothing sends while
-it's off, regardless of your other settings. Turn it on to start delivery.
+Your report starts from a **template** tied to a persona — for example
+**Founder** or **Marketer**. Each template is a ready-made layout of sections
+tuned to that role: the Founder template covers the whole business, while the
+Marketer template focuses on acquisition and conversion. A short description
+sits under each option.
 
-Set the following options under **Schedule**:
+Use the **Report template** dropdown to pick the one closest to how you work,
+then customize it from there.
+
+<Aside type="caution">
+	Switching template **replaces** your current report with the new template's
+	layout and **discards your customizations**. You confirm with **Switch &
+	reset** before it applies. This change saves immediately — the Discard action
+	cannot undo it.
+</Aside>
+
+## Understand pillars and sections
+
+Your report is organized into **pillars** — themed groups such as *Revenue &
+profitability* or *Profitable acquisition*, each shown with a number like `P1`.
+Inside a pillar sit its **sections**: the individual tables and summaries.
+
+- **Global details** — a group at the top for the summary and recommended
+  actions that apply across every pillar.
+- Each pillar shows how many of its sections are on (for example, `3/5 on`) and
+  a switch that turns all of its sections on or off at once. Expand a pillar to
+  see and adjust its sections one by one.
+
+This is the pillar-to-section mapping: every section belongs to one pillar, or
+to **Global details** when it spans all of them.
+
+## What each section shows
+
+Turn a section on or off with its checkbox. Each section is one of two kinds,
+marked by a chip:
+
+| Kind | What it shows |
+| --- | --- |
+| **Table** | A set of metrics laid out over one dimension — for example, top products by sales. It may carry extra chips such as *sliced by product title* or *for source klaviyo*. |
+| **Summary** | A short written narrative, plus optional metric breakdowns. |
+
+A small icon next to the name tells you whether you can customize it:
+
+- **Editable** (sliders icon) — you choose the metrics and breakdowns shown here.
+- **Standard** (badge icon) — this section is fixed and cannot be changed.
+
+A one-line description under each name explains what the section covers.
+
+## Choose metrics and breakdowns
+
+For an **editable** section, the pickers appear once the section is on:
+
+- **Table** → **Metrics**. Open it and select the metrics for the table.
+- **Summary** → **Metrics** (the figures the narrative can cite) and **Add
+  breakdown**. For a breakdown, pick a dimension, then choose the metrics to
+  show for it. Add more than one — they appear as **Breakdowns · N**.
+
+<Aside type="note">
+	If a section needs a data source you have not connected yet, you see a
+	**Connect** card in place of the metric picker. Select **Connect** to set the
+	source up on the **Connectors** page, then return to the report editor.
+</Aside>
+
+Some sections use every metric or every dimension by design. These have no
+picker — they always show the full set.
+
+## Preview your report live
+
+As you edit, the **Live preview** panel on the right redraws your report
+automatically — there is no button to press. It uses **sample numbers**, not
+your real data, so you can see the layout and wording of each change right away.
+Turn a section on, pick a metric, or switch template, and the preview updates
+within a moment.
+
+## Autosave
+
+Your changes save on their own about a second after you stop editing, and an
+**Autosaved** confirmation appears. A **Save** / **Discard** bar is also
+available if you want to save or roll back immediately.
+
+<Aside type="note">
+	Switching **template** is the one change that saves immediately and cannot be
+	rolled back with **Discard** — confirm it with care.
+</Aside>
+
+## Tune the AI wording (Prompts)
+
+The **Prompts** step lets you tune *how* the AI writes each section — for
+example, ask it to *lead with margin*, note the *gap to plan*, or *call out the
+biggest driver*. You pick a section on the left and add your guidance on the
+right.
+
+The AI never computes a number. This only changes how the summary reads — every
+figure still comes from your live data and the metrics you chose in
+**Composition**.
+
+<Aside type="caution">
+	The **Prompts** step is available on higher plans. On your current plan it
+	shows a **Locked** badge and *Available on a higher plan*, and the ✨ button on
+	each section is inactive. Upgrade to tune per-section wording.
+</Aside>
+
+## Email yourself a sample
+
+Open the **Test** step. It has two separate actions:
+
+- **Email me a sample → Send now.** Sends a one-off preview of your **current**
+  settings to your own inbox, right now. It uses **mock numbers** and goes only
+  to you. If you send several in a row, you are asked to wait a few minutes
+  before sending again.
+- **Schedule daily delivery → Schedule daily email.** Opens the **Delivery**
+  tab, where you set up the **real** recurring report with your live data.
+
+<Aside type="note">
+	The sample is a preview for checking layout and wording — not the real daily
+	report, and not sent to anyone but you.
+</Aside>
+
+## Sections locked on your plan
+
+Some sections may be locked on your current plan. A locked section shows a lock
+badge with the plan it needs, and a banner tells you how many are locked. Locked
+sections are never included in your report. Upgrade to add them.
+
+## Schedule and deliver
+
+The **Delivery** tab sets the schedule, recipients, and channels for the whole
+workspace.
+
+### Prerequisites
+
+- The **Owner** or **Admin** role. Other roles see the Delivery tab in read-only
+  mode and cannot save changes.
+- At least one team member to add as a recipient. Members are managed on the
+  **Team** settings page.
+- To deliver by Slack, an incoming webhook URL from your Slack workspace.
+
+### Set the schedule and audience
 
 | Option | What it does |
 | --- | --- |
-| **Daily report enabled** | Primary switch for delivery. Nothing sends while this is off. Off by default. |
+| **Daily report enabled** | The workspace switch. Nothing sends while it is off, whatever else is set. |
 | **Send time** | The time of day the report sends, in 24-hour `HH:MM` format. |
-| **Timezone** | The timezone the send time is measured in. Defaults to UTC. |
-| **Comparison** | The baseline for comparing each day's metrics. |
-| **Report type** | How much detail the report includes. |
-| **AI summaries** | Include AI-written summary text in the report. On by default. |
+| **Comparison** | The baseline each day is measured against (see below). |
+| **Recipients** | The workspace members who receive the report. |
+| **Delivery channels** | Email, Slack, or both. |
 
-### Comparison options
-
-The comparison sets what "yesterday" is measured against, which shapes every
-change shown in the report.
+The **Comparison** options are:
 
 | Comparison | Baseline |
 | --- | --- |
-| **Same weekday, last year** | The same day of the week one year ago. This is the default and controls for both weekly and seasonal patterns. |
+| **Same weekday, last year** | The same day of the week one year ago. The default — it controls for both weekly and seasonal patterns. |
 | **Previous period** | The equivalent stretch of days immediately before the report period. |
 | **Same date, last year** | The same calendar date one year ago. |
-| **Previous day** | The single day immediately before — each day is measured against the day before it. Use this day-over-day comparison to track short-term momentum without a weekly or seasonal baseline. |
-
-### Report type options
-
-| Report type | What you get |
-| --- | --- |
-| **Simple** | A headline summary and pillar health only. |
-| **Detailed** | The full root-cause report, with supporting tables and recommended actions. |
-
-## Pin metrics to the top
-
-Under **Pinned metrics**, choose the metrics you want to appear first in every
-report, in the order you add them. Pin up to 20 metrics.
+| **Previous day** | The single day before. Use this to track short-term momentum. |
 
 <Steps>
 
-1. Select **Add metric**.
-2. Choose a metric from the list. It appears as a chip in the order you added it.
-3. To remove a pinned metric, select the **✕** on its chip.
-
-</Steps>
-
-## Choose recipients
-
-Under **Recipients**, choose which team members receive the report. Add up to 50
-recipients.
-
-<Steps>
-
-1. Select **Add recipient**.
-2. Choose a team member from the list. Only active members of your workspace
-   appear.
-3. To remove a recipient, select the **✕** on their chip.
-
-</Steps>
-
-<Aside type="note">
-	Recipients must be active members of your workspace. Members who are removed
-	from the workspace or who have opted out of report emails are dropped
-	automatically at send time, so you don't need to prune the list yourself.
-</Aside>
-
-## Set delivery channels
-
-Under **Delivery channels**, choose how the report is delivered. You can enable
-email, Slack, or both.
-
-| Channel | Setup |
-| --- | --- |
-| **Email** | Turn on the **Email** toggle. Recipients receive the report at the email address on their account. On by default. |
-| **Slack** | Turn on the **Slack** toggle, then enter a **Slack webhook URL**. Off by default. |
-
-### Deliver by Slack
-
-<Steps>
-
-1. Create an incoming webhook in your Slack workspace and copy its URL. It looks
-   like `https://hooks.slack.com/...`.
-2. On the Reports settings page, turn on the **Slack** toggle.
-3. Paste the URL into the **Slack webhook URL** field.
+1. Turn on **Daily report enabled**.
+2. Set the **Send time** and **Comparison**.
+3. Under **Recipients**, add the members who should receive the report. Only
+   active members appear. Removed or opted-out members are dropped automatically
+   at send time.
+4. Under **Delivery channels**, turn on **Email**, **Slack**, or both. For
+   Slack, paste an incoming webhook URL that starts with `https://`.
+5. Select **Save**.
 
 </Steps>
 
 <Aside type="caution">
-	When Slack delivery is on, the webhook URL is required and must be a full
-	`https://` URL. You can't save the page until you provide a valid URL.
+	When Slack is on, a valid `https://` webhook URL is required — you cannot save
+	the page without it.
 </Aside>
-
-## Save your changes
-
-Select **Save** in the save bar to apply your changes. A confirmation message
-tells you the report settings were saved. If a save doesn't go through, check
-that any required fields — such as the Slack webhook URL — are filled in, then
-try again.
 
 ## Troubleshooting
 
 | Problem | Cause and resolution |
 | --- | --- |
-| The form is read-only and **Save** is unavailable | Editing report settings requires the **Owner** or **Admin** role. Ask a workspace owner or admin to make the change. |
-| No reports arrive after you turn on delivery | Confirm **Daily report enabled** is on, that you've added at least one recipient, and that you've enabled at least one delivery channel. |
-| The page won't save with Slack on | You must enter a valid `https://` **Slack webhook URL** when the Slack channel is enabled. Add the URL, then save. |
-| A recipient isn't receiving the report | The member may have been removed from the workspace or opted out of report emails. Confirm they're an active member on the **Team** settings page. |
+| The **Delivery** tab is read-only | Only **Owner** and **Admin** roles can change delivery settings. The **Your report** tab stays editable for every member. |
+| The **Prompts** step is locked | Per-section wording is available on higher plans. Upgrade to unlock it. |
+| A section shows **Connect** instead of pickers | That section's data source is not connected. Select **Connect**, set it up on the **Connectors** page, then return. |
+| No sample arrives from **Send now** | Confirm your account has an email address. If you sent several in a row, wait a few minutes and try again. |
+| No daily report arrives | Confirm your **Receive this report** switch and the workspace **Daily report enabled** switch are both on, that you are a recipient, and that at least one delivery channel is enabled. |
 
 ## Related
 
