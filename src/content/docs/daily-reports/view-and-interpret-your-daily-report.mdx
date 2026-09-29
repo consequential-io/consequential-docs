@@ -7,6 +7,8 @@ import { Steps, Aside } from '@astrojs/starlight/components';
 
 The daily report is a narrative summary of how your store performed on a given day, compared against a baseline of recent comparable days. It highlights the metrics that moved the most, explains likely causes, and breaks key metrics down by dimension so you can decide where to act.
 
+What appears is built from the report you set up in Settings — your **template**, the **sections** you turned on, and the **comparison** baseline chosen for your workspace. To change any of that, see [Configure and schedule daily reports](/daily-reports/configure-and-schedule-daily-reports/).
+
 This guide shows you how to open a report, read each section, and regenerate a report when you need a fresh run.
 
 ## Prerequisites
@@ -45,6 +47,8 @@ Each report in the list shows a status that tells you whether it's ready to read
 ## Understand each section of a report
 
 A report reads top to bottom, from the headline takeaway down to the supporting detail. Not every section appears in every report — Consequential includes only the sections that are relevant for the day.
+
+The sections you see also reflect your setup: each one corresponds to a section you turned on in the report editor, grouped under its pillar. If you turned **AI summaries** off, the sections still show their tables and numbers — just without the written narrative.
 
 ### Header
 
@@ -85,6 +89,20 @@ Supporting signals grouped by source — such as marketing, funnel, or product m
 ### All metrics
 
 A collapsible grid of every metric in the report, not only the notable movers. Click **All metrics** to expand it when you want the full picture, including metrics that stayed flat.
+
+## Change what's in your report, or turn it off
+
+You control the content and delivery of your report from Settings:
+
+- To change the **template, sections, metrics, or wording**, open **Settings →
+  Reports → Your report**. Changes autosave and take effect on your next report.
+- To change the **schedule, recipients, or channels**, use the **Delivery** tab
+  (Owner or Admin only).
+- To **stop receiving** the report, turn off **Receive this report** on the
+  **Your report** tab, or use the **Manage or turn off this report** link in the
+  footer of any report email.
+
+See [Configure and schedule daily reports](/daily-reports/configure-and-schedule-daily-reports/) for the full walkthrough.
 
 ## Regenerate a report
 
