@@ -171,3 +171,15 @@ Disconnecting revokes Consequential's stored credentials for the source and paus
 <Aside type="caution">
 Disconnecting stops new data from flowing in. Reconnect the source to resume syncing.
 </Aside>
+
+Two data sources are exceptions, and you can't disconnect them from this page.
+
+### Your Shopify store
+
+Your Shopify store powers your core store data, so you can't disconnect it from the Connectors page. The **Disconnect** button stays visible on the Shopify row, but clicking it opens a **Contact support to remove** dialog instead of disconnecting the store — no data stops flowing and no credentials are revoked. Click **Contact support** in the dialog to ask the Consequential Support Team to remove the store for you.
+
+Consequential's access to your store ends only when you uninstall the Consequential app from your Shopify admin. Uninstalling the app is the one action that revokes the store token.
+
+### Your only active data source
+
+You can't disconnect a source while it's the only active data source on your workspace, because that would leave every metric with no data to show. Consequential refuses the disconnect and asks you to connect another source first. Connect a second data source, then disconnect the original one.
