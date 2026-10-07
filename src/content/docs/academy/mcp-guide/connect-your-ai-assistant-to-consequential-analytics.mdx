@@ -1,6 +1,66 @@
 ---
 title: Connect your AI assistant to Consequential Analytics (MCP)
 description: Connect Claude or ChatGPT to Consequential's MCP server at https://mcp.consequential.io/mcp and ask about your marketing analytics in plain language.
+head:
+  - tag: script
+    attrs:
+      type: application/ld+json
+    content: |
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "TechArticle",
+            "@id": "https://docs.consequential.io/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/#article",
+            "headline": "Connect your AI assistant to Consequential's MCP server",
+            "name": "Connect your AI assistant to Consequential Analytics (MCP)",
+            "description": "Connect Claude, ChatGPT, or another MCP client to Consequential's own MCP server at https://mcp.consequential.io/mcp and query your marketing analytics in plain language.",
+            "url": "https://docs.consequential.io/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/",
+            "inLanguage": "en",
+            "articleSection": "MCP Guide",
+            "keywords": "Consequential MCP server, mcp.consequential.io, connect Claude to Consequential, connect ChatGPT to Consequential, Consequential Analytics connector",
+            "about": {
+              "@type": "WebAPI",
+              "name": "Consequential MCP server",
+              "url": "https://mcp.consequential.io/mcp",
+              "description": "Consequential's own read-only Model Context Protocol (MCP) server. A streamable-HTTP endpoint at https://mcp.consequential.io/mcp, authenticated with OAuth sign-in, that lets an AI assistant query a Consequential workspace's marketing analytics.",
+              "documentation": "https://docs.consequential.io/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/",
+              "provider": {
+                "@type": "Organization",
+                "name": "Consequential",
+                "url": "https://consequential.io"
+              }
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Consequential",
+              "url": "https://consequential.io"
+            },
+            "isPartOf": {
+              "@type": "WebSite",
+              "name": "Consequential Documentation",
+              "url": "https://docs.consequential.io"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Consequential Documentation",
+                "item": "https://docs.consequential.io/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Connect your AI assistant to Consequential Analytics (MCP)",
+                "item": "https://docs.consequential.io/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/"
+              }
+            ]
+          }
+        ]
+      }
 ---
 import { Steps, Aside } from '@astrojs/starlight/components';
 
