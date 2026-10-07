@@ -1,0 +1,76 @@
+---
+title: BFCM demand and gift-tier forecasting (MCP)
+description: Ask your AI assistant to forecast Black Friday / Cyber Monday demand and gift-tier (GWP) quantities using the Consequential Analytics connector.
+---
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The Consequential Analytics connector includes a dedicated **BFCM demand & gift-tier forecaster**. Instead of asking your assistant to reason about Black Friday / Cyber Monday numbers from memory, this tool runs a structured forecasting pipeline against your own workspace data: it verifies your order and revenue history, fits a demand model, forecasts the BFCM window, and lays a gift/GWP tier ladder on top of it.
+
+<Aside type="note">
+This builds on the Consequential Analytics connector. If you haven't connected your assistant yet, start with [Connect your AI assistant to Consequential Analytics](/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/).
+</Aside>
+
+## What it does
+
+When you ask about BFCM forecasting, your assistant calls this tool to load the forecasting workflow for your workspace, then runs it using your connector's other tools to pull the underlying data. It:
+
+- Checks that your order and revenue history is complete and up to date before forecasting anything.
+- Fits a demand model for the BFCM window (by market, with a few supported modeling approaches).
+- Builds a gift/GWP tier ladder (spend thresholds and gift value) and measures how many past orders would have cleared each tier.
+- Re-runs just the affected part of the forecast when you change an assumption, and shows you the difference from the previous run rather than only the new numbers.
+- Tells you when it's missing data it needs, instead of guessing.
+
+## Confirm the tool is available
+
+This tool ships as part of the Consequential Analytics connector, so it's available anywhere that connector is connected — no separate setup. To confirm your assistant has it loaded:
+
+<Steps>
+
+1. Open the tools menu for your conversation (in claude.ai and Claude Desktop, the search-and-tools icon in the composer; in Claude Code, run `/mcp`).
+2. Find **Consequential Analytics** in the list of connected tools and expand it.
+3. Look for a tool named **BFCM demand & gift-tier forecaster** (`bfcm_skill`) in the list.
+
+</Steps>
+
+If it's not there, disconnect and reconnect the Consequential Analytics connector from your assistant's connector settings — see [Troubleshooting](/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/#troubleshooting) in the connector guide.
+
+## Example prompts
+
+### Getting a first forecast
+
+> Forecast our BFCM demand and gift tiers for this year.
+
+> What's our weekly order forecast for the BFCM window, by market?
+
+> Build a gift-tier ladder for BFCM based on our basket sizes.
+
+### Changing an assumption and comparing
+
+Once you have a forecast, you can ask it to change one assumption at a time — it reruns only what's affected and shows you the delta:
+
+> Raise the EU tier 1 threshold to €95 and show me what changes.
+
+> What if we used a single merged model for North America and UK+EU instead of splitting them out?
+
+> Switch to a cumulative gift mechanic instead of single-tier and compare the gift unit counts.
+
+> Add a fourth tier 15% apart from the others.
+
+> Use last year's model instead and show me how the forecast would have differed.
+
+### Sanity-checking the result
+
+> Backtest this model against last year's actual BFCM window.
+
+> What's the estimated gift cost for the current tier ladder?
+
+> Which tier is closest to our best-selling bundle price, and should we move the threshold above it?
+
+<Aside type="caution">
+Forecasts are only as good as the underlying data. If your order history is incomplete or stale for the period being forecast, your assistant will say so and label the affected numbers as provisional — treat those as a range, not a committed number, until a full week of data is in.
+</Aside>
+
+## Related
+
+- [Connect your AI assistant to Consequential Analytics](/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/)
+- [MCP Prompt Guide](/academy/mcp-guide/mcp-prompt-guide/) — general analytics prompts for the connector's other tools.
