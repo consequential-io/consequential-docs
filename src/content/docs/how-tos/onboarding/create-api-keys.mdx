@@ -15,7 +15,7 @@ This page previously described a self-serve **Settings → API Keys** page for g
 
 <Steps>
 
-1. Sign in to your Consequential account, either in the app at [app.consequential.io](https://app.consequential.io) or by calling the `/auth/login` (email + password) or `/auth/magic-link` endpoints directly.
+1. Sign in to your Consequential account in the app at [app.consequential.io](https://app.consequential.io), with a magic link or Google — there is no password sign-in. The underlying endpoints are `/auth/magic-link/request` → `/auth/magic-link/verify`, but requesting a link needs the sign-in page's Turnstile check, so it can't be scripted.
 2. The login response includes a short-lived **access token** (JWT) and a **refresh token**. Send the access token on every API request as `Authorization: Bearer <token>`.
 3. Tenant-scoped endpoints additionally require an `X-Tenant-ID` header or a `:tenantId` path parameter — see the [Reference overview](/reference/overview/) and [API reference](/api/) for which endpoints need it.
 4. When the access token expires, use the refresh token against `/auth/refresh` to get a new one without re-authenticating.
