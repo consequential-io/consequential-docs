@@ -8,7 +8,7 @@ info:
     are mounted under `/api/v1`.
 
     **Authentication**: most endpoints require a Bearer JWT (obtained via
-    `/auth/login`, `/auth/magic-link/verify`, or an OAuth provider). Tenant-scoped
+    `/auth/magic-link/verify` or Google OAuth — there is no password sign-in). Tenant-scoped
     resources additionally require either an `X-Tenant-ID` header or a `:tenantId`
     path parameter — this varies by domain and is noted on each endpoint.
 
@@ -56,32 +56,27 @@ security:
 tags:
   - name: Auth
     description: |
-      Three ways in: email/password (`/auth/login`), a passwordless magic
-      link (`/auth/magic-link/request` then `/verify`), or Google OAuth
-      (`/auth/google` → `/auth/google/callback`). All three return the same
-      shape as `/auth/login` — an `accessToken` plus the user/tenant/store
-      context — and pair with `/auth/refresh` to renew it and `/auth/logout`
-      to end the session.
+      Sign-in is passwordless — there is no email/password login,
+      registration, or password reset. Two ways in: a magic link
+      (`/auth/magic-link/request` then `/auth/magic-link/verify`) or Google
+      OAuth (`/auth/google` → `/auth/google/callback`). Verifying a magic
+      link returns an `accessToken` plus the user/tenant/store context;
+      pair it with `/auth/refresh` to renew the token and `/auth/logout` to
+      end the session.
 
-      New accounts start unverified: `/auth/register` sends a verification
-      email, confirmed either by posting its token to `/auth/email/verify`
-      or by following the emailed link straight to `/auth/verify-email`.
-      `/auth/verify` is unrelated to that flow — it decodes an existing
-      JWT's claims for inter-service use, not part of sign-in.
+      There is no separate registration step: the first magic-link sign-in
+      for a new address creates the account. Requesting a link requires a
+      Cloudflare Turnstile token, so it is made from the sign-in page
+      rather than scripted.
 
-      Password reset (`/auth/password/forgot` → `verify-reset-token` →
-      `reset`) and `/auth/email/resend-verification` return the same
-      generic success response whether or not the email is registered, so
-      as not to leak which addresses exist.
+      `/auth/verify` is unrelated to sign-in — it decodes an existing
+      JWT's claims for inter-service use.
   - name: Signup
     description: |
-      Self-serve tenant creation — `POST /signup` creates a new tenant
-      *and* its owner user in one call, protected by Cloudflare Turnstile
-      and rate limiting. Distinct from `/auth/register`, which creates a
-      user with no tenant. `check-identifier` lets a signup form validate
-      a company-name slug before submitting, and `resend-verification`
-      follows the same anti-enumeration pattern as the equivalent `Auth`
-      endpoints.
+      Workspace-name availability only. `check-identifier` lets a sign-up
+      form check a company name before submitting. It does not create
+      anything — accounts are created on the first magic-link sign-in
+      (see `Auth`).
   - name: OAuth
     description: MCP connector OAuth 2.1 Authorization Server. Raw RFC JSON, not the standard envelope.
   - name: Profile
@@ -213,18 +208,14 @@ tags:
   - name: Onboarding
     description: |
       Tracks how far a tenant has gotten through setup. `GET /onboarding`
-      and `/onboarding/progress` both read task-checklist progress;
-      `complete-task`/`skip-task`/`current-step`/`reset` drive it
-      manually, and `sync-progress` re-derives it from what's actually
-      connected rather than trusting client-reported state.
+      reads task-checklist progress; `complete-task`/`skip-task` drive it
+      manually.
       `detect-platform` — scanning a storefront URL — is the real
       backing endpoint for the "Connect your data" step. `connectors`
       returns tiered integration recommendations. `GET /onboarding/status`
       is a separate concept despite the shared mount: tenant-scoped
       provisioning/lifecycle state (current phase, phase history), not
       per-user checklist progress.
-  - name: Reports
-    description: The Daily Reports feature.
   - name: Partner Integrations
     description: |
       Server-to-server surface for embedded/partner platforms (e.g. Nector.io)
@@ -387,155 +378,6 @@ components:
 
 paths:
   # ───────────────────────── Auth ─────────────────────────
-  /auth/register:
-    post:
-      tags: [Auth]
-      summary: Register a new user
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [email, password]
-              properties:
-                email: { type: string, format: email }
-                password: { type: string }
-                firstName: { type: string }
-                lastName: { type: string }
-      responses:
-        "201":
-          description: User registered
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/SuccessEnvelope" }
-  /auth/login:
-    post:
-      tags: [Auth]
-      summary: Log in with email and password
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [email, password]
-              properties:
-                email: { type: string, format: email }
-                password: { type: string }
-                rememberMe: { type: boolean }
-      responses:
-        "200":
-          description: Authenticated
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/SuccessEnvelope"
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          accessToken: { type: string }
-                          user: { type: object }
-                          tenant: { type: object, nullable: true }
-                          store: { type: object, nullable: true }
-                          stores: { type: array, items: { type: object } }
-  /auth/email/verify:
-    post:
-      tags: [Auth]
-      summary: Verify email with a token
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [token]
-              properties: { token: { type: string } }
-      responses:
-        "200": { description: Verified, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /auth/verify-email:
-    get:
-      tags: [Auth]
-      summary: Email verification link (redirect-based)
-      security: []
-      parameters:
-        - name: token
-          in: query
-          required: true
-          schema: { type: string }
-      responses:
-        "302": { description: Redirects to the plan picker on success, or /verify-email/error?reason= on failure }
-  /auth/email/resend-verification:
-    post:
-      tags: [Auth]
-      summary: Resend the verification email (rate-limited)
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, required: [email], properties: { email: { type: string, format: email } } }
-      responses:
-        "200": { description: Generic response (anti-enumeration), content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /auth/password/forgot:
-    post:
-      tags: [Auth]
-      summary: Request a password reset email (rate-limited)
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, required: [email], properties: { email: { type: string, format: email } } }
-      responses:
-        "200": { description: Generic response, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /auth/password/verify-reset-token:
-    post:
-      tags: [Auth]
-      summary: Verify a password reset token
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, required: [token], properties: { token: { type: string } } }
-      responses:
-        "200": { description: Valid reset token, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /auth/password/reset:
-    post:
-      tags: [Auth]
-      summary: Reset password with a token
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [token, password]
-              properties: { token: { type: string }, password: { type: string } }
-      responses:
-        "200": { description: Password reset, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /auth/password/change:
-    post:
-      tags: [Auth]
-      summary: Change password (authenticated, rate-limited)
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [currentPassword, newPassword]
-              properties: { currentPassword: { type: string }, newPassword: { type: string } }
-      responses:
-        "200": { description: Password changed, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
   /auth/magic-link/request:
     post:
       tags: [Auth]
@@ -560,7 +402,7 @@ paths:
             schema: { type: object, required: [token], properties: { token: { type: string } } }
       responses:
         "200":
-          description: Authenticated (same shape as /auth/login)
+          description: Authenticated — an `accessToken` plus the user/tenant/store context
           content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } }
   /auth/refresh:
     post:
@@ -615,20 +457,6 @@ paths:
         "200": { description: Decoded claims, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
 
   # ───────────────────────── Signup ─────────────────────────
-  /signup:
-    post:
-      tags: [Signup]
-      summary: Self-serve signup (creates a new tenant + owner user)
-      security: []
-      description: Protected by Cloudflare Turnstile and rate-limited.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, description: "Company + user signup fields (name, email, password, company name, etc.)" }
-      responses:
-        "201": { description: Tenant provisioned, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-        "409": { description: "EMAIL_TAKEN — email already registered", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
   /signup/check-identifier:
     get:
       tags: [Signup]
@@ -649,18 +477,6 @@ paths:
                   - $ref: "#/components/schemas/SuccessEnvelope"
                   - type: object
                     properties: { data: { type: object, properties: { available: { type: boolean } } } }
-  /signup/resend-verification:
-    post:
-      tags: [Signup]
-      summary: Resend signup verification (rate-limited, anti-enumeration)
-      security: []
-      requestBody:
-        content:
-          application/json:
-            schema: { type: object, properties: { email: { type: string, format: email } } }
-      responses:
-        "202": { description: "Always returns 202 regardless of whether the email exists", content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-
   # ───────────────────────── OAuth (MCP) ─────────────────────────
   /oauth/register:
     post:
@@ -885,6 +701,10 @@ paths:
     post:
       tags: [Invitations]
       summary: Verify an invitation token (and complete signup for new users)
+      description: |
+        The token alone is enough, for new and existing invitees alike — an
+        invitation works like a magic link with a membership attached. No
+        name or password is collected.
       security: []
       requestBody:
         required: true
@@ -895,9 +715,6 @@ paths:
               required: [token]
               properties:
                 token: { type: string }
-                firstName: { type: string, description: "Required only when accepting as a brand-new user" }
-                lastName: { type: string }
-                password: { type: string }
       responses:
         "200": { description: Session created, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
   /invitations/check-email:
@@ -1979,40 +1796,12 @@ paths:
       summary: System health check (platform Owner/Admin)
       responses:
         "200": { description: Health, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /admin/system/analytics:
-    get:
-      tags: [Admin]
-      summary: Platform-wide analytics (platform Owner/Admin)
-      responses:
-        "200": { description: Analytics, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
   /admin/diagnostics/store-coverage:
     get:
       tags: [Admin]
       summary: Store data-coverage diagnostics (platform Owner/Admin)
       responses:
         "200": { description: Coverage report, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /admin/transform/run:
-    post:
-      tags: [Admin]
-      summary: Trigger a dbt transform run (platform Owner/Admin; backed by the k8s Batch API)
-      requestBody:
-        content: { application/json: { schema: { type: object } } }
-      responses:
-        "202": { description: Run triggered, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /admin/transform/runs:
-    get:
-      tags: [Admin]
-      summary: List transform runs (platform Owner/Admin)
-      responses:
-        "200": { description: Runs, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /admin/transform/runs/{jobName}:
-    get:
-      tags: [Admin]
-      summary: Get a transform run's status (platform Owner/Admin)
-      parameters: [{ name: jobName, in: path, required: true, schema: { type: string } }]
-      responses:
-        "200": { description: Run status, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-
   # ───────────────────────── Acquisition ─────────────────────────
   /acquisition/filter-options:
     get:
@@ -2816,12 +2605,6 @@ paths:
       summary: Get the current user's onboarding status/progress
       responses:
         "200": { description: Status, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /onboarding/progress:
-    get:
-      tags: [Onboarding]
-      summary: Get onboarding progress summary
-      responses:
-        "200": { description: Progress, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
   /onboarding/complete-task:
     post:
       tags: [Onboarding]
@@ -2844,29 +2627,6 @@ paths:
             schema: { type: object, required: [taskKey], properties: { taskKey: { type: string } } }
       responses:
         "200": { description: Skipped, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /onboarding/sync-progress:
-    post:
-      tags: [Onboarding]
-      summary: Re-detect and auto-complete tasks from current account state
-      responses:
-        "200": { description: Synced, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /onboarding/current-step:
-    patch:
-      tags: [Onboarding]
-      summary: Set the current onboarding step
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, required: [step], properties: { step: { type: string } } }
-      responses:
-        "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-  /onboarding/reset:
-    post:
-      tags: [Onboarding]
-      summary: Reset onboarding progress
-      responses:
-        "200": { description: Reset, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
   /onboarding/detect-platform:
     post:
       tags: [Onboarding]
@@ -2903,101 +2663,6 @@ paths:
         - $ref: "#/components/parameters/TenantIdHeader"
       responses:
         "200": { description: Provisioning status, content: { application/json: { schema: { $ref: "#/components/schemas/SuccessEnvelope" } } } }
-
-  # ───────────────────────── Reports (Daily Reports) ─────────────────────────
-  /tenants/{tenantId}/reports:
-    get:
-      tags: [Reports]
-      summary: List recent daily reports
-      parameters:
-        - name: tenantId
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
-      responses:
-        "200":
-          description: "Up to 30 most recent reports"
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/SuccessEnvelope"
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          reports:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                id: { type: string, format: uuid }
-                                reportDate: { type: string, format: date }
-                                status: { type: string, enum: [pending, snapshotting, generating, ready, failed, no_baseline] }
-                                generatedAt: { type: string, format: date-time, nullable: true }
-                                model: { type: string, nullable: true }
-                                costUsd: { type: number, nullable: true }
-                                error: { type: string, nullable: true }
-  /tenants/{tenantId}/reports/{date}:
-    get:
-      tags: [Reports]
-      summary: Get one day's report
-      parameters:
-        - name: tenantId
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
-        - name: date
-          in: path
-          required: true
-          schema: { type: string, format: date }
-      responses:
-        "200":
-          description: Report
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/SuccessEnvelope"
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          report:
-                            type: object
-                            properties:
-                              id: { type: string, format: uuid }
-                              reportDate: { type: string, format: date }
-                              status: { type: string, enum: [pending, snapshotting, generating, ready, failed, no_baseline] }
-                              html: { type: string, nullable: true }
-                              generatedAt: { type: string, format: date-time, nullable: true }
-                              model: { type: string, nullable: true }
-                              error: { type: string, nullable: true }
-        "404": { description: DAILY_REPORT_NOT_FOUND, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-  /tenants/{tenantId}/reports/{date}/regenerate:
-    post:
-      tags: [Reports]
-      summary: Regenerate a report
-      description: |
-        **Not currently functional.** This endpoint is presently a hardcoded stub
-        that always returns `503 DAILY_REPORT_REGENERATION_UNAVAILABLE` regardless
-        of role or input — manual regeneration isn't wired up yet; reports are
-        produced on a Cloud Tasks schedule. Documented here for completeness /
-        forward-compatibility, not as a currently-working capability.
-      parameters:
-        - name: tenantId
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
-        - name: date
-          in: path
-          required: true
-          schema: { type: string, format: date, description: "YYYY-MM-DD, must be within the last 30 days." }
-      responses:
-        "400": { description: "DAILY_REPORT_BAD_DATE / DAILY_REPORT_DATE_OUT_OF_RANGE", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
-        "503": { description: "DAILY_REPORT_REGENERATION_UNAVAILABLE — always returned currently", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
   # ───────────────────────── Partner Integrations ─────────────────────────
   /partner/connect:
     post:
