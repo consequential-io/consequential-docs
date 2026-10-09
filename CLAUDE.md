@@ -61,6 +61,7 @@ Standard Starlight layout:
 - `src/content/docs/` — Markdown/MDX content; each file becomes a route. Subdirs map to URL segments and are referenced by the sidebar config in `astro.config.mjs`.
 - `public/api.yaml` — the real OpenAPI spec for `core`'s API. Lives in `public/` (not `src/`) because Scalar fetches it client-side at `/api.yaml`; `src/config/api-reference.mjs` reads the same file from disk at build time to generate the sidebar.
 - `src/config/api-reference.mjs` — declares the API reference (spec path, route slug, layout). The one file to edit if the API reference ever needs to change what it points at.
+- `worker/` — the Cloudflare Worker in front of `dist/`. It only handles `/scalar-proxy`, a same-origin proxy that lets the API reference's "Test Request" console reach core (core's CORS allowlist excludes this site); everything else is served as static assets. Allowed upstream hosts are in `worker/config.js`. Test the console locally with `npm run build && npx wrangler dev` — `astro dev`/`preview` have no proxy.
 - `src/assets/` — images imported from MDX (processed by Astro's image pipeline).
 - `public/` — static assets served as-is at the site root.
 - `tests/markdown-twins.test.mjs` — contract tests verifying every real doc page emits a working `<page>.md` route (see `@ekline/starlight-contextual-menu` below) and that OpenAPI's virtual pages correctly don't.

@@ -128,6 +128,14 @@ const configuration = {
 	// button, which belongs to the same feature.
 	agent: { disabled: true },
 
+	// Send "Test Request" calls through this site's own Worker
+	// (`worker/index.js`). Core's CORS allowlist does not include
+	// docs.consequential.io, so a direct browser call fails with a bare
+	// "Failed to fetch". Same-origin, so no third-party proxy sees a reader's
+	// token. Only exists under `wrangler dev` / the deployed site — under
+	// `astro dev` or `astro preview` the console gets a 404 from this path.
+	proxyUrl: '/scalar-proxy',
+
 	// The example spec has a single tag group open by default so the page
 	// doesn't land as one long undifferentiated wall of operations.
 	defaultOpenAllTags: false,
