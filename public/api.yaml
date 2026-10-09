@@ -42,6 +42,11 @@ info:
     url: https://consequential.io/support
     email: support@consequential.io
 servers:
+  # Listed first so the "Test Request" console defaults to the demo workspace's
+  # sample data rather than a reader's live account. Every hosted server here
+  # must also be in ALLOWED_ORIGINS in worker/config.js (the console proxy allowlist).
+  - url: https://demo.consequential.io/api/v1
+    description: Demo (sample-data workspace)
   - url: https://app.consequential.io/api/v1
     description: Production
   - url: http://localhost:4040/api/v1

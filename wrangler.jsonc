@@ -1,8 +1,14 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "consequential-docs",
+	// Proxies the API reference's "Test Request" console to core — see the
+	// header comment in worker/index.js for why. Every other path is served
+	// straight from `dist/`, as before this Worker existed.
+	"main": "worker/index.js",
 	"compatibility_date": "2026-07-27",
 	"assets": {
-		"directory": "./dist"
+		"directory": "./dist",
+		"binding": "ASSETS",
+		"run_worker_first": ["/scalar-proxy"]
 	}
 }
