@@ -1,0 +1,94 @@
+---
+title: Understand your opportunities
+description: Read the Opportunities page in Consequential to see how much money you could keep across campaigns, discount codes, and landing pages, and what you have kept so far.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The Opportunities page answers one question: how much money could you keep right now, and where. Consequential reviews your last 30 days of campaigns, discount codes, and landing pages, estimates what each one is costing you, and lists the items worth acting on, ranked by size.
+
+The page is read-only. It shows what Consequential found so you can decide where to act; you make the changes in your ad platform, your store, or your discount settings.
+
+## Prerequisites
+
+- A connected Shopify store and at least one connected ad datasource. See [Connect your data](/get-started/connect-your-data/).
+- Consequential's daily data pipeline needs to have run so there is a full window to review. Until the first run finishes, the page shows an empty state.
+
+<Aside type="note">
+Opportunities is rolling out to stores gradually. When it's available for your store, an **Opportunities** item appears in the sidebar. If you don't see it yet, the feature isn't turned on for your store.
+</Aside>
+
+## Where to find it
+
+In Consequential, open **Opportunities** from the sidebar. You can also reach it from the **See all opportunities** link in a Consequential email: the link opens the page for the store the email was about, and you sign in first if you're signed out.
+
+## What the page shows
+
+The page opens with a **What you could keep** summary card, followed by a ranked list of individual opportunities.
+
+The summary card shows:
+
+- **The headline total** — for example, "We found $4,000 to $9,000 you could keep, from the last 30 days." When the low and high estimates are the same, it shows a single figure instead of a range.
+- **What you kept so far** — "You kept $2,100 so far" appears once Consequential has measured the result of changes you made. See [The Kept section](#the-kept-section).
+- **A trial goal bar** — during a trial, a progress bar shows how close the opportunities found are to your trial goal.
+
+## The three kinds of opportunity
+
+Every opportunity belongs to one of three families. Each row carries a label that tells you which:
+
+| Label | What it flags |
+| --- | --- |
+| **Campaign** | Campaigns that lose money — ad spend that isn't earning its keep. |
+| **Discount code** | Discount codes that cost more than the margin on the orders they drive. |
+| **Landing page** | Landing pages that take traffic but don't convert it. |
+
+## Read a row
+
+Each opportunity is one row. A row shows:
+
+- The **label** — Campaign, Discount code, or Landing page.
+- A **sentence** describing the specific item and what's happening.
+- The **amount** — either a single figure or a low-to-high range (see [How Consequential estimates the amounts](#how-consequential-estimates-the-amounts)).
+- **In your email on {date}** — shown when the item has already appeared in one of your Consequential emails.
+
+The list shows 25 rows per page, ranked with the largest opportunities first. Use **Previous** and **Next** to move through the pages.
+
+## How Consequential estimates the amounts
+
+Each amount is an estimate, not an exact figure, so most opportunities show a **range** (low to high). The clearest, highest-confidence items show a **single figure** instead. The headline total adds up the low end of every item, so it's a conservative view of what's on the table.
+
+Two rules shape which amounts appear:
+
+- **A cap on the total.** When the summary is capped, the card notes: "We count at most 25% of ad spend plus 5% of revenue." This keeps the headline total grounded in your actual spend and revenue rather than letting a few large estimates dominate.
+- **A floor on individual items.** Small items aren't listed on their own. When every item found is below the floor, the page notes the threshold — for example, "Each item we found is below $100, so we do not show it on its own." The amount still counts toward the headline total.
+
+## The Kept section
+
+Once you act on an opportunity, Consequential measures what changed over the following weeks and reports the result in a **Kept** section below the list.
+
+Each kept item shows a sentence describing what you kept. The amount behaves as follows:
+
+- A **So far** badge marks an item that is still being measured — the figure can still change.
+- An item with **no measurable change** shows a sentence but no amount.
+- A final item shows the amount Consequential measured.
+
+The summary card's "You kept {amount} so far" line is the total of these kept items.
+
+## When the page is empty
+
+If Consequential hasn't finished reviewing your store, the page shows: "We are still checking your campaigns, discount codes and landing pages. We show what we find here." The list appears once the review is ready. New stores need the daily pipeline to run before anything can show.
+
+## Troubleshooting
+
+| Problem | Cause and resolution |
+| --- | --- |
+| No **Opportunities** item in the sidebar | The feature isn't turned on for your store yet. It's rolling out gradually. |
+| The page says "No opportunities yet" | Consequential is still reviewing your last 30 days. Check back after the daily pipeline has run. See [Connect your data](/get-started/connect-your-data/) to confirm your sources are connected. |
+| A row shows a range instead of one number | Expected — most amounts are estimates, shown as a low-to-high range. Only the highest-confidence items show a single figure. |
+| The headline total looks lower than the rows suggest | The total adds up the low end of every item and is capped at a share of your ad spend and revenue, so it's deliberately conservative. |
+
+## Related
+
+- [Understand the Acquisition Dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/) — campaign, ad set, creative, and landing-page performance that feeds the campaign and landing-page opportunities.
+- [View and interpret your daily report](/daily-reports/view-and-interpret-your-daily-report/) — the daily narrative of how your store is performing.
+- [CAC](/academy/metrics/cac/), [POAS](/academy/metrics/poas/), [MER](/academy/metrics/mer/) — the profitability metrics behind "money you could keep."
