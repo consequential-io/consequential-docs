@@ -65,6 +65,7 @@ Standard Starlight layout:
 - `src/assets/` — images imported from MDX (processed by Astro's image pipeline).
 - `public/` — static assets served as-is at the site root.
 - `tests/markdown-twins.test.mjs` — contract tests verifying every real doc page emits a working `<page>.md` route (see `@ekline/starlight-contextual-menu` below) and that OpenAPI's virtual pages correctly don't.
+- `src/components/Analytics.astro` — Microsoft Clarity + PostHog, the same projects consequential.io reports to. Rendered from `CustomHead`, so every page gets it; runs only on `docs.consequential.io`, so local builds send nothing. `tests/analytics.test.mjs` fails the build if a page loses it.
 
 Component overrides (Starlight's "Overriding Components" mechanism) go in `src/components/` and are wired through the `components` field of the `starlight()` integration call — don't import Starlight internals directly. Current overrides: `CustomHead`, `CustomHeader`, `CustomHero`, `CustomFooter`, `CustomSearch` (all in `src/components/`).
 
