@@ -3,6 +3,9 @@
  * rendered from `CustomHead.astro`). Pages that bypass Starlight's <head> — a new
  * route file, a layout swap — would silently drop out of both tools; this catches it.
  *
+ * The PostHog key comes from `PUBLIC_POSTHOG_KEY` at build time. When it is set, the
+ * built pages must carry that key; a build without it ships Clarity only.
+ *
  * Run after `npm run build`:  `node --test tests/analytics.test.mjs`
  */
 import { test } from 'node:test';
@@ -16,6 +19,7 @@ const DIST = join(__dirname, '..', 'dist');
 
 const CLARITY_TAG = 'https://www.clarity.ms/tag/';
 const POSTHOG_INIT = 'posthog.init(';
+const POSTHOG_KEY = process.env.PUBLIC_POSTHOG_KEY;
 
 function* walk(dir) {
 	if (!existsSync(dir)) return;
@@ -50,3 +54,14 @@ test('every page loads Clarity and PostHog exactly once', () => {
 		.map(({ path, clarity, posthog }) => `${path} (clarity ${clarity}, posthog ${posthog})`);
 	assert.equal(wrong.length, 0, `pages without exactly one of each:\n  ${wrong.join('\n  ')}`);
 });
+
+test(
+	'every page initialises PostHog with the configured key',
+	{ skip: !POSTHOG_KEY && 'PUBLIC_POSTHOG_KEY not set for this build' },
+	() => {
+		const wrong = pages
+			.filter(({ html }) => count(html, JSON.stringify(POSTHOG_KEY)) !== 1)
+			.map(({ path }) => path);
+		assert.equal(wrong.length, 0, `pages without the key exactly once:\n  ${wrong.join('\n  ')}`);
+	},
+);
