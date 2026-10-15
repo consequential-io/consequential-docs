@@ -65,7 +65,7 @@ Standard Starlight layout:
 - `src/assets/` — images imported from MDX (processed by Astro's image pipeline).
 - `public/` — static assets served as-is at the site root.
 - `tests/markdown-twins.test.mjs` — contract tests verifying every real doc page emits a working `<page>.md` route (see `@ekline/starlight-contextual-menu` below) and that OpenAPI's virtual pages correctly don't.
-- `src/components/Analytics.astro` — Microsoft Clarity + PostHog, the same projects consequential.io reports to. Rendered from `CustomHead`, so every page gets it; runs only on `docs.consequential.io`, so local builds send nothing. `tests/analytics.test.mjs` fails the build if a page loses it.
+- `src/components/Analytics.astro` — Microsoft Clarity + PostHog, the same projects consequential.io reports to. Rendered from `CustomHead`, so every page gets it; runs only on `docs.consequential.io`, so local builds send nothing. The PostHog key is the `PUBLIC_POSTHOG_KEY` repository variable, read at build time (without it a build ships Clarity only, and `deploy.yml` refuses to publish). `tests/analytics.test.mjs` fails the build if a page loses either tool.
 
 Component overrides (Starlight's "Overriding Components" mechanism) go in `src/components/` and are wired through the `components` field of the `starlight()` integration call — don't import Starlight internals directly. Current overrides: `CustomHead`, `CustomHeader`, `CustomHero`, `CustomFooter`, `CustomSearch` (all in `src/components/`).
 
@@ -84,7 +84,7 @@ Component overrides (Starlight's "Overriding Components" mechanism) go in `src/c
 non-interactively on the runner; `wrangler` is now a pinned `devDependency`,
 so `npm ci` installs the exact version `npx wrangler deploy` runs), publishing
 `dist/` to the `consequential-docs` Worker. It needs the `CLOUDFLARE_API_TOKEN`
-repo secret; the account ID is in the workflow. PRs run the same build + test
+repo secret and the `PUBLIC_POSTHOG_KEY` repo variable; the account ID is in the workflow. PRs run the same build + test
 via `ci.yml` without deploying.
 
 This replaced a manual-only flow, so **older notes in this repo and in commit messages saying
@@ -92,7 +92,7 @@ This replaced a manual-only flow, so **older notes in this repo and in commit me
 still works and is the fallback if Actions is down:
 
 ```bash
-npm run build
+PUBLIC_POSTHOG_KEY=$(gh variable get PUBLIC_POSTHOG_KEY) npm run build
 CLOUDFLARE_ACCOUNT_ID=705a25199f79333ff0e4db56e2078036 npx wrangler deploy
 ```
 
