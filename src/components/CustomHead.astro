@@ -2,7 +2,7 @@
 /**
  * Starlight Head override.
  *
- * Adds two head-level enhancements on top of Starlight's default <head>:
+ * Adds three head-level enhancements on top of Starlight's default <head>:
  *
  *   1. `<ClientRouter />` — Astro view transitions for smooth SPA-style
  *      navigation between pages.
@@ -15,6 +15,8 @@
  *      for pages that actually have a markdown twin (filters out virtual
  *      entries from e.g. `starlight-openapi`).
  *
+ *   3. `<Analytics />` — Microsoft Clarity + PostHog (see `Analytics.astro`).
+ *
  * Docs:
  *   https://docs.astro.build/en/guides/view-transitions/
  *   https://starlight.astro.build/guides/overriding-components/
@@ -22,11 +24,13 @@
 import Default from '@astrojs/starlight/components/Head.astro';
 import MarkdownAlternate from '@ekline/starlight-contextual-menu/MarkdownAlternate.astro';
 import { ClientRouter } from 'astro:transitions';
+import Analytics from './Analytics.astro';
 ---
 
 <Default />
 <ClientRouter />
 <MarkdownAlternate />
+<Analytics />
 
 <script>
 	// `<ClientRouter />` swaps the whole document on navigation, so the sidebar is rebuilt and
