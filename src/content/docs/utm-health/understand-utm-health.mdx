@@ -1,0 +1,88 @@
+---
+title: Understand UTM Health
+description: Use the UTM Health page in Consequential to score how clean your campaign tracking is, find the UTM problems hurting attribution, and fix them.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+UTM Health scores how clean your campaign tracking is and shows you exactly where it breaks. Consequential checks the UTM parameters on your orders and sessions, grades them against a set of health checks, and lists the specific issues that cost you attribution — missing tags, inconsistent casing, self-referrals, and more.
+
+UTM Health is available to every Consequential plan. It was previously a paid add-on; you no longer need an entitlement to use it.
+
+## Prerequisites
+
+- A connected Shopify store and traffic with UTM parameters to score. See [Connect your data](/get-started/connect-your-data/).
+- New to UTM parameters? Read [Understanding UTM tracking](/faq/advertising-best-practices/understanding-utm-tracking/) first.
+
+## Where to find it
+
+In Consequential, open **UTM Health** from the sidebar.
+
+<Aside type="note">
+If you don't see **UTM Health** in the sidebar, the feature is switched off for your workspace. It's available on every plan, so this is rare — contact [Consequential support](mailto:support@consequential.io) if you expect it and it's missing.
+</Aside>
+
+## Choose what to score
+
+Use the **Orders / Sessions** toggle to switch what Consequential scores:
+
+- **Orders** — the UTM parameters attached to your orders.
+- **Sessions** — the UTM parameters attached to site sessions.
+
+The **Showing** label under the title tells you which date range the report covers. UTM Health uses your global date range when you set one, and the last 30 days otherwise.
+
+## Read the score
+
+The page opens with your overall **UTM Health Score** (0–100), then breaks it down:
+
+<Steps>
+
+1. **The score** — a single 0–100 number summarizing how clean your tracking is for the selected entity and date range.
+2. **Category scores** — the overall score is grouped into categories, each with its own score, so you can see which area needs the most work.
+3. **Checks** — each category is made up of individual checks. Every check shows a status of **Healthy**, **Warning**, or **Critical**, a percentage, and the detail behind it.
+
+</Steps>
+
+Consequential runs these checks:
+
+| Check | What it looks for |
+| --- | --- |
+| UTM coverage | The share of orders or sessions that carry UTM parameters at all. |
+| Parameter completeness | Whether the expected UTM parameters (source, medium, campaign, and others) are present. |
+| Source/medium validity | Whether `utm_source` and `utm_medium` hold valid, recognized values. |
+| Casing uniformity | Whether the same value appears in mixed casing (for example, `Facebook` and `facebook`). |
+| Naming consistency | Whether campaign and channel names follow a consistent naming pattern. |
+| Self-referral detection | Traffic that your own domain is tagged as referring, which distorts attribution. |
+| Landing page available | Whether a landing page is recorded for the traffic. |
+
+## The report card
+
+After the score, the report card lists the problems Consequential found, check by check, with the specific values behind each one. From the report card you can:
+
+- **Export a CSV** of a section's detail rows to work through the issues outside Consequential.
+- **Open the score settings** with the gear control, which takes you to **Settings → UTM Score**.
+
+<Aside type="caution">
+Automatic UTM fixes aren't available in Consequential yet. UTM Health shows you what to fix; you make the changes in your ad platform and store.
+</Aside>
+
+## Adjust the score weights
+
+The overall score is a weighted blend of the checks. To change how much each area counts, open **Settings → Analytics → UTM Score** (or use the gear on the report card).
+
+On that page, adjust the weights for each check group and save. The next report recalculates the score with your weights.
+
+## Troubleshooting
+
+| Problem | Cause and resolution |
+| --- | --- |
+| **UTM Health** isn't in the sidebar | The feature is switched off for your workspace. It's available on every plan — contact [Consequential support](mailto:support@consequential.io). |
+| The page says there's nothing in this range | No orders or sessions carry UTM data for the selected entity and range. Pick a wider date range. |
+| A banner says only the largest groups are scored | The range has more UTM combinations than one report can hold. Choose a shorter range for a complete report. |
+| The score changed after I edited the settings | Expected. The score is recalculated from the weights you set under **Settings → UTM Score**. |
+
+## Related
+
+- [Understanding UTM tracking](/faq/advertising-best-practices/understanding-utm-tracking/) — what UTM parameters are and the rules that keep reporting clean.
+- [Google Ads UTM and tracking setup](/integrations-platform-setup/ads-marketing-integrations/google-ads-utm-tracking-setup/) — capture consistent UTMs from Google Ads.
+- [Understand the Acquisition Dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/) — how clean UTMs feed channel and campaign attribution.
