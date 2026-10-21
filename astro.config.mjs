@@ -100,6 +100,7 @@ export default defineConfig({
 					// "How To's" (technical setup/implementation) and "Developers" (API/SDK).
 					label: 'Guides',
 					items: [
+						{ label: 'Opportunities', items: [{ autogenerate: { directory: 'opportunities' } }] },
 						{ label: 'Daily Reports', items: [{ autogenerate: { directory: 'daily-reports' } }] },
 						{ label: 'Acquisition Dashboard', items: [{ autogenerate: { directory: 'acquisition-dashboard' } }] },
 						{ label: 'Metric Alerts', items: [{ autogenerate: { directory: 'metric-targets' } }] },
