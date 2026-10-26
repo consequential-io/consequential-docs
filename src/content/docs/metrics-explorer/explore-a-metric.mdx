@@ -1,0 +1,108 @@
+---
+title: Explore a metric in detail
+description: Open any Consequential metric to its detail view — change the time grain, break it down by a dimension, compare against an earlier period, overlay other metrics, and read or export the data.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Every metric in Consequential opens to a detail view with its own chart and toolbar. From there you change the time grain, split the metric by a dimension, compare the current period against an earlier one, draw other metrics on the same chart, and switch between a chart and a table you can export.
+
+This guide shows you how to open a metric's detail view and use each toolbar control to answer a question about that metric.
+
+## Prerequisites
+
+- Access to your Consequential account with a connected store.
+- Enough data for the metric you want to explore. A comparison also needs data from the earlier period you compare against.
+
+## Where to find it
+
+Open **Metrics** in the sidebar. The page lists your metrics grouped by **Category**, **Funnel**, and **Source**. Select a metric to open its detail view.
+
+<Aside type="note">
+The detail view is computed over the date range in the page header and the store in the workspace switcher. Change either one to re-point the whole view. See [Date ranges and presets](/concepts/date-ranges/).
+</Aside>
+
+## The metric toolbar
+
+The chart's toolbar holds every control for the view:
+
+| Control | What it does |
+| --- | --- |
+| **Grain** | Sets the point interval: **Hour**, **Day**, **Week**, **Month**, or **Quarter**. |
+| **Compare** | Draws the current period against an earlier one. See [Compare against an earlier period](#compare-against-an-earlier-period). |
+| **Dimensions** | Splits the metric by a dimension, such as channel or device. See [Break a metric down by a dimension](#break-a-metric-down-by-a-dimension). |
+| **Filters** | Shows only the data that matches a rule you set. |
+| **Add metric** | Draws another metric on the same chart. See [Overlay another metric](#overlay-another-metric). |
+| **Anomalies** | Marks the points that fall outside the metric's normal range. |
+| **Chart type** | Draws the data as filled areas, stacked bars, or side-by-side (grouped) bars. |
+| **Scale** | **Absolute** shows the real values, **Indexed** starts each metric at 100 to compare their shapes, and **Log** fits small and large values on one axis. |
+| **View** | Switches between **Chart** and **Table**. See [Read and export the table](#read-and-export-the-table). |
+
+## Break a metric down by a dimension
+
+A breakdown splits one line into a band per segment, so you can see which segments drive the metric.
+
+<Steps>
+
+1. Open the **Dimensions** control and select a dimension, such as channel or device. Use the search box to find one in a long list.
+
+2. The chart redraws with one band per segment, each in its own color. The legend lists the bands.
+
+3. Select a legend entry to hide or show that band.
+
+</Steps>
+
+<Aside type="tip">
+Consequential charts the largest segments and groups the rest, so a high-cardinality dimension stays readable. Switch to the **Table** view to read every segment as a row.
+</Aside>
+
+## Compare against an earlier period
+
+A comparison draws the current period against an earlier one so you can see the change.
+
+<Steps>
+
+1. Open the **Compare** control and select the period to compare against:
+
+   - **vs. previous period** — the equivalent window immediately before the current one.
+   - **vs. previous year** — the same calendar dates a year ago.
+   - **vs. same week last year** — the matching day of the week a year ago, so weekends line up with weekends.
+   - **vs. previous day** — the day before.
+
+2. The chart draws the earlier period as a second line. The tooltip names each line's own date, so a comparison across a different year still reads correctly.
+
+</Steps>
+
+### Compare a breakdown
+
+You can compare while a dimension is selected. For each band, the chart draws a solid line for the current period and a dashed line for the earlier one, both in the band's color. A day that exists in only one period shows as a gap in the other, so a missing day never reads as a drop to zero.
+
+## Overlay another metric
+
+Draw a second metric on the same chart to see two metrics move together.
+
+<Steps>
+
+1. Open **Add metric** and select another metric. You can overlay a few metrics on one chart.
+
+2. Set the **Scale** to **Indexed** to compare the shapes of metrics that use different units, or to **Log** to fit different magnitudes on one axis.
+
+</Steps>
+
+## Read and export the table
+
+Switch **View** to **Table** to read the exact numbers behind the chart.
+
+- With a dimension selected, the table shows one row per segment with its period total. A ratio metric, such as conversion rate, shows the correct period ratio rather than the sum of its daily rates.
+- Click **Export** to download the current view as a CSV file. The export matches what the chart or table shows, including any breakdown. The button is disabled when there is no data to export.
+
+## Share a view
+
+The detail view keeps its state — the grain, dimension, filters, comparison, and any overlaid metrics — in the page URL. Copy the URL to share the exact view with a teammate, or bookmark it to return to it later.
+
+## Related
+
+- [Set a target on a metric](/metric-targets/set-a-metric-target/) — track a metric against a goal and get alerted.
+- [Set a trend alert](/metric-targets/set-a-trend-alert/) — get alerted when a metric moves unexpectedly.
+- [Date ranges and presets](/concepts/date-ranges/) — how the header date range sets the window for the view.
+- [How it works](/concepts/how-it-works/) — the mental model behind Consequential's metrics.
