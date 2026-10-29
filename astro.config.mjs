@@ -89,6 +89,7 @@ export default defineConfig({
 						{ label: 'Connect Google Analytics 4', slug: 'get-started/connect-ga4' },
 						{ label: 'Install the Shopify app', slug: 'get-started/install-shopify-app' },
 						{ label: 'Add Shopify staff (optional)', slug: 'get-started/add-shopify-staff' },
+						{ label: 'Find your way around the app', slug: 'get-started/find-your-way-around' },
 					],
 				},
 				{
