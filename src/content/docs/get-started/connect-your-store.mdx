@@ -1,80 +1,81 @@
 ---
 title: Connect your store
-description: Enter your store URL to connect your store, create your workspace, and start Consequential onboarding.
+description: Connect your Shopify store, or a store on another platform, from the Connect your store dialog.
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-After you sign up, Consequential asks for your store URL. Entering it connects your store, creates your workspace, and takes you to your home page, where you finish setup. This guide shows you how to connect your store, what to do when a store is already connected to another workspace, and how to finish setting up from your home page.
+Your store is the first thing you connect. The first time you sign in, Consequential opens the **Connect your store** dialog. You can also open it later from the **Onboarding** card on Home. Only Owners and Admins can connect a store.
 
 ## Prerequisites
 
-- A Consequential account. Sign up with your email or with Google.
-- Your store's web address (for example, `acme.com`).
+- A Consequential account. See [Create your account and connect your store](/get-started/create-your-account/).
+- For Shopify: permission to install apps on your Shopify store.
+- For other platforms: your store's web address (for example, `acme.com`).
 
-## Enter your store URL
-
-Consequential opens the **What's your store URL?** screen the first time you sign in.
+## Connect a Shopify store
 
 <Steps>
 
-1. In the **Store URL** field, enter your store's web address (for example, `acme.com`). You can include or omit `https://` and `www.` — Consequential normalizes what you enter.
-2. Click **Continue**. Consequential connects your store and opens your home page.
+1. In the **Connect your store** dialog, click **Install on Shopify**. Shopify opens in a new tab.
+2. Approve the Consequential app in Shopify. If Shopify shows **Finish setup in Consequential**, click it.
+3. Go back to Consequential. The dialog updates by itself and shows *"Your Shopify store is connected to Consequential."*
+4. Click **Continue**.
 
 </Steps>
 
-If the address isn't a valid URL, Consequential shows *"Enter a valid store URL, e.g. acme.com"* and keeps you on the screen. Fix the address, then click **Continue** again.
-
-Consequential also asks for your store's **country**. Your country sets the store's name (for example, `Acme US`), its reporting currency, and its timezone, so pick the country the store primarily sells from. You can change the currency later — see [Set a store's currency](/how-tos/onboarding/manage-store-preferences/#set-a-stores-currency).
-
 <Aside type="note">
-When you install the Consequential app from the Shopify App Store, Consequential reads your country from Shopify, so it doesn't ask you again.
+When you install the Consequential app from Shopify, Consequential reads your store's country from Shopify, so it doesn't ask you for it.
 </Aside>
+
+## Connect a store on another platform
+
+<Steps>
+
+1. In the **Connect your store** dialog, click **I'm not on Shopify**.
+2. Under **What do you run your store on?**, choose your platform, for example WooCommerce.
+3. Under **Where is this store based?**, choose the country the store mainly sells from.
+4. Under **Your store address**, enter your store's web address (for example, `acme.com`).
+5. Click **Continue**.
+
+</Steps>
+
+We set up your workspace and get in touch about connecting your orders. You can connect your ad platforms straight away.
+
+Your country sets the store's name (for example, `Acme US`), its reporting currency and its timezone. You can change the currency later. See [Set a store's currency](/how-tos/onboarding/manage-store-preferences/#set-a-stores-currency).
 
 ## Request access to a connected store
 
-If the store you enter is already connected to another workspace, Consequential shows the **Store already connected** screen: *"This store is already connected to another workspace. You can request access from an owner, or try a different URL."*
+If the store is already connected to another workspace, Consequential shows **Store already connected**: *"This store is already connected to another workspace. You can request access from an owner, or try a different URL."*
 
 You have two options:
 
-<Steps>
-
-1. To join the existing workspace, click **Request access**. Consequential sends your request and shows *"Request sent — an owner will review it."* An owner of that workspace reviews and approves it.
-2. To connect a different store instead, click **Try a different URL**. Consequential returns you to the **Store URL** field.
-
-</Steps>
+- To join the existing workspace, click **Request access**. Consequential shows *"Request sent — an owner will review it."* An owner of that workspace reviews and approves your request.
+- To connect a different store instead, click **Try a different URL**.
 
 <Aside type="note">
-If you're already a member of the workspace that owns the store, Consequential skips the request and takes you straight to that workspace's home page.
+If you're already a member of the workspace that owns the store, Consequential skips the request and takes you straight to that workspace.
 </Aside>
 
-## Finish setting up your workspace
+## What happens next
 
-After you connect your store, Consequential provisions your workspace. While setup runs, your home page shows *"We're setting up your workspace"* and *"Your dashboards will appear here shortly."* Your dashboards appear on their own once provisioning finishes.
-
-Your home page also shows a **Finish setting up your workspace** checklist that tracks the two remaining tasks and your progress (for example, *"0 of 2 complete"*):
-
-| Task | What it does |
-| --- | --- |
-| Connect your data sources | Scans your storefront, recommends connectors, and connects Shopify. See [Connect your data](/get-started/connect-your-data/). |
-| Invite your team | Invites teammates to collaborate on your workspace. |
-
-Select a task to open the setup drawer at that step. The drawer walks you through both tasks in order — **Step 1 of 2** (connect your data sources) and **Step 2 of 2** (invite your team) — and you can skip a step and return to it later. The checklist disappears once you complete or skip both tasks.
+After your store is connected, you land on Home. The **Onboarding** card shows **Connect your store** as done, and its next step is **Connect your ad accounts**. See [Connect your data](/get-started/connect-your-data/), and [Onboarding](/get-started/onboarding/) for every step on the Getting started cards.
 
 ## Troubleshooting
 
 | Problem | Cause and resolution |
 | --- | --- |
-| "Enter a valid store URL, e.g. acme.com" | The address you entered isn't a valid URL. Enter your store's web address, such as `acme.com`, then click **Continue**. |
-| "We couldn't connect that store. Please try again." | Consequential couldn't complete the connection. Wait a moment, then click **Continue** again. |
+| "We couldn't connect that store. Please check the address and try again." | Check the store address, then click **Continue** again. |
+| "Too many attempts — please try again in a moment." | You tried several times in quick succession. Wait a moment, then try again. |
 | "Store already connected" | The store is connected to another workspace. Click **Request access** to join it, or **Try a different URL** to connect a different store. |
 | "We couldn't send that request. Please try again." | Consequential couldn't send your access request. Click **Request access** again. |
 
 <Aside type="note">
-If you have any questions or run into issues, contact the Consequential Support Team at [support@outoftheblue.ai](mailto:support@outoftheblue.ai).
+If you have any questions or run into issues, contact the Consequential Support Team at [support@consequential.io](mailto:support@consequential.io).
 </Aside>
 
 ## Related
 
-- [Connect your data](/get-started/connect-your-data/) — scan your storefront and connect Shopify (step 1 of the finish-setup checklist).
+- [Connect your data](/get-started/connect-your-data/) — connect your ad accounts, Google Analytics 4 and email tool.
+- [Install the Shopify app](/get-started/install-shopify-app/) — the Shopify install in more detail.
 - [How it works](/concepts/how-it-works/) — the mental model behind Consequential's data and metrics.
