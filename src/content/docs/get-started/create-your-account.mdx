@@ -1,68 +1,62 @@
 ---
 title: Create your account and connect your store
-description: Sign up for Consequential, connect your store by its URL, start your free trial, and finish setting up your workspace from the dashboard.
+description: Sign in to Consequential for the first time, connect your store, and pick up the rest of setup from the Getting started cards on Home.
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-This guide walks you through your first run in Consequential: create an account, connect your store by its URL, and land on your dashboard. Consequential starts your free trial and sets up your workspace in the background, so you reach a working dashboard first and complete the rest of setup when you're ready.
+This guide walks you through your first run in Consequential: sign in, connect your store, and land on Home. Consequential starts your free trial and sets up your workspace in the background. The rest of setup is tracked by the **Getting started** cards on Home. See [Onboarding](/get-started/onboarding/).
 
 ## Prerequisites
 
 - A work email address, or a Google account to sign in with.
-- Your store's public website address (for example, `acme.com`).
+- For Shopify: permission to install apps on your store. For other platforms: your store's web address (for example, `acme.com`).
 
-## Sign up
+## Sign in
+
+There is no separate sign-up form. Your account is created the first time you sign in.
 
 <Steps>
 
-1. Go to the Consequential sign-up page.
-2. Sign up with your work email and a password, or click **Continue with Google**.
-3. If you signed up with email, open the verification email Consequential sends you and click the verification link. The link signs you in and takes you to the next step. If you signed up with Google, Consequential verifies your email automatically and takes you straight to the next step.
+1. Go to [app.consequential.io](https://app.consequential.io).
+2. Click **Continue with Google**, or **Log in with SSO** if your company uses single sign-on. Or type your email and click **Email me a sign-in link**.
+3. If you asked for a link, open the email and click the link. It signs you in.
 
 </Steps>
-
-<Aside type="note">
-Didn't receive the verification email? On the sign-up screen, request a new one with the resend option.
-</Aside>
 
 ## Connect your store
 
-After you sign in, Consequential asks **What's your store URL?**
+The first time you sign in, Consequential opens the **Connect your store** dialog.
 
-<Steps>
+- On Shopify, click **Install on Shopify** and approve the app in Shopify.
+- On another platform, click **I'm not on Shopify**, then choose your platform and country and enter your store address.
 
-1. In the **Store URL** field, enter your store's website address (for example, `acme.com`).
-2. Click **Continue**.
-
-</Steps>
+See [Connect your store](/get-started/connect-your-store/) for each step.
 
 What happens next depends on whether your store is already connected to a Consequential workspace:
 
 | Situation | What you see | What to do |
 | --- | --- | --- |
 | Your store is new to Consequential | Consequential sets up your workspace | Continue to [Set up your workspace](#set-up-your-workspace). |
-| Your store belongs to a workspace you're a member of | Consequential opens that workspace | You go straight to its dashboard. |
+| Your store belongs to a workspace you're a member of | Consequential opens that workspace | Nothing. You go straight to it. |
 | Your store belongs to a workspace you're *not* a member of | A **Store already connected** message | [Request access](#request-access-to-an-existing-workspace) or try a different URL. |
-
-<Aside type="note">
-If Consequential can't reach your site, it still connects your store and sets up your workspace. You connect your platforms later from the dashboard.
-</Aside>
 
 ## Set up your workspace
 
-When your store is new, Consequential binds it to your workspace, starts your **free trial**, and provisions your workspace in the background. You see a **Setting up your workspace** screen while this runs, then land on your dashboard.
+When your store is new, Consequential binds it to your workspace, starts your **free trial** and starts loading your data. You land on Home.
 
-Your dashboard is usable right away. While Consequential finishes preparing your data, some areas show a "setting up" state until your first data is ready.
+Home is usable right away. Until your first data load finishes, some pages show that it is still running.
 
-On the dashboard, a **Finish setting up your workspace** checklist tracks the two remaining steps:
+On Home, the **Getting started** cards track the rest of setup:
 
-| Step | What it does |
+| Card | What it covers |
 | --- | --- |
-| **Connect your data sources** | Connect Shopify and your ad and analytics platforms so Consequential can build your dashboards. See [Connect your data](/get-started/connect-your-data/). |
-| **Invite your team** | Invite teammates to your workspace. See [Manage your team](/account-management/manage-your-team/). |
+| **Onboarding** | Connect your store, ad accounts, Google Analytics 4 and email tool, check your data, and our team's review. See [Connect your data](/get-started/connect-your-data/). |
+| **Setup Profile** | Connect an AI assistant, set up your daily report and notifications, invite your team, and pin your key metrics. |
+| **Setup Acquisition tab** | Set your profit margin and grading rules. Shows only when the Acquisition tab is on for your workspace. |
+| **Explore additional features** | Features that are coming soon. |
 
-Both steps are optional and resumable. Skip either one and return to it later — the checklist stays on your dashboard until you complete both, and it remembers your progress across sessions.
+Each card remembers your progress, and you can come back to it at any time. See [Onboarding](/get-started/onboarding/) for every step.
 
 ## Request access to an existing workspace
 
@@ -75,7 +69,7 @@ If your store is already connected to a workspace you don't belong to, Consequen
 
 </Steps>
 
-If you entered the wrong store, click the option to try a different URL and enter the correct address.
+If you entered the wrong store, click **Try a different URL**.
 
 <Aside type="note">
 Workspace owners approve access requests from team management. See [Manage your team](/account-management/manage-your-team/).
@@ -85,21 +79,20 @@ Workspace owners approve access requests from team management. See [Manage your 
 
 You've finished the first run when:
 
-- You can reach your dashboard.
-- The **Finish setting up your workspace** checklist shows your progress on connecting data sources and inviting your team.
-- Your free trial is active.
+- You can reach Home.
+- The **Onboarding** card shows **Connect your store** as done.
 
 ## Troubleshooting
 
 | Problem | Cause and resolution |
 | --- | --- |
-| "Enter a valid store URL, e.g. acme.com" | The address isn't a valid URL. Enter your store's website address without extra characters, for example `acme.com`. |
-| "We couldn't connect that store. Please try again." | Consequential couldn't complete the connection. Wait a moment, then click **Continue** again. |
-| "An account already exists for this email. Log in instead." | You already have a Consequential account with that email. Log in instead of signing up. |
+| "We couldn't connect that store. Please check the address and try again." | Check the store address, then click **Continue** again. |
+| "Too many attempts — please try again in a moment." | You tried several times in quick succession. Wait a moment, then try again. |
 | **Store already connected** | Your store belongs to a workspace you're not a member of. [Request access](#request-access-to-an-existing-workspace) or try a different URL. |
 
 ## Related
 
-- [Connect your data](/get-started/connect-your-data/) — scan your store and connect Shopify and your ad and analytics platforms.
+- [Onboarding](/get-started/onboarding/) — every step on the Getting started cards.
+- [Connect your data](/get-started/connect-your-data/) — connect your ad accounts, Google Analytics 4 and email tool.
 - [Manage your team](/account-management/manage-your-team/) — invite teammates and approve access requests.
 - [How it works](/concepts/how-it-works/) — the mental model behind Consequential's data and metrics.

@@ -35,6 +35,8 @@ export default defineConfig({
 		// Unattributed/Direct half was dropped), so the old slug no longer described it.
 		'/academy/attribution/not-set-and-unattributed/':
 			'/academy/attribution/not-set-in-google-analytics/',
+		// Renamed to "Onboarding" and moved to the top of Get started.
+		'/get-started/find-your-way-around/': '/get-started/onboarding/',
 	},
 	integrations: [
 		sitemap(),
@@ -81,6 +83,7 @@ export default defineConfig({
 					label: 'Get started',
 					items: [
 						{ label: 'Overview', slug: 'get-started/overview' },
+						{ label: 'Onboarding', slug: 'get-started/onboarding' },
 						{ label: 'Create your account and connect your store', slug: 'get-started/create-your-account' },
 						{ label: 'Connect your store', slug: 'get-started/connect-your-store' },
 						{ label: 'Connect your data', slug: 'get-started/connect-your-data' },
@@ -89,7 +92,6 @@ export default defineConfig({
 						{ label: 'Connect Google Analytics 4', slug: 'get-started/connect-ga4' },
 						{ label: 'Install the Shopify app', slug: 'get-started/install-shopify-app' },
 						{ label: 'Add Shopify staff (optional)', slug: 'get-started/add-shopify-staff' },
-						{ label: 'Find your way around the app', slug: 'get-started/find-your-way-around' },
 					],
 				},
 				{

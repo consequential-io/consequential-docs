@@ -1,104 +1,68 @@
 ---
 title: Connect your data
-description: Use guided onboarding to scan your store, see which platforms Consequential detects, and connect Shopify to start your dashboards.
+description: Connect your ad accounts, Google Analytics 4 and email tool from the Onboarding card on Home or from Settings → Connectors.
 ---
 
 import { Steps, Aside } from '@astrojs/starlight/components';
 
-After you connect your store, Consequential helps you connect your data sources. This is **Step 1 of 2** in the setup drawer: from the **Finish setting up your workspace** checklist on your home page, select **Connect your data sources** to open it. In this step, Consequential scans your storefront to detect the platforms and tools you already use, recommends the connectors that power your dashboards, and connects Shopify. This guide shows you how to run the scan, read the recommendations, and connect Shopify.
+After your store is connected, connect the rest of your data: your ad accounts, Google Analytics 4 and your email tool. You can do it from the **Onboarding** card on Home or from **Settings → Connectors**. Both show the same list of sources. Only Owners and Admins can connect data.
 
 ## Prerequisites
 
 - A connected store. See [Connect your store](/get-started/connect-your-store/).
-- Your public store website address (for example, `yourstore.com`).
-- Your Shopify store domain (for example, `your-store.myshopify.com`) and permission to approve app access on that store.
+- The Owner or Admin role in your workspace.
+- Access to the ad, analytics and email accounts you want to connect.
 
-## Scan your website
-
-The scan is an optional shortcut that highlights the connectors you're most likely to need. You can connect without scanning, but scanning saves you from hunting through the full list.
+## Connect from the Onboarding card
 
 <Steps>
 
-1. In the **Connect your data** step, enter your website address in the field (for example, `yourstore.com`).
-2. Click **Scan**.
-3. Wait for the scan to finish. Consequential reads your storefront and looks for the tools you use.
+1. On Home, click the **Onboarding** card.
+2. Click the step you want: **Connect your ad accounts**, **Connect Google Analytics 4** or **Connect your email tool**. A dialog opens with the sources for that step.
+3. Click **Connect** next to the platform you use, and follow the prompts to give Consequential access.
+4. Click **Continue**.
 
 </Steps>
 
-Consequential detects these platforms when their tracking is present on your site:
+| Step | Required | Can you skip it? |
+| --- | --- | --- |
+| Connect your ad accounts | Yes | No |
+| Connect Google Analytics 4 | No | Yes. Click **Skip for now**. |
+| Connect your email tool | No | Yes. Click **Skip for now**. |
 
-| Platform | Category |
-| --- | --- |
-| Shopify | Store platform |
-| Google Analytics 4 | Analytics |
-| Google Ads | Ads |
-| Meta Ads (Facebook) | Ads |
-| TikTok Ads | Ads |
-| Klaviyo | Email |
-
-Each connector that Consequential finds on your site gets a **Detected on your site** badge and moves higher in the recommendations. If Consequential finds your Shopify storefront, it also pre-fills your store domain to speed up the connection.
+A skipped step shows as striped on the card's bar. To bring it back, open the card and click **Undo** next to the step.
 
 <Aside type="note">
-If the scan can't reach your site, Consequential shows a message and you can still connect your platforms from the following list. The scan only promotes recommendations — it never blocks you.
+Until your store is connected, the sources are turned off and the dialog says *"Connect your platform first to enable these."*
 </Aside>
 
-## Read the recommendations
-
-Consequential groups recommended connectors into three tiers so you know what to connect first:
-
-| Tier | Badge | What it means |
-| --- | --- | --- |
-| **Necessary** | Required | Connect these to power your dashboards. |
-| **Recommended** | Recommended | Add these for richer insights. |
-| **Good to have** | Optional | Connect these when you're ready. |
-
-Each connector shows its current status:
-
-| Status | What you see | What it means |
-| --- | --- | --- |
-| Available | **Connect** button | You can connect this platform now. |
-| Connected | **Connected** badge | The platform is connected and active. |
-| On your list | "On your list" | Consequential notes your interest and helps set it up. |
-| Managed setup | "Managed setup — we'll set this up" | Self-serve connection isn't available for this platform. Consequential sets it up for you. |
-
-<Aside type="note">
-In this release, Shopify is the only platform you connect yourself. Your ad and analytics platforms — such as Google Ads, Meta Ads, GA4, TikTok Ads, and Klaviyo — show as **Managed setup**, and Consequential sets them up for you.
-</Aside>
-
-## Connect Shopify
-
-Shopify is a **Necessary** connector, so you connect it to finish this step.
+## Connect from Settings → Connectors
 
 <Steps>
 
-1. On the Shopify card, click **Connect**.
-2. Confirm your Shopify store domain in the **Confirm your Shopify store domain** field. Enter it in the form `your-store.myshopify.com`. If Consequential detected your store during the scan, this field is already filled in.
-3. Click **Continue to Shopify**.
-4. On Shopify, review the access Consequential requests and approve it.
-5. Wait for Shopify to send you back to onboarding. The Shopify card now shows a **Connected** badge.
+1. Click **Settings** at the bottom of the sidebar, then **Connectors**.
+2. Under **Data sources**, find your platform. Use the search box, or page through the list.
+3. Click **Connect**, and follow the prompts to give Consequential access.
 
 </Steps>
 
-## Finish the step
+A connected source shows **Connected** and the date it was connected. **+ Add connection** adds another connection for the same platform, and **Disconnect** removes it. Sources marked coming soon are set up for you by our team.
 
-After you connect Shopify, the **Continue** button becomes active.
+The **Platform** section at the top shows your store. If it says **Disconnected**, click **Reconnect**.
 
-<Steps>
+## After you connect
 
-1. Click **Continue** to move to **Step 2 of 2**, **Invite your team**.
+Each connection marks its step on the Onboarding card as done. Your data takes a while to load the first time. Until it does, Acquisition shows *"No acquisition data yet. Your first refresh is still running."*
 
-</Steps>
-
-Until Shopify is connected, Consequential shows the message *"Connect Shopify to continue. More platforms are coming soon."* and keeps **Continue** disabled. You can also skip this step and return to it later from the **Finish setting up your workspace** checklist on your home page.
+If a source stops updating later, Home shows a data alert, for example *"Your analytics data is not up to date."*, and the step on the Onboarding card shows **Not up to date**.
 
 ## Troubleshooting
 
-| Problem | Cause and resolution |
+| Problem | What to do |
 | --- | --- |
-| The scan returns "We couldn't scan that site" | Consequential couldn't reach your website, or your site doesn't expose tracking it recognizes. Connect your platforms from the following list — the scan isn't required. |
-| "Too many scans — please try again in a moment." | You ran several scans in quick succession. Wait a moment, then scan again. |
-| "That store domain looks invalid." | The Shopify domain isn't in the expected form. Enter it as `your-store.myshopify.com`, then try again. |
-| **Continue** stays disabled | You haven't connected Shopify yet. Connect Shopify to enable **Continue**. |
+| The sources are turned off and say *"Connect your platform first to enable these."* | Connect your store first. See [Connect your store](/get-started/connect-your-store/). |
+| You can't connect anything | Only Owners and Admins can connect data. Ask an Owner or Admin of your workspace. |
+| A data alert says a source is not up to date | Open **Settings → Connectors** and check the source. If your store shows **Disconnected**, click **Reconnect**. |
 
 <Aside type="note">
 If you have any questions or run into issues, contact the Consequential Support Team at [support@consequential.io](mailto:support@consequential.io).
@@ -106,7 +70,7 @@ If you have any questions or run into issues, contact the Consequential Support 
 
 ## Related
 
-- [Connect your store](/get-started/connect-your-store/) — enter your store URL to start onboarding.
-- [Connect Shopify](/get-started/install-shopify-app/) — a standalone version of the Shopify connection steps above.
-- [Overview: connect your platforms](/get-started/overview/) — the full connector list.
+- [Onboarding](/get-started/onboarding/) — every step on the Getting started cards.
+- [Connect your store](/get-started/connect-your-store/) — connect Shopify or another store platform.
+- [Connect Google Analytics 4](/get-started/connect-ga4/)
 - [How it works](/concepts/how-it-works/) — the mental model behind Consequential's data and metrics.
