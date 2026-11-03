@@ -1,0 +1,165 @@
+---
+title: Customize what your report measures
+description: The pillars, sections, and metrics you can put in your daily report — what's available, how to add sections like Top Products, and the current limits on frequency and product breakdowns.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Your daily report is built from a catalog of **pillars**, **sections**, and
+**metrics**. This page is the reference for what that catalog offers: the pillars
+your report is organized into, the sections you can turn on inside each one, the
+metrics a section can show, and the limits that apply today.
+
+For the step-by-step mechanics — where the editor lives, how switches and pickers
+behave, autosave, and plan locks — see
+[Configure and schedule daily reports](/daily-reports/configure-and-schedule-daily-reports/).
+
+## The five pillars
+
+Every section belongs to a **pillar** — a themed group shown with a number from
+`P1` to `P5`. The pillars are fixed; you choose which sections appear inside
+them.
+
+| Pillar | Name | What it covers |
+| --- | --- | --- |
+| **P1** | Revenue & profitability | Top-line sales, margin, and profit health. |
+| **P2** | Profitable acquisition | New-customer acquisition efficiency: spend, CAC, ROAS, and the paths that pay off. |
+| **P3** | Improve conversion | On-site conversion: checkout, cart, product, and quiz funnels. |
+| **P4** | Grow active users | Audience reach and engagement: visitors, sessions, page views, and bounce. |
+| **P5** | LTV growth | Repeat purchase, retention, and lifetime value. |
+
+## Global details
+
+Above the pillars sits a **Global details** group. These sections read across
+every pillar and give you the day's headline story:
+
+- **Headline summary** — a short executive summary of the day across all metrics.
+- **Pillar health** — a status line for each pillar, calling out the weakest.
+- **Key indicators** — your headline metrics and their change versus the
+  comparison baseline.
+- **Top movers & draggers** — the biggest positive and negative movers by change.
+- **Root cause chain** — the causal chain behind the day's biggest change.
+- **Focus areas** — prioritized next actions, each tied to the metric movement
+  that triggered it.
+
+Global details sections are **standard**: they appear as written and don't take
+metric or breakdown choices.
+
+## Sections you can add to each pillar
+
+Inside a pillar, you turn **sections** on or off and — for editable sections —
+choose the metrics they show. The table below lists the editable sections you're
+most likely to see for a Shopify store, grouped by pillar.
+
+| Pillar | Editable sections |
+| --- | --- |
+| **P1** Revenue & profitability | Top Products by sales, Top Products by orders, Channel breakdown |
+| **P2** Profitable acquisition | Conversion funnel by GA4, Conversion funnel by Blotout, Acquisition summary |
+| **P3** Improve conversion | Buyer breakdown, Lifecycle indicators (Klaviyo), Conversion summary |
+
+<Aside type="note">
+	Which sections appear in your editor depends on your plan and on which data
+	sources you've connected. A section whose source isn't connected shows a
+	**Connect** card instead of its metric picker, and a section locked on your
+	plan shows a lock badge. The **Your report** tab in Settings is the source of
+	truth for what you can add today.
+</Aside>
+
+## Put Top Products in your report
+
+The product sections live in the **P1 Revenue & profitability** pillar. There are
+two, so you can show products two ways at once:
+
+- **Top Products by sales** — defaults to total sales.
+- **Top Products by orders** — defaults to orders.
+
+To add one:
+
+<Steps>
+
+1. Open **Settings → Reports → Your report**, on the **Composition** step.
+2. Expand the **Revenue & profitability** pillar.
+3. Turn on **Top Products by sales**, **Top Products by orders**, or both.
+4. On a section you turned on, open its **Metrics** picker and select the metrics
+   to show.
+
+</Steps>
+
+### Metrics you can choose
+
+A product section always slices by **product**, and its picker offers **sales
+metrics**. Among them:
+
+| Metric | What it shows |
+| --- | --- |
+| **Total sales** | Total sales for each product. |
+| **Gross sales** | Sales before discounts and returns. |
+| **Net sales** | Sales after discounts and returns. |
+| **Orders** | Number of orders containing the product. |
+| **Ordered units** | Number of units sold. |
+| **Average order value** | Average value of orders containing the product. |
+
+New-customer and repeat-customer variants of these metrics are available too, so
+you can rank products by the revenue they bring from first-time buyers.
+
+<Aside type="caution">
+	A product section's breakdown is fixed to **product** — you can't switch it to
+	show products by a different dimension. You choose the metrics; the product
+	breakdown stays.
+</Aside>
+
+### Views and inventory aren't available for Top Products
+
+Today the product sections rank products by **sales metrics only**. You can't add
+**product views** or **inventory** to a Top Products section:
+
+- **Views** are measured per session, not per product, so they can't be broken
+  down by product. Funnel-level view metrics (such as PDP views) appear in the
+  **Conversion funnel** sections instead, not against individual products.
+- **Inventory** isn't a report metric. Consequential tracks product inventory in
+  its data, but it isn't selectable in the report editor.
+
+If a view-by-product or inventory-by-product report would help your team, let us
+know at [support@consequential.io](mailto:support@consequential.io) — it helps us
+prioritize.
+
+## Report frequency and comparison
+
+Reports run on a **daily** schedule. Each report covers a single day —
+yesterday — and compares it against one earlier day. There's no weekly or monthly
+cadence: you can turn the daily report on or off and set the time of day it
+sends, but not its frequency.
+
+The one lever over how a day reads is the **Comparison** baseline, set on the
+**Delivery** tab. A steadier baseline reduces the day-to-day swings that a
+low-volume store sees, where a few extra orders can read as a very large
+percentage change. The default, **Year over Year (Retail)**, compares against the same
+weekday one year ago on the NRF 4-5-4 retail calendar, which controls for both
+weekly and seasonal patterns. For the full list of baselines and how to change
+them, see
+[Set the schedule and audience](/daily-reports/configure-and-schedule-daily-reports/#set-the-schedule-and-audience).
+
+<Aside type="note">
+	Each baseline compares one day against one other day. **Week over Week**
+	compares yesterday against the same weekday last week — it doesn't add up a
+	week of sales into a single total. A weekly **aggregate** (a week's totals
+	compared week over week) isn't available today. If your store would read
+	better on weekly totals, tell us at
+	[support@consequential.io](mailto:support@consequential.io).
+</Aside>
+
+## What's not available today
+
+| You might expect | Status |
+| --- | --- |
+| A weekly or monthly report | Not available — reports are daily only. |
+| A weekly aggregate (totals summed over a week) | Not available — every comparison is one day against one day. |
+| Changing a product section's breakdown | Not available — product sections always slice by product. |
+| Top Products by views | Not available — views aren't measured per product. |
+| Top Products by inventory | Not available — inventory isn't a report metric. |
+
+## Related
+
+- [Configure and schedule daily reports](/daily-reports/configure-and-schedule-daily-reports/) — build your report, pick metrics and breakdowns, and set the schedule and recipients.
+- [View and interpret your daily report](/daily-reports/view-and-interpret-your-daily-report/) — open and read the report once it's delivered.
+- [Glossary](/concepts/glossary/) — definitions for the terms used across these docs.
