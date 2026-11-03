@@ -77,6 +77,9 @@ Inside a pillar sit its **sections**: the individual tables and summaries.
 This is the pillar-to-section mapping: every section belongs to one pillar, or
 to **Global details** when it spans all of them.
 
+For the full catalog — the five pillars, the sections you can add to each, and the
+metrics they offer — see [Customize what your report measures](/daily-reports/customize-what-your-report-measures/).
+
 ## What each section shows
 
 Turn a section on or off with its checkbox. Each section is one of two kinds,
@@ -193,14 +196,23 @@ workspace.
 | **Recipients** | The workspace members who receive the report. |
 | **Delivery channels** | Email, Slack, or both. |
 
-The **Comparison** options are:
+Each report covers a single day and is measured against one earlier day. The
+**Comparison** options set which earlier day that is:
 
 | Comparison | Baseline |
 | --- | --- |
-| **Same weekday, last year** | The same day of the week one year ago. The default — it controls for both weekly and seasonal patterns. |
-| **Previous period** | The equivalent stretch of days immediately before the report period. |
-| **Same date, last year** | The same calendar date one year ago. |
-| **Previous day** | The single day before. Use this to track short-term momentum. |
+| **Year over Year (Retail)** | The same weekday one year ago, on the NRF 4-5-4 retail calendar. The default — it controls for both weekly and seasonal patterns. |
+| **Week over Week** | The same weekday one week earlier. |
+| **Year over Year** | The same calendar date one year ago. |
+| **Day over Day** | The day before. Use this to track short-term momentum. |
+
+<Aside type="note">
+	Every baseline compares one day against one other day. A steadier baseline —
+	**Year over Year (Retail)** or **Week over Week** — reduces the day-to-day
+	swings a low-volume store sees, where a few extra orders can read as a very
+	large percentage change. Reports run daily only; there is no weekly or monthly
+	cadence. See [Report frequency and comparison](/daily-reports/customize-what-your-report-measures/#report-frequency-and-comparison).
+</Aside>
 
 <Steps>
 
@@ -232,6 +244,7 @@ The **Comparison** options are:
 
 ## Related
 
+- [Customize what your report measures](/daily-reports/customize-what-your-report-measures/) — the pillars, sections, and metrics you can put in your report, and the current limits.
 - [View and interpret your daily report](/daily-reports/view-and-interpret-your-daily-report/) — open and read the report once it's delivered.
 - [How it works](/concepts/how-it-works/) — the mental model behind Consequential's data and metrics.
 - [Glossary](/concepts/glossary/) — definitions for the terms used across these docs.
