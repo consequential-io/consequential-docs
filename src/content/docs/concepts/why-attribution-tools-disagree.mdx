@@ -53,6 +53,28 @@ The goal isn't to make the tools match. It is to understand which question each 
 - **Anchor totals to Shopify.** Use Shopify for total sales, refunds, and margin — the facts. Use Consequential, GA4, or Triple Whale for *how* those sales happened — the attribution. Expect the totals to tie out and the channel splits not to. Consequential reconciles every platform-claimed conversion against the orders that actually settled in Shopify, so a platform cannot credit itself with a sale that never happened.
 - **Read platform-reported numbers as a separate column.** On the Acquisition Dashboard, every revenue and ROAS figure comes in two forms: what the ad platform reports, and what Consequential attributes under your model. Treat them as two measurements, not as one number and an error.
 
+## Why Consequential's number is the one to trust
+
+The tools all measure something real, but they aren't equally trustworthy for the decision you care about — how much revenue a channel actually drove. Consequential answers that one question:
+
+- **It reconciles to settled orders.** Every platform-claimed conversion is checked against the orders that actually settled in Shopify. Ad platforms grade their own homework and report the number that flatters their spend; Consequential only counts a conversion that ties to a real, settled order, so a channel can't inflate its own results.
+- **It's independent.** Consequential doesn't have ad budget to defend, so it has no reason to over-credit Meta or Google the way each platform over-credits itself.
+- **It uses hard click evidence.** Credit follows the click IDs and UTMs carried on the visit (`gclid`, `fbclid`, and your tags), not a modeled guess about views a shopper may never have seen. That makes the number conservative and repeatable.
+- **It covers paid and organic in one place.** The [Acquisition Dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/) classifies every order — paid, email, organic, direct, and the rest — against the same settled-order base, so you compare channels on one consistent ruler instead of stitching four tools together.
+
+Treat Shopify as the truth for *what* sold and Consequential as the truth for *how* it sold. The other tools are useful cross-checks, not the number you optimize against.
+
+## What you can do about it
+
+Most of the gap between tools comes from signal you can improve. Work through these in order:
+
+1. **Tag every external link.** Give every ad, email, and social link a `utm_source`, `utm_medium`, and `utm_campaign`, using one consistent vocabulary. This is the single biggest lever on attribution quality. See [Understanding UTM tracking](/faq/advertising-best-practices/understanding-utm-tracking/).
+2. **Fix the tagging gaps you already have.** Check how much revenue is arriving with no source attached, and resolve the [`(not set)` and unattributed](/academy/attribution/not-set-in-google-analytics/) causes at the source.
+3. **Turn on order-side attribution.** Under **Settings → Acquisition**, enable order-side attribution so the dashboard shows attributed revenue, CAC, and the new-versus-returning split instead of platform-only numbers.
+4. **Reduce signal loss with the Pixel.** Set up [server-side tracking](/concepts/signal-loss/) so purchases reach the ad platforms even when browser pixels are blocked — this tightens both your reporting and the platforms' optimization.
+5. **Keep every source connected.** A lapsed connection or a broken pixel shows up as a falling **Match rate**. Check your [connected sources](/get-started/connect-your-data/) when numbers drift.
+6. **Pick one model and compare consistently.** Choose last-click or first-click, use the same model and date range across every tool, and judge trends over whole periods rather than single days.
+
 ## When divergence is a real problem
 
 Expected divergence has a cause you can name — a different model, window, or view-through policy. Investigate further when:
