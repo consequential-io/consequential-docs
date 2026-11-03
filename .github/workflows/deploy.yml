@@ -6,7 +6,8 @@ name: Deploy
 # when someone remembered to run `npm run build && wrangler deploy` by hand, so
 # "merged" and "live" were independent facts and PRs sat merged-but-unpublished.
 #
-# Requires one repository secret: CLOUDFLARE_API_TOKEN (see README → Deploy).
+# Requires one repository secret, CLOUDFLARE_API_TOKEN, and one repository
+# variable, PUBLIC_POSTHOG_KEY (see README → Deploy).
 
 on:
   push:
@@ -44,10 +45,21 @@ jobs:
 
       - run: npm ci
 
+      # Without the key the build still succeeds, minus PostHog (see
+      # Analytics.astro). Stop here instead: the live site keeps the previous
+      # deploy, which still has it.
+      - name: Check PostHog key is configured
+        if: ${{ vars.PUBLIC_POSTHOG_KEY == '' }}
+        run: |
+          echo "::error::Repository variable PUBLIC_POSTHOG_KEY is not set (Settings → Secrets and variables → Actions → Variables)."
+          exit 1
+
       # `npm run test` runs the build first, then the markdown-twin contract
       # tests against dist/ — so this both produces the artifact and gates it.
       - name: Build and test
         run: npm run test
+        env:
+          PUBLIC_POSTHOG_KEY: ${{ vars.PUBLIC_POSTHOG_KEY }}
 
       # Invoked directly rather than via cloudflare/wrangler-action. The action
       # bootstraps wrangler with `npx`, which on the runner cannot install

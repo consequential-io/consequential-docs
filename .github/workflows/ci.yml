@@ -28,3 +28,5 @@ jobs:
 
       - name: Build and test
         run: npm run test
+        env:
+          PUBLIC_POSTHOG_KEY: ${{ vars.PUBLIC_POSTHOG_KEY }}

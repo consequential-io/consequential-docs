@@ -71,12 +71,17 @@ The deploy workflow needs a repository secret named **`CLOUDFLARE_API_TOKEN`**:
 
 The account ID is not secret and is set directly in the workflow.
 
+It also needs a repository **variable** (not a secret) named **`PUBLIC_POSTHOG_KEY`**: the
+PostHog project key, the same project consequential.io uses. The key ends up in every page's
+HTML anyway, so a variable is enough. The deploy fails without it rather than publishing a
+site with no PostHog.
+
 ### Deploying by hand
 
 Still supported, and the fallback if Actions is unavailable:
 
 ```bash
-npm run build
+PUBLIC_POSTHOG_KEY=$(gh variable get PUBLIC_POSTHOG_KEY) npm run build
 CLOUDFLARE_ACCOUNT_ID=705a25199f79333ff0e4db56e2078036 npx wrangler deploy
 ```
 
