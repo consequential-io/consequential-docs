@@ -1,0 +1,62 @@
+---
+title: Signal loss, and why it wastes ad spend
+description: Signal loss is the broken feedback loop between your store and the ad platforms. This explains what it is, where it happens, why it drains ad budget, and how Consequential reduces it.
+sidebar:
+  label: Signal loss
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+When a shopper buys, that purchase must travel back to the ad platform that drove them so Meta and Google can learn who actually converts. **Signal loss** is what happens when that message doesn't arrive, arrives late, or arrives incomplete. It's the single issue underneath most "my numbers don't add up" questions, and left unfixed it quietly drains ad budget. This page explains what signal loss is, where it happens, and what Consequential does about it.
+
+## What signal loss is
+
+Optimizing an ad account is a feedback loop. You show ads, some people buy, and the platform needs to know *which* people bought so it can find more like them. That purchase event is the signal.
+
+Signal loss breaks the loop. The order settles in Shopify, but the conversion event never makes it back to the platform cleanly. The platform is then left optimizing toward whatever it *can* still see — clicks, page views, add-to-carts — instead of actual buyers.
+
+## Where it happens
+
+### From your store back to the ad platforms
+
+This is the direction that costs money. A purchase fails to reach Meta or Google because:
+
+- **Browser privacy changes** (Apple's ITP, cookie restrictions) drop the browser-side pixel event.
+- **iOS App Tracking Transparency** limits what in-app browsers and the Meta app can report.
+- **Ad blockers** stop client-side pixels from firing at all.
+- **Consent mode** withholds the event when a shopper declines tracking.
+- **Incomplete pixel implementations** miss the purchase event, fire it twice, or send it without the identifiers the platform needs to match it to a click.
+
+### From the ad platforms back to your store
+
+The reverse gap widens the reporting mismatch. If channel information from Google Analytics or an ad platform isn't wired into Shopify correctly, Shopify never learns which channel drove a sale. Its order attribution then falls back to **Direct** or **Organic** — which is a large part of why Shopify calls an order organic while GA4 calls it paid. See [Why your attribution tools disagree](/concepts/why-attribution-tools-disagree/).
+
+## Why it wastes ad spend
+
+The business impact is direct. When purchase signal is missing, Meta and Google keep optimizing toward proxy signals — clicks, views, add-to-carts — rather than revenue. They serve more ads to people who look busy but don't buy, and they re-serve ads to people who already converted. You pay to reach shoppers who were going to buy anyway, and the platform's reported ROAS drifts further from the revenue that actually settled in Shopify.
+
+Meanwhile, each attribution tool fills the gap with its own model, which is why the same date range reads differently in every tool. The reports aren't the root problem. The broken signal underneath them is.
+
+<Aside type="caution">
+A reporting fix can't repair a measurement problem. If the underlying signal is broken, every report built on top of it keeps telling a different story. Fix the signal first.
+</Aside>
+
+## How Consequential reduces it
+
+Consequential closes the loop in three ways:
+
+- **Pixel — server-side tracking.** Consequential's [Pixel](/how-tos/cdp/how-to-setup-consequential-pixel-cdp/) collects conversions first-party and server-side for your Shopify store, resolves identity, and sends complete conversion data — including Conversions API events — to the ad platforms and other destinations without relying on a tag manager or a browser pixel that privacy controls can block. Because it runs server-side, it survives the browser-level losses described earlier in this topic.
+- **Reconciliation against Shopify.** Consequential checks every platform-claimed conversion against the orders that actually settled in Shopify. Settled orders are the ground truth, so a platform can't inflate your results with conversions that never happened.
+- **UTM Health — tagging audit.** The signal that arrives is only as good as its tags. UTM Health scores your Shopify campaign tagging and shows how much revenue arrived with no source attached, so you can close the gaps that turn paid orders into unattributed ones. See [Understanding UTM tracking](/faq/advertising-best-practices/understanding-utm-tracking/).
+
+<Aside type="note">
+Run Consequential's server-side Pixel **instead of**, not alongside, a second client-side pixel for the same events. Running both sends the purchase twice and inflates your numbers — see [Sync Shopify products to Meta without enabling data sharing](/how-tos/cdp/syncing-products-to-meta-commerce-manager-without-enabling-data-sharing/).
+</Aside>
+
+## Related
+
+- [Why your attribution tools disagree](/concepts/why-attribution-tools-disagree/) — why the same orders read differently in every tool.
+- [Set up the Consequential Pixel (CDP)](/how-tos/cdp/how-to-setup-consequential-pixel-cdp/) — turn on server-side collection for your store.
+- [Upload offline events to the CDP](/how-tos/cdp/offline-events-uploads-to-cdp/) — feed conversions that happen off-site back into the loop.
+- [Understanding UTM tracking](/faq/advertising-best-practices/understanding-utm-tracking/) — keep the signal that does arrive correctly tagged.
+- [Why you see (not set) in your Google Analytics reports](/academy/attribution/not-set-in-google-analytics/) — the tagging gaps that cause unattributed revenue.

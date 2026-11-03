@@ -1,0 +1,72 @@
+---
+title: Why your attribution tools disagree
+description: Consequential, Google Analytics, Triple Whale, and Shopify report different numbers for the same orders. This explains why that divergence is expected, and how to compare tools correctly.
+sidebar:
+  label: Why tools disagree
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Run the same date range through Consequential, Google Analytics, Triple Whale, and Shopify and you get four different pictures of where your sales came from. One tool calls an order paid, another calls it organic, and the revenue each assigns to Meta or Google rarely matches. This page explains why that happens, why it doesn't mean one tool is broken, and how to compare them without chasing numbers that were never meant to agree.
+
+## Each tool measures a different thing
+
+The tools disagree because they answer different questions from different data:
+
+- **Shopify** is the source of truth for **what** happened: which orders were placed, for how much, what was refunded, and your true cost of goods. It isn't an attribution engine. Shopify records a `referring_site` and a landing source for an order, but a shopper who clicks an ad on Monday and returns directly to buy on Thursday often lands in Shopify as **Direct** or **Organic**, because that's how they arrived at checkout — not how they first discovered you.
+- **Google Analytics** measures **sessions and the paths between them**. It attributes an order to the channel of the session it credits, under its own model (GA4 defaults to a data-driven, last-non-direct view). If GA4 saw a click on a paid link, it can call the order paid even when Shopify calls it organic.
+- **Triple Whale** and other attribution tools **reconstruct** the journey from pixel data and their own modeling. Each vendor's model is different, so each reconstructs a different answer.
+- **Consequential** classifies every order into a channel from the click signals on the visit that led to it — the [UTMs](/faq/advertising-best-practices/understanding-utm-tracking/) on the landing URL, the click IDs that Google and Meta add to ad links (`gclid` and `fbclid`), and the visit source Shopify resolves for the order — then assigns credit under the [attribution model](/academy/attribution/attribution-models/) you select. It works from click signals only. It doesn't use raw referrer hostnames or view-through data.
+
+None of these is wrong. They're measuring different events with different rules, so they produce different numbers for the same orders.
+
+## The reasons the numbers diverge
+
+### Attribution model
+
+The model is the rule that decides which touchpoint gets credit. Last-click gives all credit to the final touch before purchase; first-click gives it to the first. Switch a report from last-click to first-click and the same orders move between channels without a single order changing. Consequential lets you pick the model on the [Acquisition Dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/); GA4, Triple Whale, and each ad platform apply their own defaults. Comparing a last-click number in one tool against a data-driven number in another compares two models, not two tools.
+
+### Click credit versus view credit
+
+Ad platforms count **view-through** conversions — someone who saw an ad, didn't click, and bought later. Click-based attribution doesn't. Consequential, like most independent tools, credits clicks only. Meta's own reported revenue is almost always higher than any click-based tool because it's claiming credit for views that other tools never counted.
+
+### Attribution window (in the other tools)
+
+Ad platforms, GA4, and Triple Whale each credit a touchpoint only if the purchase falls inside their lookback window, and those windows differ — a 7-day window and a 28-day window assign the same order to different channels. Consequential doesn't apply a configurable lookback window: it matches an order to a campaign by the click IDs and UTMs carried on the visit. So a difference here is almost always the *other* tool's window at work.
+
+### Deduplication and match rate
+
+Browser pixels and server-side events both report the same purchase, and each tool deduplicates differently. Some orders can't be matched back to any click or view data at all. On the Acquisition Dashboard, **Match rate** shows the share of orders a given ad provider could tie to its own data — the unmatched remainder is exactly where tools diverge most.
+
+### Tagging gaps
+
+When a link reaches your site without clean [UTMs](/faq/advertising-best-practices/understanding-utm-tracking/), each tool guesses the source differently from the referrer, and those guesses rarely agree. Missing or inconsistent tags are the most common reason one tool sees paid where another sees direct or organic. See [Why you see (not set) in your Google Analytics reports](/academy/attribution/not-set-in-google-analytics/).
+
+## How to compare tools correctly
+
+<Aside type="tip">
+The goal isn't to make the tools match. It is to understand which question each one answers, then use the right tool for the right decision.
+</Aside>
+
+- **Compare like for like.** Line up the same attribution model, the same attribution window, and the same date range before you call a gap a problem. Mixing a last-click tool with a data-driven one guarantees a mismatch.
+- **Compare whole periods, not partial ones.** A Consequential window ends yesterday on your store's timezone; a tool showing today's partial data against a full day elsewhere always looks off. See [Date ranges and presets](/concepts/date-ranges/).
+- **Anchor totals to Shopify.** Use Shopify for total sales, refunds, and margin — the facts. Use Consequential, GA4, or Triple Whale for *how* those sales happened — the attribution. Expect the totals to tie out and the channel splits not to. Consequential reconciles every platform-claimed conversion against the orders that actually settled in Shopify, so a platform cannot credit itself with a sale that never happened.
+- **Read platform-reported numbers as a separate column.** On the Acquisition Dashboard, every revenue and ROAS figure comes in two forms: what the ad platform reports, and what Consequential attributes under your model. Treat them as two measurements, not as one number and an error.
+
+## When divergence is a real problem
+
+Expected divergence has a cause you can name — a different model, window, or view-through policy. Investigate further when:
+
+- Shopify's **total** sales do not tie out to the tools (a data or connection issue, not an attribution one).
+- A large share of orders lands in **Unattributed** or **Direct** across every tool at once — usually a [tagging or signal problem](/academy/attribution/not-set-in-google-analytics/) at the source.
+- The **Match rate** for a provider drops suddenly, which points to a broken pixel or a lapsed connection rather than a modeling difference.
+
+For these, start with your tagging and connections, not with the attribution model.
+
+## Related
+
+- [Signal loss, and why it wastes ad spend](/concepts/signal-loss/) — the broken feedback loop underneath most reporting gaps.
+- [Attribution models](/academy/attribution/attribution-models/) — how each model assigns credit.
+- [Understand the Acquisition Dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/) — where attributed and platform-reported numbers sit side by side.
+- [Understanding UTM tracking](/faq/advertising-best-practices/understanding-utm-tracking/) — the one acquisition signal you control.
+- [Why you see (not set) in your Google Analytics reports](/academy/attribution/not-set-in-google-analytics/) — what tagging gaps look like in GA4.
