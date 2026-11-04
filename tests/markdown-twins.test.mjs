@@ -10,8 +10,8 @@
  *
  * Run after `npm run build`:  `node --test tests/markdown-twins.test.mjs`
  *
- * Content negotiation (`Accept: text/markdown` -> `.md`) is configured in
- * `vercel.json` and runs only at the Vercel edge — not exercised here.
+ * There is no content negotiation (`Accept: text/markdown` -> `.md`): the live
+ * site serves HTML for that header, so the link in (1) is how twins get found.
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';

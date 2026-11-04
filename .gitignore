@@ -22,7 +22,6 @@ pnpm-debug.log*
 
 # Playwright MCP browser snapshots/logs
 .playwright-mcp/
-.vercel
 
 # wrangler dev local state
 .wrangler/
