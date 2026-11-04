@@ -94,8 +94,8 @@ Confirm the production API base URL with the Consequential team before you integ
 
 <Steps>
 
-1. **Connect** — call `POST /partner/connect` with the merchant's Shopify shop domain, a display name, and an email.
-2. **Open `redirect_url`** in the merchant's browser. They see the onboarding flow and connect their data sources (Shopify, Meta Ads, Google Ads, etc.).
+1. **Connect** — call `POST /partner/connect` with the merchant's `.myshopify.com` domain, a display name, and an email.
+2. **Open `redirect_url`** in the merchant's browser. This signs them in. If their store hasn't approved the Consequential Shopify app, they go straight to Shopify's install screen. They then connect any other data sources (Meta Ads, Google Ads, etc.) in the product.
 3. **Poll** — call `POST /partner/connect` again periodically (every 30 seconds is a reasonable interval) and check `onboarding_status` until it reads `ACTIVE`.
 4. **Fetch data** — once `onboarding_status` is `ACTIVE`, call `GET /partner/data/acquisition/{view}` to retrieve analytics.
 
@@ -127,6 +127,7 @@ curl -s -X POST "${BASE_URL}/partner/connect" \
 | `onboarding_status` | `CREATED`, `ONBOARDING`, or `ACTIVE` |
 | `redirect_url` | URL to open in the merchant's browser |
 | `is_new_tenant` | Whether this call just created the tenant |
+| `shopify_install_url` | Direct link to Shopify's install screen for this store. Only valid when `shop_domain` is the `.myshopify.com` domain. Prefer `redirect_url`, which signs the merchant in first and sends them to Shopify when needed. |
 
 **`onboarding_status` values:**
 
@@ -139,12 +140,13 @@ curl -s -X POST "${BASE_URL}/partner/connect" \
 **Notes:**
 
 - **Idempotent** — calling Connect again for the same `shop_domain` returns the same tenant; no duplicates are created.
-- **Existing merchants** — if the merchant already uses Consequential, Connect returns their existing account and current status.
+- **Existing merchants** — Connect returns the existing account if this partner already connected it, or if the workspace is still in setup. A workspace that's past setup and has no partner returns `409 SHOP_ALREADY_CONNECTED`. Contact Consequential to link it.
+- **Shopify approval** — no Shopify data loads until the merchant approves the app, so a merchant who skips that step can stay in `ONBOARDING` indefinitely. To bring them back, call Connect again and open the new `redirect_url`, because each one expires after 10 minutes.
 - Rate limited to 60 requests/minute and 1,000/hour per partner credential.
 
 ## Browser login (`GET /partner/login`)
 
-`redirect_url` points at this endpoint. It's a browser-navigation redirect, not something your backend calls directly — the connect token itself is the auth. It verifies the token, sets session cookies (valid 24 hours), and sends the merchant into the product: onboarding if they're new, or the dashboard if `onboarding_status` was already `ACTIVE`.
+`redirect_url` points at this endpoint. It's a browser-navigation redirect, not something your backend calls directly — the connect token itself is the auth. It verifies the token and sets session cookies (valid 7 days). If the store has no active Shopify connection, it then sends the merchant to Shopify's install screen. Otherwise, they land in the product.
 
 ## Step 2: Read acquisition data
 
@@ -174,7 +176,7 @@ The shape set depends on the view you request — the same four shapes aren't re
 
 | View | Shapes returned, in order |
 |---|---|
-| `channels` | `timeseries_current`, `timeseries_previous`, `total_metrics`, `channel_breakdown` |
+| `channels` | `timeseries_current`, `timeseries_previous`, `total_metrics`, `channel_breakdown`, `category_breakdown` |
 | `campaigns` | `campaigns`, `total_metrics`, `performance_distribution`, `grade_distribution`, `match_rates`, `campaign_status_distribution` |
 | `ads` | `ads`, `total_metrics`, `performance_distribution`, `grade_distribution`, `match_rates` |
 | `pages` | `pages`, `total_metrics`, `performance_distribution`, `grade_distribution`, `match_rates` |
@@ -185,7 +187,7 @@ Each shape declares its own `type` and `purpose`:
 |---|---|---|
 | `timeseries_current`, `timeseries_previous` | `TimeSeries` | `temporal_trend` |
 | `total_metrics` | `PeriodComparison` | `aggregate_all` |
-| `channel_breakdown` | `PeriodComparison` | `aggregate_by_dimension` |
+| `channel_breakdown`, `category_breakdown` | `PeriodComparison` | `aggregate_by_dimension` |
 | `campaigns`, `ads`, `pages` | `EntityList` | `raw_data` |
 | `performance_distribution`, `grade_distribution`, `match_rates`, `campaign_status_distribution` | `Distribution` | `aggregate_by_dimension` |
 
@@ -197,12 +199,48 @@ Each shape declares its own `type` and `purpose`:
 `match_rates` returns one row per ad provider instead, each with `ad_provider`, `match_rate`, `match_rate_via_id`, `match_rate_via_name`, `matched_orders`, `matched_via_id`, `matched_via_name`, `unmatched_orders`, and `total_attributed_orders`. The three rate fields are percentages rounded to two decimal places.
 
 <Aside type="note">
-	`channels` is the only view with a daily time series and a channel breakdown. `campaigns`, `ads`, and `pages` return entity rows plus aggregates instead — a daily-by-entity breakdown for those resources isn't built yet.
+	`channels` is the only view with a daily time series and channel and category breakdowns. `campaigns`, `ads`, and `pages` return entity rows plus aggregates instead — a daily-by-entity breakdown for those resources isn't built yet.
 </Aside>
 
 <Aside type="caution">
 	`campaign_status_distribution` is returned for `campaigns` only, and is always empty, with an explanation in its `metadata.note`. Consequential doesn't compute an equivalent campaign-status classification yet, so the categories are reported as empty rather than fabricated.
 </Aside>
+
+### Channel categories and metrics
+
+`channels` has two levels. The **category** is the group, such as `Paid Ads` or `Organic`. The **sub-category** is the source, such as `Google Ads` or `Klaviyo`.
+
+| Shape | How the levels appear |
+|---|---|
+| `timeseries_current`, `timeseries_previous` | `channel` holds the sub-category and `channel_category` holds the category. Each day's `Total` row has `Total` in both. |
+| `channel_breakdown` | `category` holds the sub-category and `parent_category` holds the category. |
+| `category_breakdown` | `category` holds the category. |
+
+`category` isn't unique in `channel_breakdown`, because one source can sit in two categories. `Amazon` can appear under both `Paid Ads` and `Marketplaces`, so key on `parent_category` and `category` together.
+
+`channels` also returns metrics split by new customers (NC) and returning customers (RC). `campaigns`, `ads`, and `pages` don't return these. The row key appears on time series rows, and the label appears in `metrics` on the `PeriodComparison` shapes.
+
+| Row key | Label | Meaning |
+|---|---|---|
+| `ncorders` | NC Orders | Orders from new customers |
+| `rcorders` | RC Orders | Orders from returning customers |
+| `ncrevenue` | NC Revenue | Revenue from new customers |
+| `rcrevenue` | RC Revenue | Revenue from returning customers |
+| `platformrevenue` | Platform Revenue | Platform-reported revenue |
+| `ncroas` | NC ROAS | NC revenue ÷ total spend |
+| `rcroas` | RC ROAS | RC revenue ÷ total spend |
+| `ncaov` | NC AOV | NC revenue ÷ NC orders |
+| `rcaov` | RC AOV | RC revenue ÷ RC orders |
+| `nccvr` | NC CVR | NC orders ÷ clicks |
+| `rccvr` | RC CVR | RC orders ÷ clicks |
+| `nccac` | NC CaC | Total spend ÷ NC orders |
+| `rccac` | RC CaC | Total spend ÷ RC orders |
+
+Three things to know before you chart these:
+
+- `nccvr` and `rccvr` are raw ratios, while `conv` is a percent, so they differ by a factor of 100.
+- A `0` in `cac`, `nccac`, or `rccac` means the channel had no spend, not that customers cost nothing.
+- `nccac` and `rccac` don't add up to `cac`, because both divide total spend. `ncroas` and `rcroas` do add up to `computedroas`, to within rounding.
 
 ## Error responses
 
@@ -236,7 +274,7 @@ Codes shared by both endpoints:
 |---|---|---|
 | 400 | `INVALID_SHOP_DOMAIN` | Invalid shop domain format |
 | 403 | `EMAIL_CONFLICT` | Email already associated with a different tenant |
-| 409 | `SHOP_ALREADY_CONNECTED` | This shop is already connected through a different partner integration |
+| 409 | `SHOP_ALREADY_CONNECTED` | This shop belongs to a different partner, or to an existing workspace that's past setup |
 | 500 | `PARTNER_CONNECT_ERROR` | Connect couldn't complete. Retry; the endpoint is idempotent. |
 
 **Data:**

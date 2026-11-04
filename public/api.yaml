@@ -2670,9 +2670,10 @@ paths:
       summary: Connect a merchant (find-or-create tenant)
       description: |
         Finds or creates a Consequential tenant for the given shop and a user
-        for the given email, grants that user an OWNER membership, and mints
-        a 10-minute one-time connect token. Send the merchant's browser to
-        `redirect_url` next — see `GET /partner/login`.
+        for the given email, adds that user to the tenant (OWNER if it has no
+        owner yet, otherwise ADMIN), and mints a 10-minute one-time connect
+        token. Send the merchant's browser to `redirect_url` next — see
+        `GET /partner/login`.
 
         Rate limits: 60 requests/minute and 1,000/hour per partner credential.
       security: [{ partnerBasicAuth: [] }]
@@ -2707,10 +2708,11 @@ paths:
                           onboarding_status: { type: string, enum: [CREATED, ONBOARDING, ACTIVE], description: "CREATED: brand new tenant. ONBOARDING: exists but not yet data-ready. ACTIVE: ready to serve GET /partner/data." }
                           redirect_url: { type: string, format: uri, description: "Send the merchant's browser here to complete login." }
                           is_new_tenant: { type: boolean }
+                          shopify_install_url: { type: string, format: uri, description: "Direct link to Shopify's install screen for this store. Only valid when shop_domain is the .myshopify.com domain. Prefer redirect_url, which signs the merchant in first and sends them to Shopify when needed." }
         "400": { description: INVALID_SHOP_DOMAIN, content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
         "401": { description: "INVALID_CREDENTIALS — bad or missing partner Basic auth", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
         "403": { description: "EMAIL_CONFLICT — the email is already associated with a different tenant", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
-        "409": { description: "SHOP_ALREADY_CONNECTED — this shop is already connected through a different partner integration", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
+        "409": { description: "SHOP_ALREADY_CONNECTED — this shop belongs to a different partner, or to an existing workspace that's past setup", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
         "429": { description: RATE_LIMIT_EXCEEDED, content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
   /partner/login:
     get:
@@ -2718,10 +2720,11 @@ paths:
       summary: Exchange a connect token for a real session
       description: |
         Public browser-navigation endpoint — the connect token itself is the
-        auth, there's no partner Basic auth on this leg. Verifies the token,
-        sets session cookies, and redirects into the product (`/home` if the
-        merchant's workspace is already named, otherwise
-        `/onboarding/workspace`). Not something a partner's backend calls
+        auth, there's no partner Basic auth on this leg. Verifies the token and
+        sets session cookies. If the store has no active Shopify connection,
+        redirects to Shopify's install screen. Otherwise redirects into the
+        product (`/home` if the merchant's workspace is already named,
+        otherwise `/onboarding/workspace`). Not something a partner's backend calls
         directly — it's the destination of `connect`'s `redirect_url`, opened
         in the merchant's own browser.
       security: []
@@ -2732,7 +2735,7 @@ paths:
           schema: { type: string }
       responses:
         "302":
-          description: Redirects into the product with session cookies set, or to `/login?error=...` (token_expired / invalid_token / user_not_found / tenant_not_found) on failure.
+          description: "Redirects to Shopify's install screen or into the product with session cookies set, or to `/login?error=...` (token_expired / invalid_token / session_revoked / user_not_found / tenant_not_found) on failure."
   /partner/data/acquisition/{view}:
     get:
       tags: [Partner Integrations]
@@ -2742,17 +2745,8 @@ paths:
         uses, scoped to a tenant previously connected by this partner
         credential. **Returns a different envelope than the rest of this
         API** — `{ success, metadata, shapes }`, not `SuccessEnvelope` — to
-        match the documented partner integration contract:
-        `shapes` is always an array of exactly 4 objects, in this order:
-        `timeseries_current`, `timeseries_previous`, `total_metrics`,
-        `channel_breakdown`.
-
-        **Fidelity note**: `channels` has full real daily fidelity. For
-        `campaigns`/`ads`/`pages`, `total_metrics` is real but
-        `timeseries_current`/`timeseries_previous`/`channel_breakdown` are
-        currently returned empty (with a `metadata.note` explaining why) — a
-        true daily-by-entity breakdown for those resources has cost/perf
-        implications that aren't scoped yet.
+        match the documented partner integration contract. The shapes in
+        `shapes` depend on the view; see that field below.
 
         Rate limits: 60 requests/minute and 1,000/hour per partner credential.
       security: [{ partnerBasicAuth: [] }]
@@ -2805,18 +2799,18 @@ paths:
                       The shape set is specific to the requested view — it is not the same four
                       shapes for every resource. Match on `id` rather than array position or length.
 
-                      - `channels`: timeseries_current, timeseries_previous, total_metrics, channel_breakdown
+                      - `channels`: timeseries_current, timeseries_previous, total_metrics, channel_breakdown, category_breakdown
                       - `campaigns`: campaigns, total_metrics, performance_distribution, grade_distribution, match_rates, campaign_status_distribution
                       - `ads`: ads, total_metrics, performance_distribution, grade_distribution, match_rates
                       - `pages`: pages, total_metrics, performance_distribution, grade_distribution, match_rates
 
-                      Only `channels` returns a daily timeseries and a channel breakdown.
+                      Only `channels` returns a daily timeseries and channel and category breakdowns.
                       `campaign_status_distribution` is campaigns-only and is always empty, with
                       an explanation in its `metadata.note`.
                     items:
                       type: object
                       properties:
-                        id: { type: string, enum: [timeseries_current, timeseries_previous, total_metrics, channel_breakdown, campaigns, ads, pages, performance_distribution, grade_distribution, match_rates, campaign_status_distribution] }
+                        id: { type: string, enum: [timeseries_current, timeseries_previous, total_metrics, channel_breakdown, category_breakdown, campaigns, ads, pages, performance_distribution, grade_distribution, match_rates, campaign_status_distribution] }
                         type: { type: string, enum: [TimeSeries, PeriodComparison, EntityList, Distribution] }
                         purpose: { type: string, enum: [temporal_trend, aggregate_all, aggregate_by_dimension, raw_data] }
                         native: { type: boolean }
@@ -2824,7 +2818,7 @@ paths:
                         aggregation: { type: object }
                         data:
                           type: array
-                          description: "TimeSeries shapes: rows of {date, channel, revenue, spend, orders, computedroas, platformroas, cac, ctr, conv, clicks, impressions}. PeriodComparison shapes: rows of {category, metrics: {<Metric Label>: {current, previous, change, accent}}}. EntityList shapes: the view's own entity rows. performance_distribution/grade_distribution: rows of {category, count, percentage}, zero-filled for every declared category. match_rates: one row per ad provider, with {ad_provider, match_rate, match_rate_via_id, match_rate_via_name, matched_orders, matched_via_id, matched_via_name, unmatched_orders, total_attributed_orders}."
+                          description: "TimeSeries shapes: rows of {date, channel, channel_category, revenue, spend, orders, computedroas, platformroas, cac, ctr, conv, clicks, impressions, ncorders, rcorders, ncrevenue, rcrevenue, platformrevenue, ncroas, rcroas, ncaov, rcaov, nccvr, rccvr, nccac, rccac}. PeriodComparison shapes: rows of {category, parent_category (channel_breakdown only), metrics: {<Metric Label>: {current, previous, change, accent}}}. EntityList shapes: the view's own entity rows. performance_distribution/grade_distribution: rows of {category, count, percentage}, zero-filled for every declared category. match_rates: one row per ad provider, with {ad_provider, match_rate, match_rate_via_id, match_rate_via_name, matched_orders, matched_via_id, matched_via_name, unmatched_orders, total_attributed_orders}."
                           items: { type: object }
         "400": { description: INVALID_SHOP_DOMAIN, content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
         "401": { description: "INVALID_CREDENTIALS — bad or missing partner Basic auth", content: { application/json: { schema: { $ref: "#/components/schemas/PartnerErrorEnvelope" } } } }
