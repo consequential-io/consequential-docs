@@ -80,9 +80,8 @@ npm run build
 CLOUDFLARE_ACCOUNT_ID=705a25199f79333ff0e4db56e2078036 npx wrangler deploy
 ```
 
-Note a `vercel.json` also exists in this repo. It is **not** the deploy path — its PR checks
-fail for unrelated account reasons ("Account is blocked") on every PR, and should be
-disconnected so a red check means something.
+Vercel is not part of the deploy. A red `Vercel` check on a PR comes from a leftover GitHub
+connection and says nothing about the PR.
 
 ## Editing content
 
