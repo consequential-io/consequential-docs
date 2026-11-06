@@ -1,0 +1,115 @@
+---
+title: Act on opportunities and track your value
+description: Find the campaigns, discount codes, and landing pages Consequential flags as wasted spend, mark the ones you fix, and track the value you recover.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Consequential reviews your campaigns, discount codes, and landing pages and flags the spots where you could keep money that is leaking today. Each flag is an **opportunity**. When you fix one, you mark it as done and Consequential measures what changed, so the **Value** page shows what you have recovered over time.
+
+<Aside type="note">
+Opportunities and Value are rolling out to workspaces gradually. If the **What we found for you** card and the Value page aren't in your workspace yet, they appear once the feature is enabled for your account.
+</Aside>
+
+## Prerequisites
+
+- A connected Shopify store and at least one connected ad datasource.
+- Consequential's daily data pipeline needs to have run so there is enough history to review your campaigns, discount codes, and landing pages.
+- The feature must be enabled for your workspace. Until it is, the Value page and the opportunities list are not available.
+
+## How a recovery works
+
+<Steps>
+
+1. Consequential reviews your last 30 days and lists each opportunity it finds.
+2. You act on an opportunity in your store or ad platform — for example, you turn off an unprofitable campaign.
+3. You mark the opportunity as done with the **I did this** button.
+4. Consequential measures the result over about the next 30 days and records what you recovered on the Value page.
+
+</Steps>
+
+## What Consequential looks for
+
+Each opportunity falls into one of three types:
+
+| Type | What it flags |
+| --- | --- |
+| **Campaign** | Campaigns that cost more than they return — for example, a campaign whose attributed orders are worth far less than your store average. |
+| **Discount code** | Discount codes that cost more than the margin they bring in. |
+| **Landing page** | Landing pages that get traffic but don't convert. |
+
+## Review your opportunities
+
+Your email digest links to the **Opportunities** page, where each opportunity appears as its own row. If a row was in one of your emails, it shows the date it was sent.
+
+The **What you could keep** header at the top of the page summarizes the list:
+
+- The total you could keep, based on the last 30 days. This is a single amount or a range.
+- **You kept &lt;amount&gt; so far**, once you have recovered value from earlier opportunities.
+- A **trial goal** progress bar, if your workspace is on a trial.
+- A note on how the total is capped: Consequential counts at most a set share of your ad spend plus a set share of your revenue, so the figure stays conservative.
+
+Each row shows the opportunity type, a short title, a plain-language explanation, and the amount — a single figure for the clearest opportunities, or a range. Small opportunities below the workspace floor are not listed on their own; the page tells you when that is the case.
+
+## Mark an opportunity as done
+
+When you have acted on an opportunity in your store or ad platform:
+
+<Steps>
+
+1. Open the **Opportunities** page or the **Value** page.
+2. Find the opportunity you acted on.
+3. Select **I did this**.
+
+</Steps>
+
+Consequential confirms with **Marked as done. We measure the result over the next 30 days.** From then on, the opportunity moves from **Open** to **Measuring**, and Consequential tracks whether the change recovered the value it estimated.
+
+<Aside type="caution">
+Only mark an opportunity as done after you have made the change. The button starts a 30-day measurement — it does not make the change in your store or ad platform for you.
+</Aside>
+
+## Track your recovered value
+
+The home page shows a **What we found for you** card with your headline figures. Select **See your value** to open the Value page.
+
+### What the figures mean
+
+The **What this is worth** section shows up to three figures. A figure is hidden when there is nothing to show for it.
+
+| Figure | What it tells you |
+| --- | --- |
+| **Found so far** | The total value Consequential has found you could keep. |
+| **Recovered** | The value you have actually recovered from opportunities you marked as done. |
+| **Open now** | The value, per month, still sitting in opportunities you haven't acted on. |
+
+### Everything we found
+
+Below the figures, **Everything we found** lists every opportunity with its current state. Open opportunities keep an **I did this** button so you can mark them from this page too.
+
+| State | Meaning |
+| --- | --- |
+| **Open** | Found, but not yet acted on. |
+| **Measuring** | You marked it done and Consequential is measuring the result. |
+| **Recovered** | The change recovered value. |
+| **Dismissed** | Set aside and no longer counted. |
+| **Snoozed** | Hidden for now and due to return later. |
+| **Expired** | No longer current. |
+| **Hidden** | Not shown as a standalone opportunity. |
+
+## Your plan
+
+The Value page shows a **Your plan** section based on your current plan:
+
+- **On a trial** — the date your trial ends, with a prompt to keep Consequential so it keeps finding opportunities for you.
+- **On the free plan** — a prompt to upgrade so you can act on opportunities with Consequential.
+- **On a paid plan** — a summary of how much value you are tracking in open opportunities each month and how much you have recovered so far.
+
+## Troubleshooting
+
+| Problem | Cause and resolution |
+| --- | --- |
+| The Value page or Opportunities page sends you back home | The feature isn't enabled for your workspace yet, or your account doesn't have access. It appears once the feature is enabled for you. |
+| **No opportunities yet** | Consequential is still reviewing your campaigns, discount codes, and landing pages. New opportunities appear here as they are found. |
+| **Nothing to show yet** on the Value page | Consequential is still reviewing your store. Figures appear once there is something to report. |
+| An opportunity won't mark as done | If it is already done, the page tells you so and refreshes. If it failed to save, try again. |
