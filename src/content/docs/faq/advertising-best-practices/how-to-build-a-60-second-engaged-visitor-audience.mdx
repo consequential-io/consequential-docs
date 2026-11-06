@@ -1,0 +1,345 @@
+---
+title: How to build a 60-second engaged visitor audience (GA4 → Google Ads)
+description: Build a Google Ads list of people who spent more than 60 seconds actively on your website, using a Tag Manager timer or a no-code GA4 audience.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+## Which option to pick
+
+This guide builds a list of people who spent more than 60 seconds actively on your website, so you can show them ads in Google Ads. There are two ways to do it. Pick one, or do both.
+
+|  | Option A: Tag Manager timer | Option B: GA4 engagement count |
+| --- | --- | --- |
+| What it measures | Total active time in one browser tab, all pages added together | How many times the visitor moved between pages or returned to the site in one visit |
+| Matches "60 seconds in a session"? | Yes, while the visitor stays in one tab | No. It measures browsing depth, not time. A visitor who reads one page for two minutes is missed |
+| Effort | About 30 minutes, one small code snippet to paste | About 10 minutes, no code |
+| Waiting time before the list fills | A few hours after publishing | Immediate in GA4; up to 72 hours to fill in Google Ads |
+| Best for | The main retargeting list | A quick extra list, or if you cannot edit Tag Manager |
+
+If you only do one, do Option A. Option B is included because it needs no code and can be live today, but it measures a different thing.
+
+## Before you start
+
+Check each item. If any is missing, the audience will either not build or will not reach Google Ads.
+
+- You can sign in to Google Analytics (GA4) with Editor or Marketer access for your website's property
+- You can sign in to the Google Ads account that advertises the website
+- Google Analytics is linked to Google Ads: in GA4 go to **Admin**, then **Product links**, then **Google Ads links**. The link must exist and "Enable Personalized Advertising" must be on
+- Google signals is on: in GA4 go to **Admin**, then **Data collection and modification**, then **Data collection**. Switch on Google signals data collection
+- For Option A only: you can sign in to Google Tag Manager with Publish access, and the Tag Manager container is installed directly in your website's page code (on Shopify, in the theme, not only as a custom pixel). If you are unsure, open your website, right-click, choose **View page source**, and search for `googletagmanager.com/gtm.js`. If it is there, you are fine
+
+<Aside title="A note on list sizes">
+Google Ads only shows ads to a list once it is big enough. [Google's minimum](https://support.google.com/google-ads/answer/7558048?hl=en) is 100 people active in the last 30 days on each of Display, Search and YouTube. Each network counts separately: for example, a person only counts toward a Search list if they used Google Search in that time, so a list can be big enough for Display and still too small for Search.
+
+Until the list is big enough, you can still add it as an "observation" audience on Search and Shopping, and as an audience signal in Performance Max. Neither one limits who sees your ads.
+</Aside>
+
+## Option A: Tag Manager timer (recommended)
+
+You will add a small timer to the website. It quietly counts the seconds a visitor spends with your site open and in front of them. When the count reaches 60, it sends one signal called `engaged_60s` to Google Analytics. Each visitor can only send it once per visit.
+
+The count is kept per browser tab, so a page opened in a new tab starts again from zero.
+
+### Step 1. Open Tag Manager
+
+Go to [tagmanager.google.com](https://tagmanager.google.com) and open the container for your website. You will see a left-hand menu with **Tags**, **Triggers** and **Variables**.
+
+### Step 2. Create the timer tag
+
+<Steps>
+
+1. Click **Tags** in the left menu, then **New**.
+2. Click the pencil in the box labeled "Tag Configuration" and choose **Custom HTML**.
+3. Copy the whole block below and paste it into the HTML box. Do not change anything inside it.
+
+   ```html
+   <script>
+   (function(){
+     try {
+       var KEY='eng_seconds', FLAG='eng_60_sent', TARGET=60;
+       if (sessionStorage.getItem(FLAG)) return;
+       var s = parseInt(sessionStorage.getItem(KEY) || '0', 10);
+       var t = setInterval(function(){
+         if (document.visibilityState !== 'visible') return;
+         s++; sessionStorage.setItem(KEY, s);
+         if (s >= TARGET) {
+           clearInterval(t);
+           sessionStorage.setItem(FLAG, '1');
+           window.dataLayer = window.dataLayer || [];
+           window.dataLayer.push({ event: 'engaged_60s', engaged_seconds: s });
+         }
+       }, 1000);
+     } catch(e) {}
+   })();
+   </script>
+   ```
+
+4. Scroll down to the box labeled "Triggering" and click it. Choose **All Pages**.
+5. At the top, click the name "Untitled Tag" and rename it to `Engagement timer 60s`.
+6. Click **Save**.
+
+</Steps>
+
+### Step 3. Create the trigger that listens for the signal
+
+<Steps>
+
+1. Click **Triggers** in the left menu, then **New**.
+2. Click the box labeled "Trigger Configuration" and choose **Custom Event** (under the "Other" heading).
+3. In the "Event name" field type exactly: `engaged_60s`
+4. Leave "This trigger fires on" set to All Custom Events.
+5. Rename it at the top to `CE - engaged_60s` and click **Save**.
+
+</Steps>
+
+### Step 4. Create the tag that sends the signal to Google Analytics
+
+<Steps>
+
+1. Click **Tags**, then **New**.
+2. Click "Tag Configuration" and choose **Google Analytics: GA4 Event**.
+3. In "Measurement ID" enter your GA4 ID. It starts with G- and you can find it in GA4 under **Admin**, then **Data streams**, then your website stream. If the field offers a dropdown of existing Google tags instead, pick the existing one.
+4. In "Event Name" type exactly: `engaged_60s`
+5. Click the "Triggering" box and choose the trigger you just made, `CE - engaged_60s`.
+6. Rename the tag to `GA4 - engaged_60s` and click **Save**.
+
+</Steps>
+
+### Step 5. Test it before going live
+
+<Steps>
+
+1. Click the **Preview** button at the top right of Tag Manager.
+2. Enter your website address (for example `https://www.yourstore.com`) and click **Connect**. The store opens in a new tab with a small "Tag Assistant connected" badge.
+3. Browse normally for about 70 seconds. Open two or three product pages in the same tab and keep that tab in front of you.
+4. Go back to the Tag Assistant tab. In the left-hand list of events you should see one line called `engaged_60s`. Click it. Under "Tags fired" you should see `GA4 - engaged_60s`.
+5. Now reload a page on the store. Check that `engaged_60s` does **not** appear a second time. If it only appears once, the test has passed.
+6. If it does not appear at all, see [Troubleshooting](#troubleshooting) below.
+
+</Steps>
+
+### Step 6. Publish
+
+<Steps>
+
+1. Close the preview and click **Submit** at the top right.
+2. In "Version Name" type: `Add engaged_60s engagement event`
+3. Click **Publish**. The timer is now live on the store.
+
+</Steps>
+
+### Step 7. Wait, then build the audience
+
+Google Analytics needs to receive the signal at least once from a real visitor before the name `engaged_60s` appears in its menus. This usually takes a few hours. Then continue to [Building the audience in GA4](#building-the-audience-in-ga4-and-checking-it-in-google-ads) below and use the name `engaged_60s`.
+
+## Option B: GA4 engagement count (no code)
+
+Google Analytics sends a signal called `user_engagement` once a page has been in focus for at least a second, typically as a visitor moves to another page or switches away from your site. Counting those signals within one visit gives a rough measure of how much a visitor browsed. It is not a 60-second measure, but it needs no code and can be built in ten minutes.
+
+If you need the real 60-second definition, use Option A.
+
+### Step 1. Start from the ready-made template
+
+<Steps>
+
+1. Go to [analytics.google.com](https://analytics.google.com) and open your website's property.
+2. Click **Admin** (the cog at the bottom left), then under "Data display" click **Audiences**.
+3. Click **New audience**.
+4. Under "Suggested audiences" open the **General** group and click **Recently active users**. The template opens with a condition row already showing `user_engagement`. (You must start from this template. If you search for `user_engagement` in a blank audience, it does not appear.)
+
+</Steps>
+
+### Step 2. Set the condition
+
+<Steps>
+
+1. Next to `user_engagement`, click **Add parameter**, open **Other** and click **Event count**.
+2. Set Condition to **>** and the value to `5`. Leave "Time period" as it is. Click **Apply**.
+3. Click the small person icon at the top right of the condition box. Choose **Within the same session**. This makes the count apply to a single visit.
+4. Look at the "Summary" panel on the right. It shows how many people would have qualified in the last 30 days and what share of all visitors that is. Aim for roughly 5 to 15 percent of visitors. If the share is above 20 percent, raise the value to 7 or 8. If it is below 100 people, lower it to 3 or 4.
+
+</Steps>
+
+### Step 3. Finish the audience
+
+Continue with the [exclusions, duration and name](#for-both-options-exclusions-duration-and-name) steps in the next section. Use the Option B name given there.
+
+### Step 4. Validate the threshold before relying on it
+
+The value of 5 is a starting point, not a rule. The right number depends on your site: a store with long product pages needs a lower count than a blog where visitors click through many short pages. Run this check once to find your number, and repeat it if traffic patterns change.
+
+<Steps>
+
+1. In GA4 click **Explore** in the left menu, then **Blank**.
+2. In the "Variables" column, next to "Segments" click **+**. Scroll to the suggested segments at the bottom and under **General** click **Recently active users**. (As with the audience, searching for `user_engagement` will not find it.)
+3. At the top of the segment builder change the type to **Session segment**.
+4. Next to `user_engagement` click **Add parameter**, open **Other**, click **Event count**, set **> 5**, click **Apply**. Name the segment `Engaged 5 plus` and click **Save and apply**.
+5. Click **+** next to "Metrics" and tick: Sessions, Average engagement time per session, Views per session, Engaged sessions, Key events, Session key event rate. Click **Import**.
+6. Drag `Engaged 5 plus` and the default `All Users` into **Segment comparisons** in the "Settings" column. Drag each metric into **Values**. Set the date range to the last 30 days.
+
+</Steps>
+
+Read the table like this:
+
+| Metric | What a good threshold shows for the Engaged segment |
+| --- | --- |
+| Average engagement time per session | Over 60 seconds, and clearly above All Users |
+| Views per session | 3 or more |
+| Session key event rate | Higher than All Users |
+| Sessions | At least 100 in the 30 days |
+
+If engagement time is under 60 seconds, raise the count to 7 and re-run. If sessions are under 100, lower it to 3 or 4 and re-run. When the segment passes, set the same count in the saved audience and update the audience name to match, for example `GA4_Engaged7plus_90d_NonBuyers`.
+
+After the audience has been saved for 24 to 48 hours, a second check is available under **Reports**, then **User**, then **Audiences**. The audience appears as a row; its engagement time should sit well above the All Users row and its purchase key events should be at or near zero. This report only counts people who joined after the audience was created, so it starts small and grows.
+
+## Building the audience in GA4 and checking it in Google Ads
+
+### For Option A: create the audience
+
+<Steps>
+
+1. In GA4 click **Admin**, then under "Data display" click **Audiences**.
+2. Click **New audience**, then **Create a custom audience**.
+3. Click **Add new condition**. In the search box type `engaged_60s` and click it when it appears under Events. (If it does not appear, the timer has not yet sent its first signal. Wait a few hours and try again.)
+4. Click **Add parameter**, open **Other**, click **Event count**. Set Condition to **≥** and value to `1`. Click **Apply**.
+5. Leave the scope (person icon, top right of the box) on **Across all sessions**.
+
+</Steps>
+
+### For both options: exclusions, duration and name
+
+<Steps>
+
+6. Click **Add group to exclude**.
+7. Click **Add new condition**, type `purchase` and select it. Click **Add parameter**, open **Other**, click **Event count**, set **≥ 1**, click **Apply**.
+8. Just above the exclusion box there is a dropdown that reads "Exclude from audience temporarily". Change it to **Exclude from audience permanently**. This keeps past buyers out of the list for good.
+9. On the right under "Membership duration", select the first option and type `90` days. Do not use "Set to maximum limit".
+10. At the top, click the audience name and rename it. Use:
+    - Option A: `GA4_Engaged60s_90d_NonBuyers`
+    - Option B: `GA4_Engaged5plus_90d_NonBuyers`
+11. In the description box write one line, for example: `Visitors with 60+ seconds active time, excluding buyers. Built per the engaged audience guide.`
+12. Check the "Summary" panel on the right. It estimates how many people would have qualified in the last 30 days. Anything from roughly 100 upward is workable. Zero means the data is not there yet.
+13. Click **Save**.
+
+</Steps>
+
+<Aside type="caution">
+Do not mark `engaged_60s` as a key event. It is a behavior signal, not a conversion, and marking it would distort the conversion reports.
+</Aside>
+
+### Check it arrived in Google Ads
+
+<Steps>
+
+1. Wait for the list to fill. Google says a new list can take [48 to 72 hours](https://support.google.com/google-ads/answer/7558048?hl=en) to fully populate.
+2. In Google Ads click **Tools**, then **Shared library**, then **Audience manager**.
+3. Look for the audience name from step 10. The "Source" column will say Google Analytics (GA4).
+4. The size columns show how many people are on the list for each network. These numbers are usually lower than the GA4 estimate. That is normal.
+5. If a size shows "Too small to serve", the list cannot be targeted on that network yet. It can still be added as an observation audience or as a Performance Max signal.
+
+</Steps>
+
+## Using the audience in Google Ads
+
+The list can be used in three ways. Which one applies depends on the campaign type and on how big the list is.
+
+| Use | What it does | Campaign types | Minimum list size |
+| --- | --- | --- | --- |
+| Observation | Ads keep showing to everyone. Google reports how the list performs separately, and you can bid more for it where your bid strategy allows | Search, Shopping | No published minimum |
+| Audience signal | Tells Performance Max what a good visitor looks like. It is a hint, not a restriction | Performance Max | No published minimum |
+| Targeting | Ads show only to people on the list | Display, Demand Gen (and Search or Shopping once large enough) | 100 active in the last 30 days on that network, per Google's figures for Display, Search and YouTube |
+
+Start with Observation and Audience signal. Only move to Targeting on Search or Shopping once the list is well over the minimum, ideally 1,000 or more, and has proved it converts better.
+
+### Step 1. Find the list
+
+<Steps>
+
+1. In Google Ads click **Tools** in the left menu, then **Shared library**, then **Audience manager**.
+2. Find the audience by the name you gave it in GA4. Check the "Size" columns. "Too small to serve" against a network means Targeting is not yet possible there; Observation and Audience signal still work.
+
+</Steps>
+
+### Step 2. Add it as an Observation on Search and Shopping
+
+<Steps>
+
+1. Click **Campaigns** in the left menu and open the Search or Shopping campaign.
+2. Click **Audiences, keywords and content**, then **Audiences**.
+3. Click **Edit audience segments** (the pencil). Choose the campaign level.
+4. Make sure **Observation** is selected, not Targeting.
+5. Click **Browse**, open **How they have interacted with your business**, then **Website visitors**, tick your list, and click **Save**.
+6. Repeat for each Search and Shopping campaign you want to measure it on.
+
+</Steps>
+
+Nothing changes for the visitor yet. Google simply starts reporting the list as its own row in the Audiences table.
+
+### Step 3. Add it as an Audience signal in Performance Max
+
+<Steps>
+
+1. Open the Performance Max campaign and click **Asset groups**.
+2. On the asset group click **Edit**, scroll to **Audience signal**, and click **Add** (or the pencil if one exists).
+3. Under **Your data**, tick your list and click **Save**.
+
+</Steps>
+
+### Step 4. Add it as Targeting on Display or Demand Gen (list over 100)
+
+<Steps>
+
+1. Open the campaign, click **Audiences, keywords and content**, then **Audiences**.
+2. Click **Edit audience segments**, pick the ad group, and choose **Targeting**.
+3. Browse to **Website visitors**, tick your list, and click **Save**.
+4. Give this ad group its own budget and creative aimed at returning visitors, for example a reminder of what they looked at or a first-order offer.
+
+</Steps>
+
+### Step 5. Read the results and decide on a bid adjustment
+
+<Steps>
+
+1. After 30 days, open the campaign's **Audiences** table. Your list appears as a row alongside "All" or "Other".
+2. Compare **Conv. rate** and **Cost / conv.** for the list against the campaign total.
+3. If the list converts noticeably better (as a rule of thumb, 30 percent or more above the total), add a bid adjustment: in the row's **Bid adj.** column enter **+20%** to start. Review again after another 30 days and move in steps of 10 percent.
+4. If it converts the same or worse, leave the bid adjustment at zero and keep observing. Do not move to Targeting.
+
+</Steps>
+
+<Aside type="caution">
+[Google ignores audience bid adjustments](https://support.google.com/google-ads/answer/2616012?hl=en) on most automated bidding strategies, such as Target ROAS. Maximize clicks is the exception. If your campaign uses an automated strategy, check this first: on the strategies Google ignores it for, the +20% has no effect.
+</Aside>
+
+### Keep in mind
+
+- The list already excludes buyers. Do not add a separate purchaser exclusion on top; it would be double counting and can shrink the list below the serving minimum.
+- Changing the audience definition in GA4 (for example raising the engagement count) does not reset the Google Ads list. Existing members stay until their 90 days run out; only new joiners follow the new rule.
+- Use one list per purpose. A second audience with a slightly different definition competes with the first in the same auctions and makes the results harder to read.
+
+## Troubleshooting
+
+| What you see | Likely cause | What to do |
+| --- | --- | --- |
+| Preview test: `engaged_60s` never appears | The timer tag is not firing, or you switched tabs during the 70 seconds | In Tag Assistant click any page event and check `Engagement timer 60s` is under "Tags fired". If it is not, open the tag and confirm the trigger is All Pages. Re-test with the store tab kept in front |
+| Preview test: `engaged_60s` appears on every page | The code block was altered when pasting | Delete the HTML in the tag and paste the block again from this guide, unchanged |
+| `engaged_60s` not in the GA4 audience search | No real visitor has triggered it yet, or Tag Manager was not published | Confirm the version is published (Tag Manager, **Versions** tab). Wait a few hours. Check GA4 **Reports**, **Engagement**, **Events** for the name |
+| Audience summary shows 0 people | Data has not arrived yet | Option A: the timer has not fired for real visitors yet; wait a few hours. Option B: the threshold is too high for your traffic; lower the count to 3 or 4 |
+| Audience not in Google Ads after 72 hours | GA4 to Google Ads link is missing, or personalized advertising is off | GA4 **Admin**, **Product links**, **Google Ads links**. Open the link and switch on "Enable Personalized Advertising" |
+| Google Ads shows "Too small to serve" | List is under the minimum for that network | Use as observation or Performance Max signal. Extend membership to 180 days if it stays small after a month |
+| GA4 estimate says 500 but Google Ads says 150 | Normal. [Google Ads only counts people who are eligible for remarketing](https://support.google.com/analytics/answer/13656908?hl=en) | Nothing to fix |
+
+## What to expect
+
+- Day 0: Tag Manager published, audience saved.
+- Day 1 to 3: audience appears in Google Ads with a small number.
+- Day 7: list reflects a week of real traffic. Review the size and decide whether to use it as observation or signal.
+- Day 30: list has its full 30-day base. Compare its conversion rate against all visitors in the Google Ads audience report. If it converts better, consider a bid adjustment.
+
+If a step on screen does not match this guide, Google has probably moved a menu. The names of the settings stay the same, so search for the setting name in the Admin search box at the top of GA4 or Tag Manager.
+
+## Related pages
+
+- [Google Ads UTM and tracking setup](/integrations-platform-setup/ads-marketing-integrations/google-ads-utm-tracking-setup/)
+- [How to test audiences built via Meta Conversions API](/faq/advertising-best-practices/how-to-test-audiences-built-via-meta-conversions-api/)
