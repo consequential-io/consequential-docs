@@ -1,0 +1,144 @@
+---
+title: Ask about your metrics
+description: Pick metrics and a date range, say what you want to know, and get an on-demand insight that compares them with your forecast, last year, and the weeks before.
+sidebar:
+  order: 4
+head:
+  - tag: script
+    attrs:
+      type: application/ld+json
+    content: |
+      {"@context":"https://schema.org","@graph":[{"@type":"TechArticle","@id":"https://docs.consequential.io/metric-targets/ask-about-your-metrics/#article","headline":"Ask about your metrics","description":"Pick metrics and a date range, say what you want to know, and get an on-demand insight that compares them with your forecast, last year, and the weeks before.","mainEntityOfPage":"https://docs.consequential.io/metric-targets/ask-about-your-metrics/","isPartOf":{"@id":"https://docs.consequential.io/#website"},"publisher":{"@id":"https://consequential.io/#organization"},"inLanguage":"en-US"},{"@type":"BreadcrumbList","@id":"https://docs.consequential.io/metric-targets/ask-about-your-metrics/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Documentation","item":"https://docs.consequential.io/"},{"@type":"ListItem","position":2,"name":"Ask about your metrics"}]}]}
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Trend alerts and targets tell you when something moves. Sometimes you already have a question: *Why did revenue feel soft last week?* **Ask about your metrics** answers that question on demand. You pick the metrics and the days, and you say what you want to know. Consequential compares those metrics with your forecast, with last year, and with the weeks before. It then writes up what it finds as an **On demand** insight in your Insights feed.
+
+<Aside type="note">
+On-demand insights are rolling out. If they aren't turned on for your workspace yet, the request fails with "On-demand insights are not turned on." They work as described on this page once they're enabled.
+</Aside>
+
+## Prerequisites
+
+- Access to your Consequential account with a connected store.
+- At least one active metric in your metric catalog.
+- Data for the days you want to ask about. A day without data can't be compared, and the result tells you how many days had data.
+
+## Ask a question
+
+<Steps>
+
+1. Open **Insights** from the sidebar.
+
+2. Click **Ask about your metrics** at the top of the page. A panel opens on the right.
+
+3. Under **Metrics**, select up to eight metrics. Each metric shows a tag with its source, such as **OMS**, **Adobe Web Analytics**, or **Consequential**. When two sources report a metric with the same name, both appear side by side. Enter a metric name or a source name in the search field to filter the list.
+
+4. Under **Date range**, select the first day and then the last day, and click **Apply**. You can also select a preset: **Last 7 days**, **Last 14 days**, **Last 30 days**, or **Last month**.
+
+5. (Optional) Under **Days that matter most**, select the days you care about most inside the range. Consequential judges the verdict and the issues on these days, and uses the rest of the range for context.
+
+6. Under **What do you want to know?**, enter your question in your own words. For example: *Why did revenue feel soft last week?*
+
+7. Click **Get insight**.
+
+</Steps>
+
+The panel closes and the new insight opens. A message confirms that Consequential is investigating.
+
+### Limits
+
+| Field | Limit |
+| --- | --- |
+| **Metrics** | One to eight metrics. |
+| **Date range** | Up to 31 days. The range must end before today, because today doesn't have full data yet. Today is the current day in your store's timezone. |
+| **Days that matter most** | Optional. Select both a first and a last day, inside the range. If you change the range, these days are cleared. |
+| **What do you want to know?** | Required. At least three characters. |
+
+If a field doesn't meet its limit, the panel tells you what to fix when you click **Get insight**.
+
+## While the investigation runs
+
+The insight's page shows **Waiting to start…** and then **Investigating…**. An investigation usually takes a minute or two. The page updates by itself when the result is ready, so you don't need to reload it. You can leave the page and come back later.
+
+If the investigation doesn't finish, the page shows **Did not finish** and the message "The investigation did not finish. Ask again." Consequential also stops a request that waits or runs for more than 30 minutes and marks it this way.
+
+## Read the result
+
+The top of the page shows:
+
+- **On demand · N metrics asked about**, and a badge for the level of concern:
+
+  | Badge | What it means |
+  | --- | --- |
+  | **Needs attention** | At least one finding is clearly outside the normal range. |
+  | **Keep an eye on it** | Something is unusual, but not large enough to call a problem yet. |
+  | **All clear** | Nothing stands out against your forecast, last year, or recent weeks. |
+
+- **AI summary**, when Consequential wrote an explanation.
+- The date range you asked about and, if you set them, the focus days.
+- The verdict, and your question as you wrote it.
+
+What appears under the header depends on whether anomaly detection flagged any day in your range.
+
+### When anomaly detection flagged days in your range
+
+The insight opens in the same layout as an [AI trend insight](/metric-targets/read-an-ai-trend-insight/), with the metrics behind the flagged days, the numbers, the chart, and the tabs. The hero reads **On demand**, and its date chip shows the range you asked about.
+
+Under the tabs, a **What we found** card sums up the findings, such as *1 needs attention · 13 to keep an eye on · 2 nothing to worry about*. Click it to see your question, the findings, and **Read the full explanation**.
+
+### When no day in your range was flagged
+
+The insight uses its own layout.
+
+**The three numbers** describe the selected metric over the range, against its saved forecast:
+
+| Tile | What it tells you |
+| --- | --- |
+| **The metric over the range** | The total, or the daily average for a metric that doesn't add up across days, such as a rate, with the percentage of what your forecast expected. When some days have no data, the tile says how many days it covers, such as *10 of 12 days with data*. |
+| **Gap against expectation** | How far the metric landed from the forecast, as an amount and a percentage, and how the median day did. |
+| **Days outside the normal range** | How many days fell outside the forecast range, how many were below and above, and what the normal range is. |
+
+If a metric has no saved forecast, the tiles are replaced by a note that the metric is read against last year and the weeks before only.
+
+<Aside type="note">
+The forecast is the range your [AI trend alert](/metric-targets/set-a-trend-alert/) predicts for each day. Consequential compares a saved forecast only when your workspace has one store. With several stores, the actuals are workspace-wide and the forecast isn't compared. A comparison that wasn't made is listed under **Not covered** on the **Comparisons** tab.
+</Aside>
+
+**The left panel** shows what moved. Switch between:
+
+- **By Metric**: **You asked about** lists your metrics. Select one to point the numbers and the chart at it. **From visit to order** lists the funnel: revenue, visits, visit-to-cart rate, carts, cart-to-order rate, orders, and average order value. A red dot marks a metric with days outside its normal range, or an unusually large move in the funnel.
+- **By Dimension**: the visit-to-cart rate for each customer group, such as device type or new or returning customer, compared with the past four weeks. A red dot means unusually low. Each group shows its first eight segments, and **Show N more** shows the rest.
+
+**The tabs** on the right show the findings first:
+
+| Tab | What it shows |
+| --- | --- |
+| **What we found** | The concern, then **Needs attention**, **Keep an eye on**, **Nothing to worry about**, and **What to check next**. **Keep an eye on** shows five findings, and **Show N more** shows the rest. |
+| **Trend** | The selected metric on a chart, with the days outside the forecast range and the days behind last year's pace marked. If last year can't be compared, the tab says why. |
+| **Why** | The explanation in plain sections: what moved revenue most, where it happened, what else points the same way, how much it was worth, and the questions the data can't answer. An **About this analysis** note says how far to trust it. |
+| **Flagged days** | Each day that stood out: the metric, whether it was compared with the forecast or last year, the difference, how unusual it was, and which segment it mostly came from. If no day stood out, the tab says so. |
+| **Comparisons** | The funnel measures against what was expected, the week before, and last year, with how unusual each move was. Here, *expected* is what the same weekdays of the past four weeks predict. |
+
+Click **What do these terms mean?** at the bottom of the page for short definitions of the terms the page uses.
+
+## Find an insight later
+
+On-demand insights stay in your Insights feed with your other insights. To list only them, select the **On demand** tab at the top of the feed.
+
+## Troubleshooting
+
+| Message | What to do |
+| --- | --- |
+| "On-demand insights are not turned on" | The feature isn't enabled for your workspace yet. Contact your Consequential team. |
+| "The daily limit for on-demand insights is reached. Try again tomorrow." | Your workspace has a daily limit on on-demand insights. Requests that are still running count toward it. Try again the next day (UTC). |
+| "The range must end before today: today has no full data yet." | Select a range that ends yesterday or earlier. |
+| "The focus days must sit inside the range." | Select focus days between the first and last day of the range, or clear them. |
+| "The investigation did not finish. Ask again." | Ask the question again from **Ask about your metrics**. |
+
+## Related
+
+- [Read an AI trend insight](/metric-targets/read-an-ai-trend-insight/): understand the cards that trend alerts open.
+- [Set a trend alert on a metric](/metric-targets/set-a-trend-alert/): create the forecast that on-demand insights compare against.
+- [Explore a metric in detail](/metrics-explorer/explore-a-metric/): break a metric down and compare periods yourself.
