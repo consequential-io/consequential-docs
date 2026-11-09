@@ -107,6 +107,7 @@ export default defineConfig({
 						{ label: 'Acquisition Dashboard', items: [{ autogenerate: { directory: 'acquisition-dashboard' } }] },
 						{ label: 'Explore Metrics', items: [{ autogenerate: { directory: 'metrics-explorer' } }] },
 						{ label: 'Metric Alerts', items: [{ autogenerate: { directory: 'metric-targets' } }] },
+						{ label: 'Opportunities & Value', items: [{ autogenerate: { directory: 'opportunities' } }] },
 					],
 				},
 				{
