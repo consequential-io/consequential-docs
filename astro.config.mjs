@@ -6,6 +6,7 @@ import starlightContextualMenu from '@ekline/starlight-contextual-menu';
 import starlightLlmsTxt from 'starlight-llms-txt';
 import tailwindcss from '@tailwindcss/vite';
 import { openApiSidebarGroup } from './src/lib/openapi-sidebar.mjs';
+import { pageIndexIntegration } from './src/lib/page-index-integration.mjs';
 import { enabledReferences, listsOperationsInSidebar, routeFor } from './src/config/api-reference.mjs';
 
 // One sidebar entry per API reference, generated from its OpenAPI document.
@@ -39,6 +40,7 @@ export default defineConfig({
 		'/get-started/find-your-way-around/': '/get-started/onboarding/',
 	},
 	integrations: [
+		pageIndexIntegration(),
 		sitemap(),
 		starlight({
 			title: 'Consequential Docs',
