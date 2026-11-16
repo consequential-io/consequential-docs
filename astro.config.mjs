@@ -6,6 +6,7 @@ import starlightContextualMenu from '@ekline/starlight-contextual-menu';
 import starlightLlmsTxt from 'starlight-llms-txt';
 import tailwindcss from '@tailwindcss/vite';
 import { openApiSidebarGroup } from './src/lib/openapi-sidebar.mjs';
+import { pageIndexIntegration } from './src/lib/page-index-integration.mjs';
 import { enabledReferences, listsOperationsInSidebar, routeFor } from './src/config/api-reference.mjs';
 
 // One sidebar entry per API reference, generated from its OpenAPI document.
@@ -192,6 +193,10 @@ export default defineConfig({
 				},
 			],
 		}),
+		// Writes dist/page-index.json for the MCP gateway's `search_docs` tool.
+		// Must stay registered alongside starlightContextualMenu: it only indexes
+		// pages whose `.md` twin exists in dist/.
+		pageIndexIntegration(),
 	],
 	vite: {
 		plugins: [tailwindcss()],
