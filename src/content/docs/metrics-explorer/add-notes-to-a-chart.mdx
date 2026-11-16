@@ -1,0 +1,118 @@
+---
+title: Add notes to a chart
+description: Record a promotion, a site release, a tracking change, or an outage against the days it happened, so you and your team can explain a chart's movement later.
+head:
+  - tag: script
+    attrs:
+      type: application/ld+json
+    content: |
+      {"@context":"https://schema.org","@graph":[{"@type":"TechArticle","@id":"https://docs.consequential.io/metrics-explorer/add-notes-to-a-chart/#article","headline":"Add notes to a chart","description":"Record a promotion, a site release, a tracking change, or an outage against the days it happened, so you and your team can explain a chart's movement later.","mainEntityOfPage":"https://docs.consequential.io/metrics-explorer/add-notes-to-a-chart/","isPartOf":{"@id":"https://docs.consequential.io/#website"},"publisher":{"@id":"https://consequential.io/#organization"},"inLanguage":"en-US"},{"@type":"BreadcrumbList","@id":"https://docs.consequential.io/metrics-explorer/add-notes-to-a-chart/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Documentation","item":"https://docs.consequential.io/"},{"@type":"ListItem","position":2,"name":"Add notes to a chart"}]}]}
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+A spike or a dip is easier to read when you know what happened that day. Notes let you record that context — a sale, a site release, a tracking change, or an outage — against the days it covered. Everyone on your team sees the note under the chart, so the next person who asks "what happened here?" gets the answer without digging.
+
+You can add notes in two places:
+
+- Under the chart on a [metric's detail view](/metrics-explorer/explore-a-metric/).
+- On the **Chart** tab of an insight's detail page. See [Read an AI trend insight](/metric-targets/read-an-ai-trend-insight/).
+
+## Prerequisites
+
+- Access to your Consequential account. Any member of your account can add, edit, and delete notes.
+- To add notes on a metric's detail view, a single store selected in the scope switcher. The metric page doesn't show notes while a view, such as **All stores**, is selected. See [Where a note belongs](#where-a-note-belongs).
+
+## Add a note
+
+<Steps>
+
+1. Open a metric from **Metrics** in the sidebar, or open an insight from **Insights** and stay on its **Chart** tab.
+
+2. Scroll to the **Notes** section under the chart and click **Add a note**.
+
+   On an insight's **Chart** tab, you can also click a day on the chart. The add form opens with that day already set as the start and end day.
+
+3. Set the start day and the end day. For a single day, leave both on the same date. The form shows *one day* or *a range* so you can confirm what you picked.
+
+4. In the **What happened?** field, describe the event. For example: *Black Friday sitewide 20% off*.
+
+5. Select the kind of note:
+
+   - **Promotion** — a sale, discount, or campaign push.
+   - **Release** — a site or app change that went live.
+   - **Tracking change** — a change to pixels, tags, or how data is collected.
+   - **Outage** — downtime on your site or on a connected service.
+   - **Note** — anything else. This is the default.
+
+6. Click **Save**.
+
+</Steps>
+
+The note appears in the list under the chart, with its dates, a colored badge for its kind, and your text.
+
+### Limits
+
+| Field | Rule |
+| --- | --- |
+| **Start and end day** | Required. The end day can't be before the start day. |
+| **What happened?** | Required. Up to 500 characters. Leading and trailing spaces are removed. |
+| **Kind** | One of **Promotion**, **Release**, **Tracking change**, **Outage**, or **Note**. |
+
+**Save** stays disabled until every field meets its rule. Once you've entered text, a message next to the buttons tells you what to fix.
+
+## Where a note belongs
+
+A note belongs to the scope of the chart you write it on. It's either a store note or an account-wide note:
+
+| Where you write it | What kind of note it is | Where it shows |
+| --- | --- | --- |
+| A metric's detail view, with one store selected | A store note | That store's metric charts and that store's insight cards. |
+| An insight card for one store | A store note | That store's metric charts and that store's insight cards. |
+| An insight card tagged **All stores** | An account-wide note | Every metric chart and insight card in the account. |
+
+The text under the **Notes** heading tells you which scope you're writing in. A store's chart lists that store's notes together with the account-wide ones.
+
+<Aside type="note">
+The metric detail view doesn't show the **Notes** section while a view, such as **All stores**, is selected. A view groups several stores, so a note written there would have no single store to belong to. Switch to one store to add a note. See [Switch stores and views](/how-tos/onboarding/manage-store-preferences/#switch-stores-and-views).
+</Aside>
+
+You can't move a note to a different scope after you save it. To change its scope, delete it and add it again from the right chart.
+
+## Which notes the list shows
+
+On a metric's detail view, the list shows the notes whose days overlap the date range in the page header. A note that runs from Nov 27 to Dec 1 appears on any range that includes at least one of those days. Notes are sorted by start day.
+
+On an insight's **Chart** tab, the list shows every note in the card's scope.
+
+## Edit or delete a note
+
+<Steps>
+
+1. Find the note in the **Notes** list.
+
+2. To change it, click **Edit**, update the dates, text, or kind, and click **Save**.
+
+3. To remove it, click **Delete**, and then click **Confirm delete**. Click **Keep** to leave the note in place.
+
+</Steps>
+
+A deleted note disappears from every chart it showed on.
+
+## Troubleshooting
+
+| What you see | What to do |
+| --- | --- |
+| There's no **Notes** section under the metric chart. | A view is selected. Switch the scope to a single store. |
+| **Save** is disabled and no message shows. | The **What happened?** field is empty. Describe the event. |
+| *Write what happened* | The **What happened?** field holds only spaces. Describe the event. |
+| *The end day cannot be before the start day* | Move the end day to the start day or later. |
+| *Could not load notes.* | Refresh the page. If the message stays, contact your Consequential admin or support. |
+| A note you expected isn't listed. | Check the date range in the page header and the scope switcher. A store note doesn't show on another store's charts or on account-wide charts. |
+
+## Related
+
+- [Explore a metric in detail](/metrics-explorer/explore-a-metric/) — the metric detail view the notes sit under.
+- [Read an AI trend insight](/metric-targets/read-an-ai-trend-insight/) — the insight detail page and its tabs.
+- [Date ranges and presets](/concepts/date-ranges/) — how the header date range sets the window for a chart.
+- [Glossary: Scope](/concepts/glossary/#scope) — what a store, a view, and the account mean in Consequential.
