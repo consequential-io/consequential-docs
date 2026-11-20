@@ -58,7 +58,9 @@ month they reached production. Rules:
   behind a PostHog flag, mark the item **Rolling out** (or **Early access** for flags that default
   closed) instead of claiming it's available to everyone.
 - **Link the docs page** for a feature when one exists.
-- Group each month under **Added / Changed / Fixed / Removed**, newest month first.
+- **Write for the customer, in plain friendly language.** Talk to the reader ("you"), say what
+  they can now do and why it matters, and open each month with a one-line summary.
+- Group each month under **New / Improved / Fixed / Removed**, newest month first.
 
 ## Commands
 
