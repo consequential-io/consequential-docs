@@ -1,36 +1,246 @@
 ---
 title: Changelog
-description: Notable changes to the product, newest first.
+description: What's new in Consequential, newest first.
 ---
 
-A running list of notable changes. Group by month (newest at the top) and use
-**Added / Changed / Fixed / Removed** subheadings so readers can skim quickly.
+import { Aside } from '@astrojs/starlight/components';
+
+Here's what's changed in Consequential, newest first. Each update is listed under
+the month it reached [app.consequential.io](https://app.consequential.io).
+
+<Aside>
+We switch some features on one workspace at a time. If something here is marked
+**Rolling out** or **Early access** and you don't see it yet, ask your
+Consequential contact about turning it on.
+</Aside>
+
+## November 2026
+
+This month was about asking questions of your data and keeping your team in the
+loop.
+
+### New
+
+- **Ask about your metrics** (Rolling out). Ask a question about any metric from
+  the Insights tab, or select **Research it** on an insight card. You'll get an
+  answer with a chart of the period you asked about and its forecast band.
+- **Notes on charts.** Did something happen on certain days, like a promotion or
+  a site outage? Add a note against those dates under a metric or insight chart,
+  so your team knows why the numbers moved.
+- **Pick your display currency.** Show the figures on Acquisition and Metrics in
+  any of nine currencies.
+- **Custom MER and Custom NC MER.** Two optional blended metrics that don't rely
+  on attribution. Switch them on from the new **Settings › Attribution** page.
+- **Download attribution data.** Export the numbers behind the attribution chart
+  in Acquisition as a CSV.
+- **Bar and bubble views** for channel performance in Acquisition.
+- **Profitability by store** (Rolling out). Set profitability values for each
+  store separately, and see profitability as a column on the Campaigns table.
+- **Last-year comparisons and drift insights** (Rolling out). New insight cards
+  compare a day with the same period last year, and flag metrics that are
+  drifting away from last year's pace.
+- **Journeys** (Early access). See the paths customers take before they buy
+  under **Attribution › Journeys**, with an Overview tab and a profile for each
+  customer.
+
+### Improved
+
+- **Insights got a redesign** (Rolling out). The feed cards are new, and every
+  insight now has its own page showing what caused it, how it compares with last
+  year, a feedback box, and who raised it.
+- **UTM Health** has a new layout with a **What to fix** list: one row for each
+  check that needs attention, with the orders and revenue it affects.
+
+### Fixed
+
+- Typing `2.4` for a percentage target now saves it as 2.4%. Before, the value
+  was scaled wrongly.
+
+## October 2026
+
+October was about getting new workspaces up and running faster. It also brought
+UTM Health and a Products view in Acquisition.
+
+### New
+
+- **A Getting started checklist on Home.** Setup steps are grouped into cards.
+  You can open each step from the checklist and mark it done, and you'll see a
+  warning if a data source falls behind. See [Onboarding](/get-started/onboarding/).
+- **A 14-day trial.** New workspaces get every feature for 14 days, starting when
+  they connect a store. After that, they move to the Free plan unless you pick a
+  plan.
+- **Setup emails.** Within minutes of connecting Shopify, you'll get an email with
+  your first findings. Follow-up emails suggest data sources and settings worth
+  adding.
+- **Single sign-on.** Sign in through Okta (OIDC). Get in touch and we'll set up
+  the SSO connection for your workspace.
+- **UTM Health.** A page that scores how well your orders are tagged with UTMs,
+  plus **UTM Score** settings so you decide how much each check counts. It's
+  available in every workspace.
+- **Products in Acquisition.** A new Products tab splits campaign spend down to
+  the products it sold, with new and returning customer splits. Click a product
+  to see the campaigns behind it.
+- **Weekly insights** (Rolling out). Weekly insight cards now sit alongside the
+  daily ones.
+- **Feedback on insights** (Rolling out). Rate an insight card, and use **Assign
+  to me** to take it on.
+- **A Funnel tab** on insights (Rolling out).
+- **Compare breakdowns over time.** Compare a metric's breakdown by dimension
+  against an earlier period, with totals for each period.
+- **A forecast band toggle** on a metric's detail page.
+
+### Improved
+
+- **Report settings** are rebuilt as step cards, with Delivery first. See
+  [Configure and schedule daily reports](/daily-reports/configure-and-schedule-daily-reports/).
+- **Connecting a store takes one step**, and you'll see a clear notice if it's
+  already connected.
+- **Signing in is quicker.** The form is ready as soon as the page opens, with
+  Google sign-in first.
+- **Performance Max** campaigns now show their own ad sets and creatives in
+  Acquisition, instead of collapsing into one row.
+- **Age and Recency** in Acquisition now describe the campaign, ad set or
+  creative itself rather than the date range you picked, so an ad that's still
+  running no longer looks dormant.
+- **Days without data** now show as missing rather than as zero.
+- **Store time zones.** Daily fulfillment and session numbers follow each store's
+  own time zone instead of UTC.
+- **Email metrics by store.** You can now filter Klaviyo email metrics by store.
+- **Renaming a workspace** no longer breaks old links.
+- **Insight titles** (Rolling out) lead with the verdict, like "Conversion Rate
+  came in better than expected, 13.93% above".
+
+### Fixed
+
+- A store with no session data no longer blanks out the whole Shopify dashboard.
+- Shopify connection errors now tell you what went wrong, and reinstalling the
+  Shopify app reconnects your store properly.
+- Klaviyo numbers were being counted twice for some connected accounts.
+
+### Removed
+
+- The Customer data platform item in Getting started.
+
+## September 2026
+
+September brought metric targets and the first version of Insights.
+
+### New
+
+- **Metric targets.** Set a target for a metric and see how you're pacing on its
+  chart, including the ideal pace and how far off you are. See
+  [Set a metric target](/metric-targets/set-a-metric-target/).
+- **Trend alerts** (Rolling out). Get an alert when a metric moves outside its
+  forecast. See [Set a trend alert](/metric-targets/set-a-trend-alert/).
+- **The Insights tab** (Rolling out). A feed of the notable changes in your
+  metrics. Each insight comes with an AI-written summary, how far it is from the
+  forecast, and a root-cause breakdown you can dig into. See
+  [Read an AI trend insight](/metric-targets/read-an-ai-trend-insight/).
+- **Acquisition Explorer** (Rolling out, beta).
+- **More than one connection per data source.** For example, two Meta logins can
+  feed the same workspace.
+- **Data source status on Home.** If a source stops sending data, you'll see a
+  notice asking you to reconnect it.
+- **Workspace time zone and currency** in your workspace profile. See
+  [Set workspace timezone and currency](/account-management/set-workspace-timezone-and-currency/).
+- **Daily report templates by role.** Start your daily report from a template
+  made for your role, such as Founder. See
+  [Configure and schedule daily reports](/daily-reports/configure-and-schedule-daily-reports/).
+
+### Improved
+
+- **Signing up is simpler.** There's no plan picker during onboarding, there are
+  fewer steps, and we name the workspace for you.
+- **Insights** (Rolling out) now show only what falls in the date range you
+  picked, and you can filter them by category and pillar.
+- **Sign-in errors are clearer**, including when an email sign-in link has
+  expired or isn't valid.
+- A new store with no orders yet now tells you so, instead of looking broken.
+
+### Fixed
+
+- If you run several Shopify stores, every store is now imported, and each
+  store's data refreshes on its own, so one store can no longer overwrite
+  another's.
+- GA4 numbers now land on the right day.
+- Renaming a campaign no longer splits its spend and conversions into two rows.
+- Insight cards show the date they're about, not the date you opened them.
+
+## August 2026
+
+August is when Consequential arrived on the Shopify App Store, along with a new
+look and a much richer metric page.
+
+### New
+
+- **Shopify App Store.** Install Consequential from the Shopify App Store and
+  finish setup without leaving your Shopify admin. See
+  [Install the Shopify app](/get-started/install-shopify-app/).
+- **Email sign-in links.** Sign in with a one-time link sent to your inbox. No
+  password to remember.
+- **A Billing page** in Settings, where you can upgrade on your own.
+- **A new look**, with refreshed light and dark themes.
+- **A richer metric page.** Compare several metrics on one chart, switch the
+  breakdown chart, see a breakdown table by dimension, and export the data. See
+  [Explore a metric](/metrics-explorer/explore-a-metric/).
+- **Metrics table view.** The table shows Date, Current, Previous and Change, even
+  when you haven't picked a dimension.
+- **Day over Day** comparisons for metrics.
+- **One picker for stores and views.** Switch between stores and saved views from
+  a single selector, with a country flag for each store. We remember your last
+  choice.
+- **Store currency** and **workspace logo** settings.
+- **Data source readiness on Home**, so you can see which sources are ready and
+  which are still importing.
+- **Partner API.** See
+  [Partner integration setup](/integrations-platform-setup/partner-integrations/partner-integration-setup/)
+  and the [API reference](/api/).
+- **Easier account connections.** The account list is searchable, and we tell you
+  which Klaviyo role you need before you connect.
+
+### Improved
+
+- **Channel classification is more accurate.** As a result, some orders moved
+  between Direct, Organic, Paid and Referral.
+- **Dates follow your workspace.** Date presets and ranges use your workspace's
+  time zone rather than your device's, and the range you pick stays put as you
+  move between pages.
+- If a metric's data source stops sending data, the metric now says so instead of
+  showing "No data for this period".
+
+### Fixed
+
+- Money metrics stopped two days short for workspaces in some currencies.
+- Charts that are still loading now show that they're warming up and try again,
+  instead of promising a rebuild that wasn't happening.
 
 ## July 2026
 
+July is when the Consequential app went live.
+
+### New
+
+- **app.consequential.io is live**, along with our **MCP server** at
+  `mcp.consequential.io`. Once you approve access, AI assistants like Claude can
+  read your workspace's data.
+- **Connect your marketing data.** Meta Ads, Google Ads, TikTok Ads, GA4 and
+  Klaviyo, all from inside the app. See [Connect your data](/get-started/connect-your-data/).
+- **Pinned metrics** on the Metrics tab and Home, plus a settings page to choose
+  and arrange your metrics. See [Update my metrics](/account-management/update-my-metrics/).
+- **Scores & grading** and **Badges** settings. See
+  [Configure health scores and grading](/account-management/configure-health-scores-and-grading/)
+  and [Configure performance badges](/account-management/configure-performance-badges/).
+- **A fuller Acquisition dashboard.** Filter every tab by ad platform and creative
+  type, compare periods on Channels, Campaigns, Ad sets and Creatives, sort by
+  health, and compare new and returning customers. Channels also gets sparklines,
+  totals and CSV export, plus there are creative detail tabs and the Pages tab.
+  See [Understand the Acquisition dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/).
+
+### Improved
+
+- Grades use the same colors everywhere: A is green, B blue, C amber and D red.
+
 ### Fixed
 
-- Daily reports guide now documents the correct report status (**Sent**, not
-  **Ready**) to match the product. See **[Daily reports](/guides/daily-reports/)**
-  ([source PR](/changelog/pr-16-report-status-fix/)).
-
-## May 2026
-
-### Added
-
-- New `widgets` endpoint group. See **[API reference](/api/)**.
-- Per-key scopes for finer-grained access control.
-
-### Changed
-
-- Error responses now include a `request_id` to make support faster.
-
-## April 2026
-
-### Fixed
-
-- Pagination cursors are no longer invalidated when a widget is deleted mid-page.
-
-### Added
-
-- Initial public release.
+- Metric tiles that are still warming up now retry on their own instead of
+  showing an error.
