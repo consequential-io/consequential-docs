@@ -3,34 +3,230 @@ title: Changelog
 description: Notable changes to the product, newest first.
 ---
 
-A running list of notable changes. Group by month (newest at the top) and use
-**Added / Changed / Fixed / Removed** subheadings so readers can skim quickly.
+import { Aside } from '@astrojs/starlight/components';
 
-## July 2026
+Notable changes to Consequential, newest first. Each change is listed under the
+month it reached the app at [app.consequential.io](https://app.consequential.io).
 
-### Fixed
+<Aside>
+Some features are switched on workspace by workspace. If an item is marked
+**Rolling out** or **Early access**, your workspace may not show it yet. Ask your
+Consequential contact if you want it turned on.
+</Aside>
 
-- Daily reports guide now documents the correct report status (**Sent**, not
-  **Ready**) to match the product. See **[Daily reports](/guides/daily-reports/)**
-  ([source PR](/changelog/pr-16-report-status-fix/)).
-
-## May 2026
+## November 2026
 
 ### Added
 
-- New `widgets` endpoint group. See **[API reference](/api/)**.
-- Per-key scopes for finer-grained access control.
+- **Ask about your metrics** (Rolling out): ask a question about a metric from
+  the Insights tab, or select **Research it** on an insight card. The answer
+  comes with a chart of the period you asked about and its forecast band.
+- **Notes on charts**: add a note against a date range under a metric chart or
+  an insight chart, for example to mark a promotion or a site outage, so your
+  team sees what happened on those days.
+- **Display currency**: switch the currency figures are shown in on Acquisition
+  and Metrics. Nine currencies are available.
+- **Custom MER and Custom NC MER**: two optional blended metrics that don't
+  depend on attribution. Turn them on from **Settings › Attribution**, a new
+  settings page.
+- **Download attribution data**: export the data behind the attribution chart in
+  Acquisition as a CSV file.
+- **Bar and bubble views** for channel performance in Acquisition.
+- **Profitability by store** (Rolling out): set profitability values separately
+  for each store, and see a profitability column on the Campaigns table.
+- **Last-year comparisons and drift insights** (Rolling out): new insight cards
+  that compare a day against the same period last year, and cards for metrics
+  that drift away from last year's pace.
+- **Journeys** (Early access): **Attribution › Journeys** shows the paths
+  customers take before they buy, with an Overview tab and a profile for each
+  customer.
 
 ### Changed
 
-- Error responses now include a `request_id` to make support faster.
-
-## April 2026
+- **Insights redesign** (Rolling out): new feed cards and a detail page for each
+  insight. The detail page has a root-cause story, a comparison with last year's
+  actual, a feedback box, and the name of the person who raised the insight.
+- **UTM Health** has a new page layout with a **What to fix** list: one row for
+  each check that needs attention, with the orders and revenue it affects.
 
 ### Fixed
 
-- Pagination cursors are no longer invalidated when a widget is deleted mid-page.
+- A percentage target typed as `2.4` is now saved as 2.4%. Before, the value
+  was scaled wrongly.
+
+## October 2026
 
 ### Added
 
-- Initial public release.
+- **Getting started checklist** on Home: setup steps grouped into cards, a setup
+  window you open from the checklist, **Mark as done**, and a warning when a data
+  source isn't up to date. See [Onboarding](/get-started/onboarding/).
+- **14-day trial**: a new workspace gets every feature for 14 days from the
+  moment it connects a store. After that it moves to the Free plan unless you
+  pick a plan.
+- **Setup emails**: after you connect Shopify, an email with your first findings
+  arrives within minutes. Later emails suggest data sources and settings worth
+  adding.
+- **Single sign-on**: sign in through Okta (OIDC). Contact us to set up an SSO
+  connection for your workspace.
+- **UTM Health**: a page that scores how well your orders are tagged with UTMs,
+  plus **UTM Score** settings for weighting each check. Available to every
+  workspace.
+- **Products in Acquisition**: a Products tab that splits campaign spend down to
+  the products it sold, with new and returning customer splits and a drill-down
+  from a product to its campaigns.
+- **Weekly insights** (Rolling out): weekly insight cards next to the daily ones.
+- **Insight feedback** (Rolling out): rate an insight card, and use **Assign to
+  me** to take it on.
+- **Funnel tab** on an insight (Rolling out).
+- **Compare a breakdown with an earlier period**: a metric's dimension breakdown
+  can now be compared against a previous period, with totals for each period.
+- **Forecast band toggle** on a metric's detail page.
+
+### Changed
+
+- **Report settings** are rebuilt as step cards, with Delivery first. See
+  [Configure and schedule daily reports](/daily-reports/configure-and-schedule-daily-reports/).
+- **Connecting a store is one step**, with a clear notice if the store is
+  already connected.
+- **Sign-in** opens with the form ready and Google sign-in first.
+- **Performance Max** campaigns now show their own ad sets and creatives in
+  Acquisition instead of collapsing into one row.
+- **Age and Recency** in Acquisition describe the campaign, ad set or creative
+  itself, not the selected date range, so an ad that's still running no longer
+  looks dormant.
+- **Days without data** now show as missing instead of zero.
+- **Store time zones**: daily fulfillment and session figures now follow each
+  store's own time zone instead of UTC.
+- **Email metrics by store**: Klaviyo email metrics can be filtered by store.
+- **Workspace renames** keep old links working.
+- **Insight titles** (Rolling out) lead with a verdict, for example "Conversion
+  Rate came in better than expected, 13.93% above".
+
+### Fixed
+
+- A store with no session data no longer blanks the whole Shopify dashboard.
+- Shopify connection errors now say what went wrong, and reinstalling the
+  Shopify app reconnects the store properly.
+- Klaviyo figures were double-counted for some connected accounts.
+
+### Removed
+
+- The Customer data platform item in Getting started.
+
+## September 2026
+
+### Added
+
+- **Metric targets**: set a target on a metric and track your pace against it on
+  the metric's chart, with the ideal pace and the gap. See
+  [Set a metric target](/metric-targets/set-a-metric-target/).
+- **Trend alerts** (Rolling out): get alerted when a metric moves outside its
+  forecast. See [Set a trend alert](/metric-targets/set-a-trend-alert/).
+- **Insights tab** (Rolling out): a feed of notable changes in your metrics. Each
+  insight has an AI-written summary, the gap to the forecast, and a root-cause
+  breakdown you can drill into. See
+  [Read an AI trend insight](/metric-targets/read-an-ai-trend-insight/).
+- **Acquisition Explorer** (Rolling out, beta).
+- **Several connections per data source**, for example two Meta logins feeding
+  one workspace.
+- **Data source status on Home**, with a notice to reconnect when a source stops
+  sending data.
+- **Workspace time zone and currency** in the workspace profile. See
+  [Set workspace timezone and currency](/account-management/set-workspace-timezone-and-currency/).
+- **Daily report templates by role**: start your daily report from a template
+  for your role, such as Founder. See
+  [Configure and schedule daily reports](/daily-reports/configure-and-schedule-daily-reports/).
+
+### Changed
+
+- **Simpler sign-up**: no plan picker during onboarding, fewer steps, and the
+  workspace is named for you.
+- **Insights** (Rolling out) show only the insights in the selected date range,
+  and can be filtered by category and pillar.
+- **Clearer sign-in errors**, including for expired or invalid email sign-in
+  links.
+- A new store with no orders yet now says so instead of looking broken.
+
+### Fixed
+
+- **Workspaces with several Shopify stores**: every store is now imported, and a
+  day's data is refreshed one store at a time, so refreshing one store no longer
+  overwrites another.
+- GA4 figures now land on the correct day.
+- Renaming a campaign no longer splits its spend and its conversions into two
+  rows.
+- Insight cards show the date they describe, not the date you opened them.
+
+## August 2026
+
+### Added
+
+- **Shopify App Store**: install Consequential from the Shopify App Store and
+  finish setup inside your Shopify admin. See
+  [Install the Shopify app](/get-started/install-shopify-app/).
+- **Email sign-in links**: sign in with a one-time link sent to your email. No
+  password needed.
+- **Billing page** in Settings, with a self-serve upgrade.
+- **New look**: refreshed light and dark themes.
+- **Metric detail page**: compare several metrics on one chart, switch the
+  breakdown chart, see a breakdown table by dimension, and export the data. See
+  [Explore a metric](/metrics-explorer/explore-a-metric/).
+- **Metrics table view**: the table shows Date, Current, Previous and Change even
+  when no dimension is picked.
+- **Day over Day** comparison for metrics.
+- **Store and view picker**: switch between stores and saved views from one
+  selector, with a country flag per store. Your choice is remembered.
+- **Store currency** and **workspace logo** settings.
+- **Data source readiness on Home**: see which sources are ready and which are
+  still importing.
+- **Partner API**. See
+  [Partner integration setup](/integrations-platform-setup/partner-integrations/partner-integration-setup/)
+  and the [API reference](/api/).
+- When connecting ad accounts, the account list is searchable, and you see which
+  Klaviyo role you need before you connect.
+
+### Changed
+
+- **Channel classification** is more accurate. Some orders moved between Direct,
+  Organic, Paid and Referral as a result.
+- **Dates follow your workspace's day**: date presets and ranges use the
+  workspace's time zone rather than your device's, and the range you pick stays
+  as you move between pages.
+- A metric whose data source has stopped sending now says so, instead of "No
+  data for this period".
+
+### Fixed
+
+- Money metrics stopped two days early for workspaces in some currencies.
+- Charts that are still loading show a warming state and retry, instead of
+  promising a rebuild that wasn't happening.
+
+## July 2026
+
+### Added
+
+- **app.consequential.io**: the Consequential app went live, along with the
+  **MCP server** at `mcp.consequential.io`, which lets AI assistants such as
+  Claude read your workspace's data once you approve access.
+- **Connect your marketing data**: Meta Ads, Google Ads, TikTok Ads, GA4 and
+  Klaviyo, from inside the app. See [Connect your data](/get-started/connect-your-data/).
+- **Pinned metrics** on the Metrics tab and Home, and a settings page to choose
+  and arrange your metrics. See [Update my metrics](/account-management/update-my-metrics/).
+- **Scores & grading** and **Badges** settings. See
+  [Configure health scores and grading](/account-management/configure-health-scores-and-grading/)
+  and [Configure performance badges](/account-management/configure-performance-badges/).
+- **Acquisition**: filter every tab by ad platform and creative type; compare
+  periods on Channels, Campaigns, Ad sets and Creatives; sparklines, totals and
+  CSV export on Channels; sort by health; new versus returning customer
+  comparisons; creative detail tabs and the Pages tab. See
+  [Understand the Acquisition dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/).
+
+### Changed
+
+- Grades use one color scheme everywhere: A is green, B blue, C amber and D red.
+
+### Fixed
+
+- Metric tiles that are still warming up retry on their own instead of showing
+  an error.

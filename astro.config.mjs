@@ -38,6 +38,9 @@ export default defineConfig({
 			'/academy/attribution/not-set-in-google-analytics/',
 		// Renamed to "Onboarding" and moved to the top of Get started.
 		'/get-started/find-your-way-around/': '/get-started/onboarding/',
+		// A docs-only PR write-up that was linked from the changelog; the changelog now lists
+		// product changes only.
+		'/changelog/pr-16-report-status-fix/': '/changelog/',
 	},
 	integrations: [
 		pageIndexIntegration(),

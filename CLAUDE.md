@@ -43,6 +43,23 @@ A prior content migration pulled in material from a predecessor product's docs a
 
 (Find the current set with `grep -rl "could not be re-verified\|predecessor-product\|Could not verify\|before publishing" src/content/docs/`.) A related, now-resolved instance was the "Pulse SDK" how-to section — it turned out to describe a real product but shipped with the same kind of unverified caution note; it was deleted outright (2026-08-07) rather than published unverified. Treat any page you touch in these directories as unverified until checked against the live app or backend, not as ground truth.
 
+## Changelog (`src/content/docs/changelog.mdx`)
+
+The changelog lists **product** changes customers can see in app.consequential.io, under the
+month they reached production. Rules:
+
+- **Source of truth is the prod release, not a merge.** A change counts from the day its
+  `promote(prod)` / `pin(prod)` PR merged in `consequential-io/infra` (those PR bodies carry a
+  plain-language "what this release is" section). Merged-to-`develop` is not shipped.
+- **Customer-facing only.** No infra, CI, pipelines, staff/internal tools, migrations or docs-site
+  edits. No tenant or customer names, no internal codenames, no vendor names we white-label.
+- **Flag-gated surfaces get a label.** Check `pulse/src/constants/tabs.constants.ts`,
+  `feature-flags.constants.ts` and `settings.constants.ts` on pulse `main`. If the surface sits
+  behind a PostHog flag, mark the item **Rolling out** (or **Early access** for flags that default
+  closed) instead of claiming it's available to everyone.
+- **Link the docs page** for a feature when one exists.
+- Group each month under **Added / Changed / Fixed / Removed**, newest month first.
+
 ## Commands
 
 - `npm install` — install dependencies
