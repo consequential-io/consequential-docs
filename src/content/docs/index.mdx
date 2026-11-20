@@ -48,3 +48,16 @@ import { CardGrid, LinkCard } from '@astrojs/starlight/components';
 		description="Notable changes, newest first."
 	/>
 </CardGrid>
+
+## For AI agents and tools
+
+These files describe the documentation and the API in formats that AI agents and other tools can read:
+
+- [`/llms.txt`](/llms.txt): an index of the documentation.
+- [`/llms-full.txt`](/llms-full.txt): the full documentation in one file.
+- [`/llms-small.txt`](/llms-small.txt): a shorter version of the documentation for small context windows.
+- Markdown versions of each page: replace the trailing slash of a page URL with `.md`. For example, `/concepts/glossary/` is available at [`/concepts/glossary.md`](/concepts/glossary.md).
+- [`/api.yaml`](/api.yaml): the OpenAPI description of the Consequential API, which the [API reference](/api/) is generated from.
+- [`/sitemap-index.xml`](/sitemap-index.xml): every page on this site.
+
+To query your own analytics from Claude or ChatGPT, connect the Consequential MCP server. See [Connect your AI assistant to Consequential Analytics](/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/).

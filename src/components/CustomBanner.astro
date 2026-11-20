@@ -1,0 +1,80 @@
+---
+/**
+ * Starlight Banner override.
+ *
+ * Starlight renders `Banner` at the top of `<main>` on every page — docs pages,
+ * the splash home page, and `StarlightPage` routes like `/api/` — so it is the
+ * one slot that puts a line above every page's title. The upstream component
+ * (frontmatter `banner:`) still renders first and is unchanged.
+ *
+ * The line tells AI agents where the documentation index is, where this page's
+ * Markdown twin is, and — on an API reference — where its OpenAPI description
+ * is. Wording is shared with the Markdown twins via `src/lib/agent-discovery.mjs`.
+ * `tests/agent-discovery.test.mjs` fails the build if a page loses it.
+ *
+ * Docs: https://starlight.astro.build/reference/overrides/#banner
+ */
+import Default from '@astrojs/starlight/components/Banner.astro';
+import { enabledReferences, routeFor } from '../config/api-reference.mjs';
+import { AGENT_INDEX_LEAD, LLMS_TXT_PATH, markdownTwinPath } from '../lib/agent-discovery.mjs';
+
+const pathname = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+
+// API references are rendered from an OpenAPI document, not a content entry, so
+// they have no Markdown twin. Point to the OpenAPI description instead.
+const apiReference = enabledReferences.find((reference) => routeFor(reference) === pathname);
+const isNotFound = Astro.locals.starlightRoute.id === '404';
+const markdownTwin = apiReference || isNotFound ? undefined : markdownTwinPath(pathname);
+---
+
+<Default />
+<div class="agent-hint" data-pagefind-ignore>
+	<p>
+		{AGENT_INDEX_LEAD} <a href={LLMS_TXT_PATH}>{LLMS_TXT_PATH}</a>.
+		{
+			markdownTwin && (
+				<>
+					This page is available as Markdown at{' '}
+					<a href={markdownTwin} type="text/markdown">{markdownTwin}</a>.
+				</>
+			)
+		}
+		{
+			apiReference && (
+				<>
+					The OpenAPI description for this API is available at{' '}
+					<a href={apiReference.specUrl}>{apiReference.specUrl}</a>.
+				</>
+			)
+		}
+	</p>
+</div>
+
+<style>
+	/* Mirrors the padding and width of Starlight's content panel so the line
+	 * lines up with the page title beneath it. */
+	.agent-hint {
+		padding: 0.75rem var(--sl-content-pad-x) 0;
+	}
+
+	.agent-hint p {
+		max-width: var(--sl-content-width);
+		margin: 0;
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+	}
+
+	.agent-hint a {
+		color: inherit;
+	}
+
+	.agent-hint a:hover {
+		color: var(--sl-color-text-accent);
+	}
+
+	@media (min-width: 72rem) {
+		.agent-hint p {
+			margin-inline: var(--sl-content-margin-inline, auto);
+		}
+	}
+</style>

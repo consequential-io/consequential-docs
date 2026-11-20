@@ -7,6 +7,7 @@ import starlightLlmsTxt from 'starlight-llms-txt';
 import tailwindcss from '@tailwindcss/vite';
 import { openApiSidebarGroup } from './src/lib/openapi-sidebar.mjs';
 import { pageIndexIntegration } from './src/lib/page-index-integration.mjs';
+import { markdownAgentHintIntegration } from './src/lib/agent-discovery.mjs';
 import { enabledReferences, listsOperationsInSidebar, routeFor } from './src/config/api-reference.mjs';
 
 // One sidebar entry per API reference, generated from its OpenAPI document.
@@ -60,6 +61,9 @@ export default defineConfig({
 				Header: './src/components/CustomHeader.astro',
 				Hero: './src/components/CustomHero.astro',
 				Footer: './src/components/CustomFooter.astro',
+				// Adds a "For AI agents" line at the top of every page pointing to
+				// `/llms.txt` and the page's Markdown twin (see `src/lib/agent-discovery.mjs`).
+				Banner: './src/components/CustomBanner.astro',
 				// Re-init Pagefind after every Astro view-transition swap — the
 				// upstream component only initializes on `DOMContentLoaded`,
 				// which doesn't fire on subsequent <ClientRouter /> navigations.
@@ -194,6 +198,9 @@ export default defineConfig({
 				},
 			],
 		}),
+		// Adds the same "For AI agents" line to every `<page>.md` twin. After
+		// `starlight()` so it runs once the contextual menu's twins are written.
+		markdownAgentHintIntegration(),
 	],
 	vite: {
 		plugins: [tailwindcss()],
