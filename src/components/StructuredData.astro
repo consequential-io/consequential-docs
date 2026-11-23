@@ -1,0 +1,96 @@
+---
+/**
+ * JSON-LD for every docs page, read from Starlight's route data (`Astro.locals.starlightRoute`,
+ * https://starlight.astro.build/guides/route-data/).
+ *
+ * - The home page describes the docs site (WebSite) and its publisher (Organization), using the
+ *   same Organization @id as consequential.io so the two sites form one entity graph.
+ * - Every other page is a TechArticle with a BreadcrumbList built from its URL path.
+ * - FAQ pages with question headings (`## …?`) also emit FAQPage for those questions, so the
+ *   structured data only ever repeats what the page visibly shows.
+ */
+const route = Astro.locals.starlightRoute;
+const site = (Astro.site ?? new URL('https://docs.consequential.io')).href.replace(/\/$/, '');
+const path = Astro.url.pathname;
+const url = `${site}${path}`;
+const { title, description } = route.entry.data;
+const ORG = 'https://consequential.io/#organization';
+
+const graph: Record<string, unknown>[] = [];
+
+if (route.id === '' || route.id === 'index') {
+	graph.push(
+		{
+			'@type': 'Organization',
+			'@id': ORG,
+			name: 'Consequential',
+			url: 'https://consequential.io/',
+			logo: 'https://consequential.io/favicon.svg',
+		},
+		{
+			'@type': 'WebSite',
+			'@id': `${site}/#website`,
+			url: `${site}/`,
+			name: 'Consequential Docs',
+			description,
+			publisher: { '@id': ORG },
+		},
+	);
+} else {
+	const segments = path.split('/').filter(Boolean);
+	const crumbs = segments.map((seg, i) => ({
+		'@type': 'ListItem',
+		position: i + 2,
+		name: i === segments.length - 1 ? title : seg.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase()),
+		item: `${site}/${segments.slice(0, i + 1).join('/')}/`,
+	}));
+	graph.push(
+		{
+			'@type': 'TechArticle',
+			'@id': `${url}#article`,
+			headline: title,
+			description,
+			url,
+			inLanguage: 'en',
+			isPartOf: { '@id': `${site}/#website` },
+			author: { '@id': ORG },
+			publisher: { '@id': ORG },
+			...(route.lastUpdated ? { dateModified: route.lastUpdated.toISOString() } : {}),
+		},
+		{
+			'@type': 'BreadcrumbList',
+			itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Docs', item: `${site}/` }, ...crumbs],
+		},
+	);
+
+	// Question headings on FAQ pages become FAQPage entries; the answer is the text under each one.
+	if (path.startsWith('/faq/')) {
+		const body = (route.entry as { body?: string }).body ?? '';
+		const qa = [...body.matchAll(/^## (.+\?)\s*\n+([\s\S]*?)(?=\n## |$)/gm)]
+			.map(([, q, a]) => ({
+				q: q.trim(),
+				a: a
+					.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+					.replace(/[*`]/g, '')
+					.replace(/\s+/g, ' ')
+					.trim(),
+			}))
+			.filter(({ a }) => a.length > 0);
+		if (qa.length > 0) {
+			graph.push({
+				'@type': 'FAQPage',
+				'@id': `${url}#faq`,
+				mainEntity: qa.map(({ q, a }) => ({
+					'@type': 'Question',
+					name: q,
+					acceptedAnswer: { '@type': 'Answer', text: a },
+				})),
+			});
+		}
+	}
+}
+
+const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph });
+---
+
+<script type="application/ld+json" set:html={json} />

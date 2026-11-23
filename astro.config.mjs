@@ -150,6 +150,7 @@ export default defineConfig({
 				{
 					label: "FAQ's",
 					items: [
+						{ label: 'About Consequential', items: [{ autogenerate: { directory: 'faq/about' } }] },
 						{ label: 'ROAS, Performance & Growth Strategy', items: [{ autogenerate: { directory: 'faq/roas-growth-strategy' } }] },
 						{ label: 'Integrations & Setup', items: [{ autogenerate: { directory: 'faq/integrations-setup' } }] },
 						{ label: 'TikTok & Creative Insights', items: [{ autogenerate: { directory: 'faq/tiktok-creative-insights' } }] },
