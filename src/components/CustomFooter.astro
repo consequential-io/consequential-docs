@@ -4,11 +4,21 @@ import Default from '@astrojs/starlight/components/Footer.astro';
 
 <Default><slot /></Default>
 
+<p class="agent-links">
+	For AI agents: <a href="/llms.txt">llms.txt</a> indexes these docs, and adding <code>.md</code> to the end of any page URL returns its Markdown version.
+</p>
+
 <p class="ekline-credit">
 	<ekline-credit></ekline-credit>
 </p>
 
 <style>
+	.agent-links {
+		margin-top: 1.5rem;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+		text-align: center;
+	}
 	.ekline-credit {
 		margin-top: 2.5rem;
 		padding-top: 1.25rem;
