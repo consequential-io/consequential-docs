@@ -67,7 +67,7 @@ Standard Starlight layout:
 - `tests/markdown-twins.test.mjs` — contract tests verifying every real doc page emits a working `<page>.md` route (see `@ekline/starlight-contextual-menu` below) and that OpenAPI's virtual pages correctly don't.
 - `src/components/Analytics.astro` — Microsoft Clarity + PostHog, the same projects consequential.io reports to. Rendered from `CustomHead`, so every page gets it; runs only on `docs.consequential.io`, so local builds send nothing. `tests/analytics.test.mjs` fails the build if a page loses it.
 
-Component overrides (Starlight's "Overriding Components" mechanism) go in `src/components/` and are wired through the `components` field of the `starlight()` integration call — don't import Starlight internals directly. Current overrides: `CustomHead`, `CustomHeader`, `CustomHero`, `CustomFooter`, `CustomSearch` (all in `src/components/`).
+Component overrides (Starlight's "Overriding Components" mechanism) go in `src/components/` and are wired through the `components` field of the `starlight()` integration call — don't import Starlight internals directly. Current overrides: `CustomHead`, `CustomHeader`, `CustomHero`, `CustomFooter`, `CustomSearch` (all in `src/components/`). `CustomHead` also renders `StructuredData.astro`: JSON-LD from Starlight route data (Organization + WebSite on the home page, TechArticle + BreadcrumbList elsewhere, and FAQPage built from `## …?` headings on `/faq/` pages, so it only repeats visible questions).
 
 ## Installed plugins
 
@@ -99,4 +99,4 @@ CLOUDFLARE_ACCOUNT_ID=705a25199f79333ff0e4db56e2078036 npx wrangler deploy
 Deploying by hand from a dirty or behind-`main` checkout will publish exactly that state —
 prefer letting the workflow do it.
 
-**GitHub write access gap**: as of this writing, the account used from this machine has `pull`-only access to `consequential-io/consequential-docs` — PRs can be opened but not merged from here. The working pattern has been: make the change, verify with `npm run build`/`npm run test`, deploy directly via `wrangler deploy` above (bypassing GitHub entirely for the live site), then push the branch to a fork for someone with real access to reconcile GitHub's history later. Don't assume "committed" means "live," or that "live" means "merged on GitHub" — check both independently.
+**GitHub access**: as of 2026-11-23 the `hsaxena2` account has maintain access, so branches can be pushed and PRs opened from this machine; merging to `main` still needs an approving review. Earlier notes describing pull-only access and deploying around GitHub are out of date. Prefer a reviewed PR over a manual `wrangler deploy`, and don't assume "committed" means "live" — check both independently.

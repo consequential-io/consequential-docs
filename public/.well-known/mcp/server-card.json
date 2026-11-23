@@ -1,0 +1,33 @@
+{
+  "name": "consequential-analytics",
+  "title": "Consequential Analytics",
+  "description": "Consequential's own MCP server. Lets Claude, ChatGPT and other assistants query a Consequential workspace's marketing analytics in plain language: workspaces, the metric catalog, business metrics, acquisition performance, daily history and BFCM forecasting. Read-only and scoped to the workspaces the signed-in account can access.",
+  "websiteUrl": "https://consequential.io/",
+  "documentationUrl": "https://docs.consequential.io/academy/mcp-guide/connect-your-ai-assistant-to-consequential-analytics/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.consequential.io/mcp"
+    }
+  ],
+  "authentication": {
+    "required": true,
+    "schemes": ["oauth2"],
+    "authorizationServers": ["https://app.consequential.io"],
+    "scopes": ["mcp:read"],
+    "protectedResourceMetadata": "https://mcp.consequential.io/.well-known/oauth-protected-resource",
+    "note": "Sign in with a Consequential account (app.consequential.io) and approve the consent screen."
+  },
+  "capabilities": {
+    "tools": {}
+  },
+  "readOnly": true,
+  "related": [
+    {
+      "name": "consequential-homepage",
+      "description": "Public, no-sign-in tools from consequential.io: vendor comparisons, connector categories and a ROAS-versus-MER check.",
+      "url": "https://consequential.io/mcp",
+      "serverCard": "https://consequential.io/.well-known/mcp/server-card.json"
+    }
+  ]
+}

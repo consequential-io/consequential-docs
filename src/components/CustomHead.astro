@@ -25,11 +25,13 @@ import Default from '@astrojs/starlight/components/Head.astro';
 import MarkdownAlternate from '@ekline/starlight-contextual-menu/MarkdownAlternate.astro';
 import { ClientRouter } from 'astro:transitions';
 import Analytics from './Analytics.astro';
+import StructuredData from './StructuredData.astro';
 ---
 
 <Default />
 <ClientRouter />
 <MarkdownAlternate />
+<StructuredData />
 <link rel="alternate" type="text/plain" href="/llms.txt" title="Consequential docs llms.txt" />
 <Analytics />
 
