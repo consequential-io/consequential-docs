@@ -1,0 +1,119 @@
+---
+title: View figures in another currency
+description: Use the currency menu in the page header to see money figures on the Acquisition and Metrics pages in USD, GBP, EUR, CAD, AUD, INR, JPY, SGD, or AED.
+sidebar:
+  order: 2
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+You can show the money figures on the **Acquisition** and **Metrics** pages in a currency other than your store's own. Use this when you sell in several markets, or when you report to your team in a different currency than the one your store records sales in.
+
+Consequential converts the figures for you. Your store's data stays in its own currency, and other people in your workspace keep the currency they chose.
+
+## Prerequisites
+
+- A Consequential workspace at [app.consequential.io](https://app.consequential.io) with a connected store.
+- Any role in the workspace. The currency choice is a personal setting, so you don't need the **Owner** or **Admin** role.
+
+## Change the display currency
+
+<Steps>
+
+1. Log in to [app.consequential.io](https://app.consequential.io).
+2. Open one of these pages:
+   - **Analyze → Acquisition**, on any tab.
+   - **Metrics**, or the detail view of any metric.
+3. In the page header, find the currency menu to the right of the date range. It shows a flag and a currency code, such as **USD**.
+4. Click the currency menu. It lists each currency with its flag, code, and full name.
+5. Select a currency:
+
+   | Code | Currency |
+   | --- | --- |
+   | `USD` | US Dollar |
+   | `GBP` | British Pound |
+   | `EUR` | Euro |
+   | `CAD` | Canadian Dollar |
+   | `AUD` | Australian Dollar |
+   | `INR` | Indian Rupee |
+   | `JPY` | Japanese Yen |
+   | `SGD` | Singapore Dollar |
+   | `AED` | UAE Dirham |
+
+</Steps>
+
+The page reloads its figures in the currency you selected. There is no **Save** button: Consequential saves your choice as soon as you select it.
+
+To go back to your store's own currency, open the menu and select that currency.
+
+## How your choice is saved
+
+- **Per user.** Your choice changes only what you see. Other people in the workspace keep their own choice.
+- **Per workspace.** If you belong to more than one workspace, each one remembers its own choice. A choice in one workspace never carries into another.
+- **Across sessions and devices.** Your choice stays after you refresh the page, sign out, or sign in on another device.
+- **No choice saved.** The pages show figures in the currency of the store or view you selected in the sidebar switcher, as they did before.
+
+## What converts and what doesn't
+
+| Figures | With another display currency |
+| --- | --- |
+| Money amounts, such as spend, revenue, AOV, CAC, CPA, CPC, CPM, and profit | Convert to the currency you selected |
+| Ratios, such as ROAS, CTR, and CVR | Stay the same |
+| Counts, such as orders, clicks, and impressions | Stay the same |
+| Scores and letter grades | Stay the same |
+
+Ratios, counts, and grades don't depend on the currency, so the menu doesn't change them.
+
+### How Consequential converts the figures
+
+- **Daily figures** convert at the exchange rate for that day. Each point on a chart and each daily row uses its own day's rate.
+- **Totals for a period** depend on the page:
+  - On the **Metrics** pages, a total is the sum of each day's converted figure.
+  - On the **Acquisition** tables, a row's total for the period, such as a campaign's spend over 30 days, converts at the average daily rate across the period.
+- Exchange rates come from the European Central Bank's daily reference rates. On days the ECB doesn't publish, such as weekends, Consequential uses the last published rate. The ECB doesn't publish a rate for the UAE Dirham, so `AED` uses the official US dollar peg of 1 USD = 3.6725 AED.
+
+Because each day converts at its own rate, a converted figure can differ slightly from a figure you convert yourself at today's rate.
+
+### Pages that don't convert yet
+
+The currency menu shows only on the **Acquisition** and **Metrics** pages. These pages still show figures in your store's own currency:
+
+- **Home**
+- **Attribution**, **Conversion**, and **Journeys** under **Analyze**
+- **Insights**
+- Daily reports and email reports
+
+## When a figure can't be converted
+
+If an exchange rate is missing for some data, Consequential doesn't mix currencies. The page shows those figures in your store's own currency, labeled with that currency, and a warning icon appears next to the currency menu. Hover over the icon to see which currency the figures are in.
+
+<Aside type="note">
+The currency menu only changes how figures appear. It doesn't change your store's currency or your workspace's base currency. To change those, see [Set a store's currency](/how-tos/onboarding/manage-store-preferences/#set-a-stores-currency) and [Set your workspace timezone and currency](/account-management/set-workspace-timezone-and-currency/).
+</Aside>
+
+## Verify your choice
+
+<Steps>
+
+1. Refresh the page.
+2. Confirm the currency menu in the header still shows the currency you selected.
+3. Confirm the money amounts on the page show that currency's symbol or code.
+
+</Steps>
+
+## Troubleshooting
+
+| Problem | Cause and resolution |
+| --- | --- |
+| The currency menu isn't in the header | The menu shows only on the **Acquisition** and **Metrics** pages. Open one of those pages. |
+| A warning icon shows next to the currency menu | An exchange rate is missing for some of the data on this page, so those figures show in your store's own currency. Hover over the icon to see which currency they're in. |
+| The message **Could not change the currency** appears | Consequential couldn't save your choice, and the menu went back to your previous currency. Select the currency again. |
+| A teammate sees different figures from you | Each person chooses their own display currency. Ask your teammate which currency their menu shows. |
+| Figures on **Home** or **Attribution** don't match the **Acquisition** page | Those pages don't convert yet. They show your store's own currency. |
+
+## Related
+
+- [Understand the Acquisition Dashboard](/acquisition-dashboard/understand-the-acquisition-dashboard/) — the tabs, filters, and metrics on the Acquisition page.
+- [Explore a metric in detail](/metrics-explorer/explore-a-metric/) — open a metric's detail view and use its toolbar.
+- [How to switch stores and manage display preferences](/how-tos/onboarding/manage-store-preferences/) — set a store's currency and choose whether amounts show a symbol or a code.
+- [Set your workspace timezone and currency](/account-management/set-workspace-timezone-and-currency/) — the workspace's base currency.
