@@ -18,10 +18,15 @@ AI trend insights are rolling out alongside trend alerts. If the Insights page o
 <Steps>
 
 1. Open **Insights** from the sidebar.
-2. Find a card tagged **AI trend**. The tags next to it show the metric, the store, and the period.
-3. Click the card to open its detail page.
+2. Set the date range in the header to the days you want to review. The feed shows only cards with an anomaly on one of those days, so a narrower range hides older moves.
+3. Find a card tagged **AI trend**. The tags next to it show the metric, the store, and the period.
+4. Click the card to open its detail page.
 
 </Steps>
+
+<Aside type="note">
+If the feed reads *"No insights in this date range"*, widen the range. Nothing was flagged on the days you picked.
+</Aside>
 
 ## The header
 
@@ -44,24 +49,53 @@ When several metrics moved together, the heading reads **AI trend · N metrics m
 
 ## The tabs
 
-**Timeline** charts the metric around the detection date: the actual value, the same weekday a year earlier for comparison, and the expected range as a band. Each fired breach is marked on its own date.
+The detail view has three tabs, each a different cut of the same move.
+
+### Timeline
+
+**Timeline** charts the metric around the detection date: the actual value, the same metric a year earlier for comparison, and the expected range as a band. Each fired breach is marked on its own date. When the card is a segment anomaly — Sales Channel = Hydrogen, for example — the chart shows that segment's own line, last-year line, and band, which is what it was judged against.
 
 <Aside type="note">
 The band is drawn only on days Consequential has a stored expectation for, and is left open where it doesn't — the gaps are honest, not missing data. A breach marker's own range can differ slightly from the band, because the check that fired it and the stored band come from separate model fits.
 </Aside>
 
-**Funnel** places the metric in its funnel, where the metric belongs to one.
+### Drivers
 
-**Dimension** breaks the move down by segment. If it reads *"No dimensional drivers yet"*, anomaly detection doesn't send a segment-level breakdown for that metric yet. The tab fills in automatically once it does — there's nothing to configure.
+**Drivers** ranks the segments behind the move under a **Where this comes from** card. Each row is a dimension value — a sales channel, a country, a campaign — with a bar and a **Delta** that shows how much it added to or subtracted from the metric. Rank the list by one of three measures from the dropdown:
+
+| Rank by | What it surfaces |
+| --- | --- |
+| **Impact** | Share of the whole metric's expected total — how much this segment alone moved the overall number. |
+| **Lift** | Share of its own dimension's movement — most responsible for that dimension's spread, whatever the dollar size. |
+| **Volume** | Plain year-over-year change, with no target involved. |
+
+A row with a `›` arrow opens to the causes and movers found inside it, and those open further down the same way. A row that doesn't open is where the breakdown stopped.
+
+### Breakdown
+
+**Breakdown** is the full root-cause analysis: the path from the whole metric down to the segments that drove the move. It opens with a written summary — how much of the change the segments that broke their own range account for, and whether the move was concentrated in a few segments or spread across many.
+
+Following the summary, each split (**Split by Sales Channel**, **Split by Country**, and so on) is a table of segments showing the **Actual** value, the **Expected (range)**, its **Share of change**, and a plain-language **Status**:
+
+- **Below its range** / **Above its range** — a cause: the segment moved outside its own expected range and carries a real share of the change.
+- **Moved most, within its range** — a mover: the segment stayed inside its range but swings enough day to day to drive the total anyway.
+- **Moved the other way, made up for part of it** — the segment pushed against the change and offset some of it.
+- **Within its range** — the segment moved in line with its usual size.
+
+A segment marked with a `›` opens to its own split, so you can follow the cause down through the levels.
+
+<Aside type="note">
+When a detection has no stored analysis yet, the Breakdown tab says so. It fills in automatically once anomaly detection sends one — there's nothing to configure.
+</Aside>
 
 ## What moved with it
 
-The panel beside the chart lists everything that moved at the same time, switchable between:
+The panel to the left of the tabs lists every detection on the card, each with a small trend line, switchable between:
 
-- **By Dimension** — dimensions that moved together, for a metric with a segment-level breakdown.
+- **By Dimension** — segments that moved together, for a metric with a segment-level breakdown.
 - **By Metric** — other metrics that moved together, which is what makes a multi-metric card worth reading as one story rather than several.
 
-Selecting an entry re-points the numbers and the chart at it, so you can compare members without leaving the page.
+Selecting an entry re-points the numbers, the chart, and the tabs at it, so you can compare members without leaving the page.
 
 ## Related
 
